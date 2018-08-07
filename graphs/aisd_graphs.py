@@ -153,7 +153,7 @@ def powrotne_nastepnikow(graph: list, d: list, f: list) -> int:
     return count
 
 
-n_wartosci = [100]
+n_wartosci = [100, 200]
 d_wartosci = [0.2, 0.4]
 
 for gestosc in d_wartosci:
