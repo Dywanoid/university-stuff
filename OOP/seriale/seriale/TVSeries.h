@@ -1,13 +1,20 @@
 #pragma once
 #include <string>
+using namespace std;
 
 class TVSeries
 {
 private:
-	std::string title, genre;
+	string title, genre;
 	float score;
 public:
-	TVSeries(std::string, std::string, float);
+	TVSeries(string, string, float);
+	bool setTitle(string);
+	bool setGenre(string);
+	bool setScore(float);
+	string getTitle();
+	string getGenre();
+	float getScore();
 	~TVSeries();
 };
 
