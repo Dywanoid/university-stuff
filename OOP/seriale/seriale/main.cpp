@@ -1,13 +1,11 @@
-#include "TVSeriesSet.cpp"
+#include "TVShowSet.cpp"
 #include <iostream>
 
 
 int main() {
-	TVSeries serial = TVSeries(string("Pamietnik"), string("romans"), 8.0);
+	//TVShow(string("Pamietnik"), string("romans"), 8.0);
+	TVShowSet<TVShow> pula; 
 
-	cout << serial.getTitle() << endl;
-	cout << serial.getGenre() << endl;
-	cout << serial.getScore() << endl;
 
 	system("pause");
 	return 0;
