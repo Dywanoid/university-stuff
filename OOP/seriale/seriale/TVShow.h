@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <vector>
+
 using namespace std;
 
 class TVShow
@@ -12,9 +14,9 @@ public:
 	bool setTitle(string);
 	bool setGenre(string);
 	bool setScore(float);
-	string getTitle();
-	string getGenre();
-	float getScore();
+	string getTitle() const;
+	string getGenre() const;
+	float getScore() const;
 	~TVShow();
 };
 

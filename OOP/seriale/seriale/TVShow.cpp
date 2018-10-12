@@ -24,22 +24,18 @@ bool TVShow::setScore(float s)
 	return false;
 }
 
-bool TVShow::test()
-{
-	return false;
-}
 
-string TVShow::getTitle()
+string TVShow::getTitle() const
 {
 	return title;
 }
 
-string TVShow::getGenre()
+string TVShow::getGenre() const
 {
 	return genre;
 }
 
-float TVShow::getScore()
+float TVShow::getScore() const
 {
 	return score;
 }
