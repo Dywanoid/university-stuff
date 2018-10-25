@@ -1,35 +1,38 @@
-#include "TVShow.h"
+#include "Production.h"
 #include <algorithm>
+#include <vector>
 
-template <class T> class TVShowSet
+template <class T> class Pool
 {
 private:
-	vector<T> pool;
+	vector<T> selected;
 public:
-	TVShowSet(vector<T>);
+	Pool(vector<T>);
 	void add(T);
 	void remove(string);
-	void edit(string);
 	void showAll();
-	bool isInSet(string);
+	int howManyHoursPerWeek();
+	bool isInPool(string);
+	void readFile();
+	void saveFile();
 
-	~TVShowSet();
+	~Pool();
 };
 
 template<class T>
-TVShowSet<T>::TVShowSet(vector<T> set)
+Pool<T>::Pool(vector<T> set)
 {
 	pool = set;
 }
 
 template<class T>
-void TVShowSet<T>::add(T)
+void Pool<T>::add(T)
 {
 	pool.push_back(T);
 }
 
 template<class T>
-void TVShowSet<T>::remove(string title)
+void Pool<T>::remove(string title)
 {
 	for (vector<T> iterator i = pool.begin(); i != pool.end(); i++) {
 		if (strcmp(i.title, title)) {
@@ -39,12 +42,12 @@ void TVShowSet<T>::remove(string title)
 }
 
 template<class T>
-void TVShowSet<T>::edit(string)
+void Pool<T>::edit(string)
 {
 }
 
 template<class T>
-void TVShowSet<T>::showAll()
+void Pool<T>::showAll()
 {
 	for (auto const serial : pool) {
 		cout << serial.getTitle() << " ma ocene: " << serial.getScore() << endl;
@@ -53,13 +56,13 @@ void TVShowSet<T>::showAll()
 }
 
 template<class T>
-bool TVShowSet<T>::isInSet(string)
+bool Pool<T>::isInSet(string)
 {
 
 	return false;
 }
 
 template<class T>
-TVShowSet<T>::~TVShowSet()
+Pool<T>::~Pool()
 {
 }

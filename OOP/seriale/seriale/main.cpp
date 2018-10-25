@@ -1,16 +1,15 @@
-#include "TVShowSet.cpp"
+#include "Pool.cpp"
+#include "Series.h"
 #include <iostream>
 
 
 int main() {
-	//TVShow(string("Pamietnik"), string("romans"), 8.0);
+	vector<Series> seriale;
+	seriale.push_back(Series(string("Pamietnik"), string("romans"), 8.0f));
+	seriale.push_back(Series(string("Star Wars"), string("sci-fi"), 10.0f));
+	seriale.push_back(Series(string("XXX"), string("porno"), 6.9f));
 
-	vector<TVShow> seriale;
-	seriale.push_back(TVShow(string("Pamietnik"), string("romans"), 8.0f));
-	seriale.push_back(TVShow(string("Star Wars"), string("sci-fi"), 10.0f));
-	seriale.push_back(TVShow(string("XXX"), string("porno"), 6.9f));
-
-	TVShowSet<TVShow> pula = TVShowSet<TVShow>(seriale);
+	Pool<Series> pula = Pool<Series>(seriale);
 
 	pula.showAll();
 	system("pause");

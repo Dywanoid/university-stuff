@@ -4,19 +4,19 @@
 
 using namespace std;
 
-class TVShow
+class Production
 {
 private:
 	string title, genre;
 	float score;
 public:
-	TVShow(string, string, float);
+	Production();
 	bool setTitle(string);
 	bool setGenre(string);
 	bool setScore(float);
 	string getTitle() const;
 	string getGenre() const;
 	float getScore() const;
-	~TVShow();
+	~Production();
 };
 
