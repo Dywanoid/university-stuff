@@ -1,10 +1,7 @@
 #include "Database.h"
-#include "User.h"
-
 
 
 int main() {
-	User uzytkownik;
 	Database db;
 	Pool<Series> pula;
 	pula += Series(Series("Tytul1", "horror", 5.2f, 5));
