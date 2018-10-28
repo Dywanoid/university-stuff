@@ -1,44 +1,28 @@
 #include "Series.h"
 
 
-Series::Series(string t="title", string g="genre", float s=0.0f)
+Series::Series(string iTitle, string iGenre, float iScore, int iSeasons) : Production(iTitle, iGenre, iScore)
 {
-	title = t;
-	genre = g;
-	score = s;
+	seasons = iSeasons;
 }
 
-bool Series::setTitle(string t)
+int Series::getSeasons()
 {
-	return false;
+	return seasons;
 }
 
-bool Series::setGenre(string g)
+void Series::setSeasons(int s)
 {
-	return false;
+	seasons = s;
 }
 
-
-bool Series::setScore(float s)
+string Series::stringify()
 {
-	return false;
+	string result = Production::stringify();
+	result += to_string(getSeasons());
+	return result;
 }
 
-
-string Series::getTitle() const
-{
-	return title;
-}
-
-string Series::getGenre() const
-{
-	return genre;
-}
-
-float Series::getScore() const
-{
-	return score;
-}
 
 Series::~Series()
 {

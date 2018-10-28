@@ -6,20 +6,27 @@ Production::Production()
 {
 }
 
-bool Production::setTitle(string t)
+Production::Production(string t, string g, float s)
 {
-	return false;
+	title = t;
+	genre = g;
+	score = s;
 }
 
-bool Production::setGenre(string g)
+void Production::setTitle(string t)
 {
-	return false;
+	title = t;
+}
+
+void Production::setGenre(string g)
+{
+	genre = g;
 }
 
 
-bool Production::setScore(float s)
+void Production::setScore(float s)
 {
-	return false;
+	score = s;
 }
 
 
@@ -36,6 +43,12 @@ string Production::getGenre() const
 float Production::getScore() const
 {
 	return score;
+}
+
+string Production::stringify()
+{
+	string result = getTitle() + getGenre() + to_string(getScore());
+	return result;
 }
 
 Production::~Production()

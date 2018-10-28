@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -11,12 +10,14 @@ private:
 	float score;
 public:
 	Production();
-	bool setTitle(string);
-	bool setGenre(string);
-	bool setScore(float);
+	Production(string, string, float);
+	void setTitle(string);
+	void setGenre(string);
+	void setScore(float);
 	string getTitle() const;
 	string getGenre() const;
 	float getScore() const;
+	string stringify();
 	~Production();
 };
 

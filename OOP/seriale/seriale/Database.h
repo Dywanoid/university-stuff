@@ -1,14 +1,22 @@
 #pragma once
+#include "Pool.cpp"
 #include "Series.h"
+#include "Stream.h"
+#include "Movie.h"
+#include <fstream>
+#include <sstream>
 
 class Database
 {
 private:
-	Series db_series;
+	Pool<Series> series;
+	Pool<Stream> streams;
+	Pool<Movie> movies;
 public:
-	Database(string);
+	Database();
+	void saveDatabases();
+	void show();
+	void loadDatabases();
 	~Database();
-	string getTitles();
-	int getTitleIndex(string);
 };
 

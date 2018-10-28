@@ -4,9 +4,11 @@
 class Movie : public Production
 {
 private:
-	float IMDb;
+	int imdbPlace;
 public:
-	Movie();
+	Movie(string, string, float, int);
+	float getImdbPlace();
+	string stringify();
 	~Movie();
 };
 
