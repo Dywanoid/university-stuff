@@ -1,17 +1,19 @@
-#include "Pool.cpp"
-#include "Series.h"
-#include <iostream>
+#include "Database.h"
+#include "User.h"
+
 
 
 int main() {
-	vector<Series> seriale;
-	seriale.push_back(Series(string("Pamietnik"), string("romans"), 8.0f));
-	seriale.push_back(Series(string("Star Wars"), string("sci-fi"), 10.0f));
-	seriale.push_back(Series(string("XXX"), string("porno"), 6.9f));
-
-	Pool<Series> pula = Pool<Series>(seriale);
-
+	User uzytkownik;
+	Database db;
+	Pool<Series> pula;
+	pula += Series(Series("Tytul1", "horror", 5.2f, 5));
+	
 	pula.showAll();
+	system("pause");
+	db.loadDatabases();
+	system("pause");
+	db.show();
 	system("pause");
 	return 0;
 }
