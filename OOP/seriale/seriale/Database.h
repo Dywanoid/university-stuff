@@ -14,6 +14,7 @@ private:
 	Pool<Movie> movies;
 public:
 	Database();
+	void addSeries(string&);
 	void saveDatabases();
 	void show();
 	void loadDatabases();

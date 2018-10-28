@@ -12,6 +12,13 @@ vector<string> splitLine(const string& line, char delimeter) {
 
 Database::Database()
 {
+	loadDatabases();
+}
+
+void Database::addSeries(string& seriesInfo)
+{
+	vector<string> entry = splitLine(seriesInfo, ';');
+	series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
 }
 
 void Database::saveDatabases()
@@ -21,6 +28,8 @@ void Database::saveDatabases()
 void Database::show()
 {
 	series.showAll();
+	streams.showAll();
+	movies.showAll();
 }
 
 void Database::loadDatabases()
@@ -66,7 +75,7 @@ void Database::loadDatabases()
 		file.close();
 	}
 	else {
-		throw string("Nie uda³o otworzyæ siê pliku z filami!");
+		throw string("Nie uda³o otworzyæ siê pliku ze streamami!");
 	}
 }
 
