@@ -38,7 +38,7 @@ void Database::add(string info, int what)
 	}
 }
 
-void Database::remove(int toDelete, int what)
+void Database::remove(unsigned int toDelete, int what)
 {
 	string paths[] = PATHS;
 	int counter = 0;
@@ -62,7 +62,6 @@ void Database::remove(int toDelete, int what)
 			}
 		}
 		file.close();
-
 		switch (what) {
 		case 0:
 			series -= toDelete;
@@ -74,6 +73,7 @@ void Database::remove(int toDelete, int what)
 			streams -= toDelete;
 			break;
 		}
+		
 	}
 	else {
 		throw string("Nie uda³o otworzyæ siê pliku z danymi!");

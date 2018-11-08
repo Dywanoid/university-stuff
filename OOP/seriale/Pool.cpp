@@ -1,4 +1,3 @@
-//#include "Production.h"
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -17,8 +16,9 @@ public:
 		selected.push_back(obj);
 	}
 
-	void operator-=(const int idToRemove) {
-		selected.erase(selected.begin() + idToRemove);
+	void operator-=(const unsigned int idToRemove) {
+		if (idToRemove - 1 >= selected.size()) throw string("POJEBALO CIE?!");
+		selected.erase(selected.begin() + idToRemove - 1);
 	}
 
 	~Pool();
@@ -39,10 +39,9 @@ Pool<T>::Pool(vector<T> arr)
 template<class T>
 void Pool<T>::showAll()
 {
-	for(auto &serial: seriale)
 	for(unsigned int i = 0; i < selected.size(); i++){
 		T temp = selected[i];
-		cout << i << ". " <<temp.getTitle() << " z gatunku "<< temp.getGenre() <<" ma ocene: " << temp.getScore() << endl;
+		cout << i + 1<< ". " <<temp.getTitle() << " z gatunku "<< temp.getGenre() <<" ma ocene: " << temp.getScore() << endl;
 	}
 
 }

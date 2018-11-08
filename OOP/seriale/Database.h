@@ -17,7 +17,7 @@ private:
 public:
 	Database();
 	void add(string, int);
-	void remove(int, int);
+	void remove(unsigned int, int);
 	void show();
 	void show(int);
 	void loadDatabases();

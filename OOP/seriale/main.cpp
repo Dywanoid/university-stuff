@@ -12,6 +12,18 @@ void endOption() {
 	system("cls");
 }
 
+template<class Type>
+Type getInput() {
+	Type input;
+	cin >> input;
+	while (!cin) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cin >> input;
+	}
+	return input;
+}
+
 // TODO: input check
 void addProduction(Database& db) {
 	int choice;
@@ -19,59 +31,55 @@ void addProduction(Database& db) {
 	string seasons, imdbplace, date;
 	cout << "1. Dodaj.." << endl;
 	cout << "Wybierz co chcesz dodac: " << endl;
-	cout << "	0 - serial\n	1 - film\n	2 - stream\n 3 - wyjdz" << endl;
-	cin >> choice;
-	if (choice != 3) {
+	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
+	choice = getInput<int>();
+	cin.ignore();
+	if (choice >= 0 && choice < 3) {
 		cout << "Podaj tytul: " << endl;
-		cin.ignore();
 		getline(cin, title);
 		cout << "Podaj gatunek: " << endl;
 		getline(cin, genre);
 		cout << "Podaj ocene: " << endl;
-		getline(cin, score);
+		score = to_string(getInput<float>());
 	}
 	switch (choice) {
 	case 0:
 		cout << "Ile sezonow?: " << endl;
-		getline(cin, seasons);
+		seasons = to_string(getInput<int>());
 		db.add(title + ";" + genre + ";" + score + ";" + seasons, choice);
 		cout << "Dodano serial: " + title + ".\nGatunek: " + genre + ".\nMa on ocene: " + score + " i liczba sezonow to: " + seasons << endl;
-		endOption();
 		break;
 	case 1:
 		cout << "Jaka pozycja na IMDb?: " << endl;
-		getline(cin, imdbplace);
+		imdbplace = to_string(getInput<int>());
 		db.add(title + ";" + genre + ";" + score + ";" + imdbplace, choice);
 		cout << "Dodano film: " + title + ".\nGatunek: " + genre + ".\nMa on ocene: " + score + " i jego miejsce na IMDb to: " + imdbplace << endl;
-		endOption();
 		break;
 	case 2:
 		cout << "Kiedy?: " << endl;
 		getline(cin, date);
 		db.add(title + ";" + genre + ";" + score + ";" + date, choice);
 		cout << "Dodano stream: " + title + ".\nGatunek: " + genre + ".\nMa on ocene: " + score + " i odbedzie sie: " + date << endl;
-		endOption();
 		break;
-	case 3:
-		endOption();
+	default:
 		break;
 	}
 }
 
 void removeProduction(Database& db) {
-	int choice, toDelete;
+	int choice;
+	unsigned int toDelete;
 	cout << "2. Usun.." << endl;
 	cout << "Wybierz co chcesz usunac: " << endl;
-	cout << "	0 - serial\n	1 - film\n	2 - stream\n 3 - wyjdz" << endl;
-	cin >> choice;
-	if (choice != 3) {
+	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
+	choice = getIntInput();
+
+	if (choice >=0 && choice < 3) {
 		db.show(choice);
-		cout << "Co usunac? (-1 aby wyjsc)" << endl;
-		cin >> toDelete;
-		if (toDelete != -1) { db.remove(toDelete, choice); }
-	}
-	
-	endOption();
+		cout << "Co usunac? (0 aby wyjsc)" << endl;
+		toDelete = getInput<unsigned int>();
+		if (toDelete != 0) { db.remove(toDelete, choice); }
+	}	
 }
 
 int main() {
@@ -83,7 +91,7 @@ int main() {
 	while (!exit) {
 		cout << "Co chcialbys wykonac?" << endl;
 		showOptions();
-		cin >> choice;
+		choice = getInput<int>();
 		system("cls");
 		switch (choice) {
 		case 0: // show all data
@@ -91,10 +99,22 @@ int main() {
 			endOption();
 			break;
 		case 1: // add production
-			addProduction(db);
+			try {
+				addProduction(db);
+			}
+			catch (string ex) {
+				cout << ex << endl;
+			}
+			endOption();
 			break;
 		case 2: // remove production
-			removeProduction(db);
+			try {
+				removeProduction(db);
+			}
+			catch (string ex) {
+				cout << ex << endl;
+			}
+			endOption();
 			break;
 		case 9:
 			exit = true;
