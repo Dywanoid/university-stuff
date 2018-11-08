@@ -4,10 +4,10 @@
 class Stream : public Production
 {
 private:
-	time_t time;
+	string time;
 public:
-	Stream(string, string, float, time_t);
-	time_t getTime();
+	Stream(string, string, float, string);
+	string getTime();
 	string stringify();
 	~Stream();
 };

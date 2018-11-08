@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 
+#define PATHS {"db/seriale.txt", "db/filmy.txt", "db/streamy.txt"}
+
 class Database
 {
 private:
@@ -14,9 +16,10 @@ private:
 	Pool<Movie> movies;
 public:
 	Database();
-	void addSeries(string&);
-	void saveDatabases();
+	void add(string, int);
+	void remove(int, int);
 	void show();
+	void show(int);
 	void loadDatabases();
 	~Database();
 };

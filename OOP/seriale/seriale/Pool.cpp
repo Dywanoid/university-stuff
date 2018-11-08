@@ -1,5 +1,4 @@
 //#include "Production.h"
-#include <algorithm>
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -18,12 +17,8 @@ public:
 		selected.push_back(obj);
 	}
 
-	void operator-=(const string& titleToRemove) {
-		for (auto const& select : selected) {
-			if (strcmp(select.title, titleToRemove)) {
-				selected.erase(remove(selected.begin(), selected.end(), select.title), selected.end());
-			}
-		}
+	void operator-=(const int idToRemove) {
+		selected.erase(selected.begin() + idToRemove);
 	}
 
 	~Pool();
@@ -44,8 +39,10 @@ Pool<T>::Pool(vector<T> arr)
 template<class T>
 void Pool<T>::showAll()
 {
-	for (auto const serial : selected) {
-		cout << serial.getTitle() << " ma ocene: " << serial.getScore() << endl;
+	for(auto &serial: seriale)
+	for(unsigned int i = 0; i < selected.size(); i++){
+		T temp = selected[i];
+		cout << i << ". " <<temp.getTitle() << " z gatunku "<< temp.getGenre() <<" ma ocene: " << temp.getScore() << endl;
 	}
 
 }

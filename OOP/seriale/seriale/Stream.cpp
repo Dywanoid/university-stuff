@@ -2,12 +2,12 @@
 
 
 
-Stream::Stream(string iTitle, string iGenre, float iScore, time_t iTime) : Production(iTitle, iGenre, iScore)
+Stream::Stream(string iTitle, string iGenre, float iScore, string iTime) : Production(iTitle, iGenre, iScore)
 {
 	time = iTime;
 }
 
-time_t Stream::getTime()
+string Stream::getTime()
 {
 	return time;
 }
@@ -15,7 +15,7 @@ time_t Stream::getTime()
 string Stream::stringify()
 {
 	string result = Production::stringify();
-	result += to_string(getTime());
+	result += getTime();
 	return result;
 }
 

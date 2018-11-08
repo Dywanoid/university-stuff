@@ -1,2 +1,4 @@
-Pamietnik;Romans;10.0;1
-Black Mirror;Sci-Fi;5.4;3
+Bleach;anime;5;11
+Daredevil;comic;7.21;3
+Pokemon;anime;100.2;25
+Rick and Morty;cartoon;9.9;4
