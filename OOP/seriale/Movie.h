@@ -7,7 +7,7 @@ private:
 	int imdbPlace;
 public:
 	Movie(string, string, float, int);
-	float getImdbPlace();
+	int getImdbPlace();
 	string stringify();
 	~Movie();
 };

@@ -7,7 +7,7 @@ Movie::Movie(string iTitle, string iGenre, float iScore, int iImdbPlace) : Produ
 	imdbPlace = iImdbPlace;
 }
 
-float Movie::getImdbPlace()
+int Movie::getImdbPlace()
 {
 	return imdbPlace;
 }

@@ -1,2 +1,0 @@
-Pamietnik;Romans;10.0;1
-Black Mirror;Sci-Fi;5.4;3
