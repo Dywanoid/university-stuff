@@ -4,6 +4,7 @@ void showOptions() {
 	cout << "0. Pokaz wszystko!" << endl;
 	cout << "1. Dodaj.." << endl;
 	cout << "2. Usun.." << endl;
+	cout << "3. Edytuj.." << endl;
 	cout << "9. Wyjdz!" << endl;
 }
 
@@ -29,6 +30,7 @@ void addProduction(Database& db) {
 	int choice;
 	string title, genre, score;
 	string seasons, imdbplace, date;
+
 	cout << "1. Dodaj.." << endl;
 	cout << "Wybierz co chcesz dodac: " << endl;
 	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
@@ -70,18 +72,35 @@ void addProduction(Database& db) {
 void removeProduction(Database& db) {
 	int choice;
 	unsigned int toDelete;
+
 	cout << "2. Usun.." << endl;
 	cout << "Wybierz co chcesz usunac: " << endl;
 	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
 	choice = getInput<int>();
 
-	if (choice >=0 && choice < 3) {
+	if (choice >=0 && choice <= 2) {
 		db.show(choice);
 		cout << "Co usunac? (0 aby wyjsc)" << endl;
 		toDelete = getInput<unsigned int>();
 		if (toDelete != 0) { db.remove(toDelete, choice); }
 	}	
 }
+
+void editProduction(Database& db) {
+	int choice;
+	unsigned int toEdit;
+
+	cout << "3. Edytuj.." << endl;
+	cout << "Wybierz co chcesz edytowac: " << endl;
+	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
+	choice = getInput<int>();
+	if (choice >= 0 && choice <= 2) {
+		db.show(choice);
+		cout << "Co edytowac? (0 aby wyjsc)" << endl;
+		toEdit = getInput<unsigned int>();
+	}
+	
+};
 
 int main() {
 	try {
@@ -112,6 +131,15 @@ int main() {
 			case 2: // remove production
 				try {
 					removeProduction(db);
+				}
+				catch (string ex) {
+					cout << ex << endl;
+				}
+				endOption();
+				break;
+			case 3: // edit production
+				try {
+					editProduction(db);
 				}
 				catch (string ex) {
 					cout << ex << endl;
