@@ -49,16 +49,19 @@ void Database::remove(unsigned int toDelete, int what)
 	file.open(paths[what], ios::in);
 	if (file.good()) {
 		while (getline(file, line)) {
-			if (counter != toDelete) {
-				lines.push_back(line);
+			if (line != "") {
+				if (counter != toDelete - 1) {
+					lines.push_back(line);
+				}
+				counter++;
 			}
-			counter++;
+			
 		}
 		file.close();
 		file.open(paths[what], ios::out);
 		if (file.good()) {
 			for (auto &addLine : lines) {
-				file << addLine << '\n';
+				file << '\n' + addLine;
 			}
 		}
 		file.close();
@@ -115,47 +118,33 @@ void Database::show(int what)
 void Database::loadDatabases()
 {
 	fstream file;
-	
-	// seriale
-	file.open("db/seriale.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+	string paths[] = PATHS;
+	for (int i = 0; i < 3; i++)
+	{
+		file.open(paths[i], ios::in);
+		if (file.good()) {
+			string line;
+			while (getline(file, line)) {
+				if (line != "") {
+					vector<string> entry = splitLine(line, ';');
+					switch (i) {
+					case 0:
+						series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+						break;
+					case 1:
+						movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+						break;
+					case 2:
+						streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
+						break;
+					}
+				}
+			}
+			file.close();
 		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku z serialami!");
-	}
-
-	// filmy
-	file.open("db/filmy.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+		else {
+			throw string("Nie udalo sie otworzyc pliku!");
 		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku z filami!");
-	}
-
-	// streamy
-	file.open("db/streamy.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
-		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku ze streamami!");
 	}
 }
 

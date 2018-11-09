@@ -41,6 +41,7 @@ void addProduction(Database& db) {
 		getline(cin, genre);
 		cout << "Podaj ocene: " << endl;
 		score = to_string(getInput<float>());
+		cin.ignore();
 	}
 	switch (choice) {
 	case 0:
@@ -72,7 +73,7 @@ void removeProduction(Database& db) {
 	cout << "2. Usun.." << endl;
 	cout << "Wybierz co chcesz usunac: " << endl;
 	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
-	choice = getIntInput();
+	choice = getInput<int>();
 
 	if (choice >=0 && choice < 3) {
 		db.show(choice);
@@ -83,48 +84,55 @@ void removeProduction(Database& db) {
 }
 
 int main() {
-	Database db;
-	bool exit = false;
-	int choice;
+	try {
+		Database db;
+		bool exit = false;
+		int choice;
 
-	cout << "Witaj w aplikacji!" << endl; 
-	while (!exit) {
-		cout << "Co chcialbys wykonac?" << endl;
-		showOptions();
-		choice = getInput<int>();
-		system("cls");
-		switch (choice) {
-		case 0: // show all data
-			db.show();
-			endOption();
-			break;
-		case 1: // add production
-			try {
-				addProduction(db);
+		cout << "Witaj w aplikacji!" << endl;
+		while (!exit) {
+			cout << "Co chcialbys wykonac?" << endl;
+			showOptions();
+			choice = getInput<int>();
+			system("cls");
+			switch (choice) {
+			case 0: // show all data
+				db.show();
+				endOption();
+				break;
+			case 1: // add production
+				try {
+					addProduction(db);
+				}
+				catch (string ex) {
+					cout << ex << endl;
+				}
+				endOption();
+				break;
+			case 2: // remove production
+				try {
+					removeProduction(db);
+				}
+				catch (string ex) {
+					cout << ex << endl;
+				}
+				endOption();
+				break;
+			case 9:
+				exit = true;
+				break;
+			default:
+				cout << "Nie ma takiego!" << endl;
+				endOption();
 			}
-			catch (string ex) {
-				cout << ex << endl;
-			}
-			endOption();
-			break;
-		case 2: // remove production
-			try {
-				removeProduction(db);
-			}
-			catch (string ex) {
-				cout << ex << endl;
-			}
-			endOption();
-			break;
-		case 9:
-			exit = true;
-			break;
-		default:
-			cout << "Nie ma takiego!" << endl;
-			endOption();
 		}
 	}
+	catch (string ex) {
+		cout << ex << endl;
+	}
 
+	
 
+	endOption();
 	return 0;
 }

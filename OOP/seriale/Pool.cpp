@@ -15,9 +15,8 @@ public:
 	void operator+=(const T& obj) {
 		selected.push_back(obj);
 	}
-
 	void operator-=(const unsigned int idToRemove) {
-		if (idToRemove - 1 >= selected.size()) throw string("POJEBALO CIE?!");
+		if (idToRemove - 1 >= selected.size()) throw string("Usuwanie poza podanym zbiorem!");
 		selected.erase(selected.begin() + idToRemove - 1);
 	}
 
