@@ -1,5 +1,9 @@
 #include <vector>
 #include <iostream>
+#include "Series.h"
+#include "Stream.h"
+#include "Movie.h"
+
 using namespace std;
 
 
@@ -40,10 +44,10 @@ void Pool<T>::showAll()
 {
 	for(unsigned int i = 0; i < selected.size(); i++){
 		T temp = selected[i];
-		cout << i + 1<< ". " <<temp.getTitle() << " z gatunku "<< temp.getGenre() <<" ma ocene: " << temp.getScore() << endl;
+		cout << i + 1 << ". " << temp.showFull() << endl;
 	}
-
 }
+
 
 template<class T>
 bool Pool<T>::isInPool(string)

@@ -25,7 +25,6 @@ Type getInput() {
 	return input;
 }
 
-// TODO: input check
 void addProduction(Database& db) {
 	int choice;
 	string title, genre, score;

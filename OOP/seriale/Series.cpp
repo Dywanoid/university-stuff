@@ -6,11 +6,6 @@ Series::Series(string iTitle, string iGenre, float iScore, int iSeasons) : Produ
 	seasons = iSeasons;
 }
 
-int Series::getSeasons()
-{
-	return seasons;
-}
-
 void Series::setSeasons(int s)
 {
 	seasons = s;
@@ -19,8 +14,18 @@ void Series::setSeasons(int s)
 string Series::stringify()
 {
 	string result = Production::stringify();
-	result += to_string(getSeasons());
+	result += getSpecial();
 	return result;
+}
+
+string Series::getSpecial()
+{
+	return to_string(seasons);
+}
+
+string Series::showFull()
+{
+	return title + " z gatunku " + genre + " ma ocene: " + to_string(score) + " i liczbe sezonow: " + to_string(seasons);
 }
 
 

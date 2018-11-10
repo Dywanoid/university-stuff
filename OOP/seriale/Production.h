@@ -5,7 +5,7 @@ using namespace std;
 
 class Production
 {
-private:
+protected:
 	string title, genre;
 	float score;
 public:
@@ -17,6 +17,7 @@ public:
 	string getTitle() const;
 	string getGenre() const;
 	float getScore() const;
+	virtual string getSpecial() const;
 	string stringify();
 	~Production();
 };

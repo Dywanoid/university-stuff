@@ -8,7 +8,8 @@ private:
 public:
 	Series(string, string, float, int);
 	string stringify();
-	int getSeasons();
+	string getSpecial();
+	string showFull();
 	void setSeasons(int);
 	~Series();
 };
