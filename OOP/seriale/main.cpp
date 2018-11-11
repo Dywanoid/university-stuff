@@ -22,6 +22,7 @@ Type getInput() {
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		cin >> input;
 	}
+	cin.ignore();
 	return input;
 }
 
@@ -34,7 +35,6 @@ void addProduction(Database& db) {
 	cout << "Wybierz co chcesz dodac: " << endl;
 	cout << "	0 - serial\n	1 - film\n	2 - stream\n inna - wyjdz" << endl;
 	choice = getInput<int>();
-	cin.ignore();
 	if (choice >= 0 && choice < 3) {
 		cout << "Podaj tytul: " << endl;
 		getline(cin, title);
@@ -42,7 +42,6 @@ void addProduction(Database& db) {
 		getline(cin, genre);
 		cout << "Podaj ocene: " << endl;
 		score = to_string(getInput<float>());
-		cin.ignore();
 	}
 	switch (choice) {
 	case SERIES:
@@ -87,7 +86,7 @@ void removeProduction(Database& db) {
 
 void editProduction(Database& db) {
 	int choice;
-	unsigned int toEdit;
+	unsigned int toEdit, confirm;
 	string title, genre, score, special;
 
 	cout << "3. Edytuj.." << endl;
@@ -96,11 +95,11 @@ void editProduction(Database& db) {
 	choice = getInput<int>();
 	if (choice >= 0 && choice <= 2) {
 		db.show(choice);
-		cout << "Co edytowac? (0 aby wyjsc)" << endl;
+		cout << "Ktora pozycje edytowac? (0 aby wyjsc)" << endl;
 		toEdit = getInput<unsigned int>();
 		if (toEdit) { 
 			db.show(choice, toEdit);
-			cout << "PNowy tytul: " << endl;
+			cout << "Nowy tytul: " << endl;
 			getline(cin, title);
 			cout << "Nowy gatunek: " << endl;
 			getline(cin, genre);
@@ -118,9 +117,12 @@ void editProduction(Database& db) {
 				break;
 			}
 			getline(cin, special);
-			db.edit(toEdit, choice, title + ";" + genre + ";" + score + ";" + special);
+			cout << "Czy jestes pewny i chcesz zmienic pozycje? \n 1 - Tak, 0 - Nie" << endl;
+			confirm = getInput<unsigned int>();
+			if(confirm) db.edit(choice, toEdit, title + ";" + genre + ";" + score + ";" + special);
 		}
 	}
+	endOption();
 	
 };
 

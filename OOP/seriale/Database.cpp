@@ -95,7 +95,7 @@ void Database::edit(int what, int which, string info)
 		break;
 	case STREAM:
 		streams.edit(Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]), which);
-		break;
+		break;	
 	}
 	
 }

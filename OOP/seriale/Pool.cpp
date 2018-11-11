@@ -43,7 +43,7 @@ Pool<T>::Pool(vector<T> arr)
 template<class T>
 void Pool<T>::edit(const T& obj, int which)
 {
-	selected[which] = obj;
+	selected[which - 1] = obj;
 }
 
 
@@ -59,7 +59,7 @@ void Pool<T>::showAll()
 template<class T>
 void Pool<T>::showAll(int which)
 {
-	cout << selected[which].showFull() << endl;
+	cout << selected[which - 1].showFull() << endl;
 }
 
 
