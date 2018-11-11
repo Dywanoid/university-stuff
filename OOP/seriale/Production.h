@@ -20,6 +20,7 @@ public:
 	string getGenre() const;
 	float getScore() const;
 	virtual string getSpecial() const;
+	string showFull();
 	string stringify();
 	~Production();
 };

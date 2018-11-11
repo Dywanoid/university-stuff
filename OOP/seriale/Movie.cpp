@@ -14,10 +14,7 @@ string Movie::getSpecial()
 
 string Movie::showFull()
 {
-	stringstream stream;
-	stream << fixed << setprecision(1) << score;
-	string scr = stream.str();
-	return title + " z gatunku " + genre + " ma ocene: " + scr + " a jego pozycja w rankingu IMDb to: " + to_string(imdbPlace);
+	return Production::showFull() + " a jego pozycja w rankingu IMDb to: " + to_string(imdbPlace);
 }
 
 

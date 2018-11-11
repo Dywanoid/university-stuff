@@ -25,10 +25,7 @@ string Series::getSpecial()
 
 string Series::showFull()
 {
-	stringstream stream;
-	stream << fixed << setprecision(1) << score;
-	string scr = stream.str();
-	return title + " z gatunku " + genre + " ma ocene: " + scr + " i liczbe sezonow: " + to_string(seasons);
+	return Production::showFull() + " i liczbe sezonow: " + to_string(seasons);
 }
 
 
