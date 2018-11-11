@@ -14,7 +14,9 @@ private:
 public:	
 	Pool();
 	Pool(vector<T>);
+	void edit(const T&, int);
 	void showAll();
+	void showAll(int);
 	bool isInPool(string);
 	void operator+=(const T& obj) {
 		selected.push_back(obj);
@@ -38,6 +40,12 @@ Pool<T>::Pool(vector<T> arr)
 	selected = arr;
 }
 
+template<class T>
+void Pool<T>::edit(const T& obj, int which)
+{
+	selected[which] = obj;
+}
+
 
 template<class T>
 void Pool<T>::showAll()
@@ -46,6 +54,12 @@ void Pool<T>::showAll()
 		T temp = selected[i];
 		cout << i + 1 << ". " << temp.showFull() << endl;
 	}
+}
+
+template<class T>
+void Pool<T>::showAll(int which)
+{
+	cout << selected[which].showFull() << endl;
 }
 
 

@@ -8,6 +8,9 @@
 #include <sstream>
 
 #define PATHS {"db/seriale.txt", "db/filmy.txt", "db/streamy.txt"}
+#define SERIES 0
+#define MOVIE 1
+#define STREAM 2
 
 class Database
 {
@@ -19,8 +22,10 @@ public:
 	Database();
 	void add(string, int);
 	void remove(unsigned int, int);
+	void edit(int, int, string);
 	void show();
 	void show(int);
+	void show(int, int);
 	void loadDatabases();
 	~Database();
 };

@@ -45,19 +45,19 @@ void addProduction(Database& db) {
 		cin.ignore();
 	}
 	switch (choice) {
-	case 0:
+	case SERIES:
 		cout << "Ile sezonow?: " << endl;
 		seasons = to_string(getInput<int>());
 		db.add(title + ";" + genre + ";" + score + ";" + seasons, choice);
 		cout << "Dodano serial: " + title + ".\nGatunek: " + genre + ".\nMa on ocene: " + score + " i liczba sezonow to: " + seasons << endl;
 		break;
-	case 1:
+	case MOVIE:
 		cout << "Jaka pozycja na IMDb?: " << endl;
 		imdbplace = to_string(getInput<int>());
 		db.add(title + ";" + genre + ";" + score + ";" + imdbplace, choice);
 		cout << "Dodano film: " + title + ".\nGatunek: " + genre + ".\nMa on ocene: " + score + " i jego miejsce na IMDb to: " + imdbplace << endl;
 		break;
-	case 2:
+	case STREAM:
 		cout << "Kiedy?: " << endl;
 		getline(cin, date);
 		db.add(title + ";" + genre + ";" + score + ";" + date, choice);
@@ -81,13 +81,14 @@ void removeProduction(Database& db) {
 		db.show(choice);
 		cout << "Co usunac? (0 aby wyjsc)" << endl;
 		toDelete = getInput<unsigned int>();
-		if (toDelete != 0) { db.remove(toDelete, choice); }
+		if (toDelete) { db.remove(toDelete, choice); }
 	}	
 }
 
 void editProduction(Database& db) {
 	int choice;
 	unsigned int toEdit;
+	string title, genre, score, special;
 
 	cout << "3. Edytuj.." << endl;
 	cout << "Wybierz co chcesz edytowac: " << endl;
@@ -97,6 +98,28 @@ void editProduction(Database& db) {
 		db.show(choice);
 		cout << "Co edytowac? (0 aby wyjsc)" << endl;
 		toEdit = getInput<unsigned int>();
+		if (toEdit) { 
+			db.show(choice, toEdit);
+			cout << "PNowy tytul: " << endl;
+			getline(cin, title);
+			cout << "Nowy gatunek: " << endl;
+			getline(cin, genre);
+			cout << "Nowa ocene: " << endl;
+			score = to_string(getInput<float>());
+			switch (choice) {
+			case SERIES:
+				cout << "Nowa liczbe sezonow: " << endl;
+				break;
+			case MOVIE:
+				cout << "Nowe miejsce w rankingu: " << endl;
+				break;
+			case STREAM:
+				cout << "Nowa data: " << endl;
+				break;
+			}
+			getline(cin, special);
+			db.edit(toEdit, choice, title + ";" + genre + ";" + score + ";" + special);
+		}
 	}
 	
 };

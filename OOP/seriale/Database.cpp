@@ -26,13 +26,13 @@ void Database::add(string info, int what)
 	}
 	vector<string> entry = splitLine(info, ';');
 	switch (what) {
-	case 0:
+	case SERIES:
 		series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
 		break;
-	case 1:
+	case MOVIE:
 		movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
 		break;
-	case 2:
+	case STREAM:
 		streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
 		break;
 	}
@@ -66,13 +66,13 @@ void Database::remove(unsigned int toDelete, int what)
 		}
 		file.close();
 		switch (what) {
-		case 0:
+		case SERIES:
 			series -= toDelete;
 			break;
-		case 1:
+		case MOVIE:
 			movies -= toDelete;
 			break;
-		case 2:
+		case STREAM:
 			streams -= toDelete;
 			break;
 		}
@@ -83,34 +83,66 @@ void Database::remove(unsigned int toDelete, int what)
 	}
 }
 
+void Database::edit(int what, int which, string info)
+{
+	vector<string> entry = splitLine(info, ';');
+	switch (what) {
+	case SERIES:
+		series.edit(Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
+		break;
+	case MOVIE:
+		movies.edit(Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
+		break;
+	case STREAM:
+		streams.edit(Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]), which);
+		break;
+	}
+	
+}
+
 void Database::show()
 {	
 	cout << "=====================" << endl;
 	cout << "SERIALE" << endl;
 	cout << "=====================" << endl;
-	show(0);
+	show(SERIES);
 	cout << "\n=====================" << endl;
 	cout << "FILMY" << endl;
 	cout << "=====================" << endl;
-	show(1);
+	show(MOVIE);
 	cout << "\n=====================" << endl;
 	cout << "STREAMY" << endl;
 	cout << "=====================" << endl;
-	show(2);
+	show(STREAM);
 	cout << "\n\n";
 }
 
 void Database::show(int what)
 {
 	switch (what) {
-	case 0:
+	case SERIES:
 		series.showAll();
 		break;
-	case 1:
+	case MOVIE:
 		movies.showAll();
 		break;
-	case 2:
+	case STREAM:
 		streams.showAll();
+		break;
+	}
+}
+
+void Database::show(int what, int which)
+{
+	switch (what) {
+	case SERIES:
+		series.showAll(which);
+		break;
+	case MOVIE:
+		movies.showAll(which);
+		break;
+	case STREAM:
+		streams.showAll(which);
 		break;
 	}
 }
@@ -128,13 +160,13 @@ void Database::loadDatabases()
 				if (line != "") {
 					vector<string> entry = splitLine(line, ';');
 					switch (i) {
-					case 0:
+					case SERIES:
 						series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
 						break;
-					case 1:
+					case MOVIE:
 						movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
 						break;
-					case 2:
+					case STREAM:
 						streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
 						break;
 					}
