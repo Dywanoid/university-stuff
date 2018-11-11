@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <algorithm> 
 #include "Series.h"
 #include "Stream.h"
 #include "Movie.h"
@@ -17,6 +18,8 @@ public:
 	void edit(const T&, int);
 	void showAll();
 	void showAll(int);
+	static bool cmpScore(T, T);
+	void showSorted();
 	int howMany();
 	vector<string> getAllSpecials();
 	void operator+=(const T& obj) {
@@ -47,13 +50,11 @@ void Pool<T>::edit(const T& obj, int which)
 	selected[which - 1] = obj;
 }
 
-
 template<class T>
 void Pool<T>::showAll()
 {
 	for(unsigned int i = 0; i < selected.size(); i++){
-		T temp = selected[i];
-		cout << i + 1 << ". " << temp.showFull() << endl;
+		cout << i + 1 << ". " << selected[i].showFull() << endl;
 	}
 }
 
@@ -61,6 +62,23 @@ template<class T>
 void Pool<T>::showAll(int which)
 {
 	cout << selected[which - 1].showFull() << endl;
+}
+
+template<class T>
+bool Pool<T>::cmpScore(T a, T b)
+{
+	return a.getScore() > b.getScore();
+}
+
+template<class T>
+void Pool<T>::showSorted()
+{
+	vector<T> sorted = selected;
+	sort(sorted.begin(), sorted.end(), cmpScore);
+
+	for (unsigned int i = 0; i < selected.size(); i++) {
+		cout << i + 1 << ". " << sorted[i].showFull() << endl;
+	}
 }
 
 template<class T>

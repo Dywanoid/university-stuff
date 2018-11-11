@@ -6,7 +6,7 @@ void showOptions() {
 	cout << "1. Dodaj.." << endl;
 	cout << "2. Usun.." << endl;
 	cout << "3. Edytuj.." << endl;
-	cout << "4. Rekomendacje.." << endl;
+	cout << "4. Rekomendacje (ranking).." << endl;
 	cout << "5. Statystyki.." << endl;
 	cout << "9. Wyjdz!" << endl;
 }
@@ -100,7 +100,7 @@ void editProduction(Database& db) {
 		db.show(choice);
 		cout << "Ktora pozycje edytowac? (0 aby wyjsc)" << endl;
 		toEdit = getInput<unsigned int>();
-		if (toEdit) { 
+		if (toEdit) {
 			db.show(choice, toEdit);
 			cout << "Nowy tytul: " << endl;
 			getline(cin, title);
@@ -122,10 +122,9 @@ void editProduction(Database& db) {
 			getline(cin, special);
 			cout << "Czy jestes pewny i chcesz zmienic pozycje? \n 1 - Tak, 0 - Nie" << endl;
 			confirm = getInput<unsigned int>();
-			if(confirm) db.edit(choice, toEdit, title + ";" + genre + ";" + score + ";" + special);
+			if (confirm) db.edit(choice, toEdit, title + ";" + genre + ";" + score + ";" + special);
 		}
 	}
-	endOption();
 	
 };
 
@@ -143,6 +142,16 @@ void statistics(Database& db) {
 	cout << "\nSTREAMY:\n";
 	cout << "Liczba streamow: " << db.howMany(STREAM) << endl;
 	// najlepsze, najgorsze miejsce
+};
+
+void recommendations(Database& db) {
+	cout << "Najlepsze!\n";
+	cout << "\nSERIALE:\n";
+	db.showSorted(SERIES);
+	cout << "\nFILMY:\n";
+	db.showSorted(MOVIE);
+	cout << "\nStreamy:\n";
+	db.showSorted(STREAM);
 };
 
 int main() {
@@ -187,6 +196,10 @@ int main() {
 				catch (string ex) {
 					cout << ex << endl;
 				}
+				endOption();
+				break;
+			case 4: // recommendations
+				recommendations(db);
 				endOption();
 				break;
 			case 5: // statistics

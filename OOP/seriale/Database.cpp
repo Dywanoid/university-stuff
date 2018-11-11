@@ -25,15 +25,17 @@ void Database::add(string info, int what)
 		file.close();
 	}
 	vector<string> entry = splitLine(info, ';');
+	float tempScore = atof(entry[2].c_str());
+	if (tempScore > 10 || tempScore < 0) throw string("Ocena poza skala! 0-10 to dopuszczalny zakres!");
 	switch (what) {
 	case SERIES:
-		series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+		series += Series(entry[0], entry[1], tempScore, stoi(entry[3]));
 		break;
 	case MOVIE:
-		movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+		movies += Movie(entry[0], entry[1], tempScore, stoi(entry[3]));
 		break;
 	case STREAM:
-		streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
+		streams += Stream(entry[0], entry[1], tempScore, entry[3]);
 		break;
 	}
 }
@@ -219,6 +221,21 @@ void Database::show(int what, int which)
 		break;
 	case STREAM:
 		streams.showAll(which);
+		break;
+	}
+}
+
+void Database::showSorted(int what)
+{
+	switch (what) {
+	case SERIES:
+		series.showSorted();
+		break;
+	case MOVIE: 
+		movies.showSorted();
+		break;
+	case STREAM:
+		streams.showSorted();
 		break;
 	}
 }

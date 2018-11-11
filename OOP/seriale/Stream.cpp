@@ -12,7 +12,10 @@ string Stream::getSpecial()
 
 string Stream::showFull()
 {
-	return title + " z gatunku " + genre + " ma ocene: " + to_string(score) + " rozpocznie sie: " + time;
+	stringstream stream;
+	stream << fixed << setprecision(1) << score;
+	string scr = stream.str();
+	return title + " z gatunku " + genre + " ma ocene: " + scr + " rozpocznie sie: " + time;
 }
 
 string Stream::stringify()

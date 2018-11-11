@@ -30,6 +30,7 @@ public:
 	void show();
 	void show(int);
 	void show(int, int);
+	void showSorted(int);
 	void loadDatabases();
 	~Database();
 };
