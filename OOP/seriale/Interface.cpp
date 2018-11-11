@@ -6,7 +6,7 @@ Interface::Interface()
 	Database db;
 	bool exit = false;
 	int choice;
-
+  
 	cout << "Witaj w aplikacji!" << endl;
 	while (!exit) {
 		cout << "Co chcialbys wykonac?" << endl;
@@ -57,7 +57,7 @@ Interface::Interface()
 			exit = true;
 			break;
 		default:
-			cout << "Nie ma takiej opcji!" << endl;
+			cout << "Nie ma takiego!" << endl;
 			endOption();
 		}
 	}
