@@ -25,20 +25,22 @@ void Database::add(string info, int what)
 		file.close();
 	}
 	vector<string> entry = splitLine(info, ';');
+	float tempScore = atof(entry[2].c_str());
+	if (tempScore > 10 || tempScore < 0) throw string("Ocena poza skala! 0-10 to dopuszczalny zakres!");
 	switch (what) {
-	case 0:
-		series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+	case SERIES:
+		series += Series(entry[0], entry[1], tempScore, stoi(entry[3]));
 		break;
-	case 1:
-		movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+	case MOVIE:
+		movies += Movie(entry[0], entry[1], tempScore, stoi(entry[3]));
 		break;
-	case 2:
-		streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
+	case STREAM:
+		streams += Stream(entry[0], entry[1], tempScore, entry[3]);
 		break;
 	}
 }
 
-void Database::remove(int toDelete, int what)
+void Database::remove(unsigned int toDelete, int what)
 {
 	string paths[] = PATHS;
 	int counter = 0;
@@ -49,35 +51,131 @@ void Database::remove(int toDelete, int what)
 	file.open(paths[what], ios::in);
 	if (file.good()) {
 		while (getline(file, line)) {
-			if (counter != toDelete) {
-				lines.push_back(line);
+			if (line != "") {
+				if (counter != toDelete - 1) {
+					lines.push_back(line);
+				}
+				counter++;
 			}
-			counter++;
+			
 		}
 		file.close();
 		file.open(paths[what], ios::out);
 		if (file.good()) {
 			for (auto &addLine : lines) {
-				file << addLine << '\n';
+				file << '\n' + addLine;
 			}
 		}
 		file.close();
-
 		switch (what) {
-		case 0:
+		case SERIES:
 			series -= toDelete;
 			break;
-		case 1:
+		case MOVIE:
 			movies -= toDelete;
 			break;
-		case 2:
+		case STREAM:
 			streams -= toDelete;
 			break;
 		}
+		
 	}
 	else {
 		throw string("Nie uda³o otworzyæ siê pliku z danymi!");
 	}
+}
+
+void Database::edit(int what, int which, string info)
+{
+	string paths[] = PATHS;
+	int counter = 0;
+	fstream file;
+	vector<string> lines;
+	string line;
+	vector<string> entry = splitLine(info, ';');
+
+	
+
+	file.open(paths[what], ios::in);
+	if (file.good()) {
+		while (getline(file, line)) {
+			if (line != "") {
+				if (counter != which - 1) {
+					lines.push_back(line);
+				}
+				else {
+					lines.push_back(info);
+				}
+				counter++;
+			}
+
+		}
+		file.close();
+		file.open(paths[what], ios::out);
+		if (file.good()) {
+			for (auto &addLine : lines) {
+				file << '\n' + addLine;
+			}
+		}
+		file.close();
+	}
+
+	switch (what) {
+	case SERIES:
+		series.edit(Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
+		break;
+	case MOVIE:
+		movies.edit(Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
+		break;
+	case STREAM:
+		streams.edit(Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]), which);
+		break;	
+	}
+	
+}
+
+int Database::howMany(int what)
+{
+	int n;
+	switch (what) {
+	case SERIES:
+		n = series.howMany();
+		break;
+	case MOVIE:
+		n = movies.howMany();
+		break;
+	case STREAM:
+		n = streams.howMany();
+		break;
+	}
+	return n;
+}
+
+int Database::countSeasons()
+{
+	int total = 0;
+	for (auto &seasons : series.getAllSpecials()) {
+		total += stoi(seasons);
+	};
+	return total;
+}
+
+int Database::getBestPlace()
+{
+	int best = 0;
+	for (auto &places : movies.getAllSpecials()) {
+		if (!best || stoi(places) < best) best = stoi(places);
+	};
+	return best;
+}
+
+int Database::getWorstPlace()
+{
+	int worst = 0;
+	for (auto &places : movies.getAllSpecials()) {
+		if (!worst || stoi(places) > worst) worst = stoi(places);
+	};
+	return worst;
 }
 
 void Database::show()
@@ -85,29 +183,59 @@ void Database::show()
 	cout << "=====================" << endl;
 	cout << "SERIALE" << endl;
 	cout << "=====================" << endl;
-	show(0);
+	show(SERIES);
 	cout << "\n=====================" << endl;
 	cout << "FILMY" << endl;
 	cout << "=====================" << endl;
-	show(1);
+	show(MOVIE);
 	cout << "\n=====================" << endl;
 	cout << "STREAMY" << endl;
 	cout << "=====================" << endl;
-	show(2);
+	show(STREAM);
 	cout << "\n\n";
 }
 
 void Database::show(int what)
 {
 	switch (what) {
-	case 0:
+	case SERIES:
 		series.showAll();
 		break;
-	case 1:
+	case MOVIE:
 		movies.showAll();
 		break;
-	case 2:
+	case STREAM:
 		streams.showAll();
+		break;
+	}
+}
+
+void Database::show(int what, int which)
+{
+	switch (what) {
+	case SERIES:
+		series.showAll(which);
+		break;
+	case MOVIE:
+		movies.showAll(which);
+		break;
+	case STREAM:
+		streams.showAll(which);
+		break;
+	}
+}
+
+void Database::showSorted(int what)
+{
+	switch (what) {
+	case SERIES:
+		series.showSorted();
+		break;
+	case MOVIE: 
+		movies.showSorted();
+		break;
+	case STREAM:
+		streams.showSorted();
 		break;
 	}
 }
@@ -115,47 +243,33 @@ void Database::show(int what)
 void Database::loadDatabases()
 {
 	fstream file;
-	
-	// seriale
-	file.open("db/seriale.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+	string paths[] = PATHS;
+	for (int i = 0; i < 3; i++)
+	{
+		file.open(paths[i], ios::in);
+		if (file.good()) {
+			string line;
+			while (getline(file, line)) {
+				if (line != "") {
+					vector<string> entry = splitLine(line, ';');
+					switch (i) {
+					case SERIES:
+						series += Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+						break;
+					case MOVIE:
+						movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+						break;
+					case STREAM:
+						streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
+						break;
+					}
+				}
+			}
+			file.close();
 		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku z serialami!");
-	}
-
-	// filmy
-	file.open("db/filmy.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			movies += Movie(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3]));
+		else {
+			throw string("Nie udalo sie otworzyc pliku!");
 		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku z filami!");
-	}
-
-	// streamy
-	file.open("db/streamy.txt", ios::in);
-	if (file.good()) {
-		string line;
-		while (getline(file, line)) {
-			vector<string> entry = splitLine(line, ';');
-			streams += Stream(entry[0], entry[1], ::atof(entry[2].c_str()), entry[3]);
-		}
-		file.close();
-	}
-	else {
-		throw string("Nie uda³o otworzyæ siê pliku ze streamami!");
 	}
 }
 

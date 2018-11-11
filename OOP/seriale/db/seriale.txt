@@ -1,4 +1,8 @@
+
 Bleach;anime;5;11
 Daredevil;comic;7.21;3
-Pokemon;anime;100.2;25
+Pokemon;anime;10;25
 Rick and Morty;cartoon;9.9;4
+Black Mirror;sci-fi;7.500000;4
+Hablo;Espaniol;5;2
+Ania z zielonego wzgorza;obyczajowy;6.400000;2

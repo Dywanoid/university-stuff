@@ -7,15 +7,24 @@ Movie::Movie(string iTitle, string iGenre, float iScore, int iImdbPlace) : Produ
 	imdbPlace = iImdbPlace;
 }
 
-int Movie::getImdbPlace()
+string Movie::getSpecial()
 {
-	return imdbPlace;
+	return to_string(imdbPlace);
 }
+
+string Movie::showFull()
+{
+	stringstream stream;
+	stream << fixed << setprecision(1) << score;
+	string scr = stream.str();
+	return title + " z gatunku " + genre + " ma ocene: " + scr + " a jego pozycja w rankingu IMDb to: " + to_string(imdbPlace);
+}
+
 
 string Movie::stringify()
 {
 	string result = Production::stringify();
-	result += to_string(getImdbPlace());
+	result += getSpecial();
 	return result;
 }
 

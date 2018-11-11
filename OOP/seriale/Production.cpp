@@ -45,6 +45,11 @@ float Production::getScore() const
 	return score;
 }
 
+string Production::getSpecial() const
+{
+	return string();
+}
+
 string Production::stringify()
 {
 	string result = getTitle() + getGenre() + to_string(getScore());
