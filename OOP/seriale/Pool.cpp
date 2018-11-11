@@ -14,7 +14,6 @@ private:
 	vector<T> selected;
 public:	
 	Pool();
-	Pool(vector<T>);
 	void edit(const T&, int);
 	void showAll();
 	void showAll(int);
@@ -38,38 +37,37 @@ Pool<T>::Pool()
 {
 }
 
-template<class T>
-Pool<T>::Pool(vector<T> arr)
-{
-	selected = arr;
-}
-
+// edit entry
 template<class T>
 void Pool<T>::edit(const T& obj, int which)
 {
 	selected[which - 1] = obj;
 }
 
+// shows every entry
 template<class T>
-void Pool<T>::showAll()
+void Pool<T>::showAll() 
 {
 	for(unsigned int i = 0; i < selected.size(); i++){
 		cout << i + 1 << ". " << selected[i].showFull() << endl;
 	}
 }
 
+// shows one entry by id = which - 1
 template<class T>
-void Pool<T>::showAll(int which)
+void Pool<T>::showAll(int which) 
 {
 	cout << selected[which - 1].showFull() << endl;
 }
 
+// function to compare scores
 template<class T>
 bool Pool<T>::cmpScore(T a, T b)
 {
 	return a.getScore() > b.getScore();
 }
 
+// shows sorted entries
 template<class T>
 void Pool<T>::showSorted()
 {
@@ -81,12 +79,14 @@ void Pool<T>::showSorted()
 	}
 }
 
+// how many entries
 template<class T>
 int Pool<T>::howMany()
 {
 	return selected.size();
 }
 
+// get all special fields (seasons, imdbplace, date)
 template<class T>
 vector<string> Pool<T>::getAllSpecials()
 {

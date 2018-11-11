@@ -1,11 +1,12 @@
 #include "Interface.h"
 
+// main program loop
 Interface::Interface()
 {
 	Database db;
 	bool exit = false;
 	int choice;
-
+  
 	cout << "Witaj w aplikacji!" << endl;
 	while (!exit) {
 		cout << "Co chcialbys wykonac?" << endl;
@@ -62,11 +63,7 @@ Interface::Interface()
 	}
 }
 
-
-Interface::~Interface()
-{
-}
-
+// show options to use in main menu
 void Interface::showOptions() {
 	cout << "0. Pokaz wszystko!" << endl;
 	cout << "1. Dodaj.." << endl;
@@ -77,13 +74,13 @@ void Interface::showOptions() {
 	cout << "9. Wyjdz!" << endl;
 }
 
+// pausing and clearing terminal
 void Interface::endOption() {
 	system("pause");
 	system("cls");
 }
 
-
-
+// add production
 void Interface::addProduction(Database& db) {
 	int choice;
 	string title, genre, score;
@@ -125,6 +122,7 @@ void Interface::addProduction(Database& db) {
 	}
 }
 
+// remove production
 void Interface::removeProduction(Database& db) {
 	int choice;
 	unsigned int toDelete;
@@ -142,6 +140,7 @@ void Interface::removeProduction(Database& db) {
 	}
 }
 
+// edit production
 void Interface::editProduction(Database& db) {
 	int choice;
 	unsigned int toEdit, confirm;
@@ -183,6 +182,7 @@ void Interface::editProduction(Database& db) {
 
 };
 
+// statistics of databases
 void Interface::statistics(Database& db) {
 	cout << "Statystyki:\n";
 	cout << "\nSERIALE:\n";
@@ -196,9 +196,9 @@ void Interface::statistics(Database& db) {
 	}
 	cout << "\nSTREAMY:\n";
 	cout << "Liczba streamow: " << db.howMany(STREAM) << endl;
-	// najlepsze, najgorsze miejsce
 };
 
+// recommendations option, prints sorted entries
 void Interface::recommendations(Database& db) {
 	cout << "Najlepsze!\n";
 	cout << "\nSERIALE:\n";
@@ -209,3 +209,6 @@ void Interface::recommendations(Database& db) {
 	db.showSorted(STREAM);
 };
 
+Interface::~Interface()
+{
+}

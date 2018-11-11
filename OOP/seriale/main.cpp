@@ -2,6 +2,7 @@
 
 int main() {
 	try {
+		// init the main loop
 		Interface start;
 	}
 	catch (string ex) {

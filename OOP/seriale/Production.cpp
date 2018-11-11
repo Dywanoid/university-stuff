@@ -50,6 +50,15 @@ string Production::getSpecial() const
 	return string();
 }
 
+// return string to display with all Production class fields
+string Production::showFull()
+{
+	stringstream stream;
+	stream << fixed << setprecision(1) << score;
+	string scr = stream.str();
+	return title + " z gatunku " + genre + " ma ocene: " + scr;
+}
+
 string Production::stringify()
 {
 	string result = getTitle() + getGenre() + to_string(getScore());

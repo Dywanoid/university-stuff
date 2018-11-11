@@ -1,5 +1,6 @@
 #include "Database.h"
 
+// function to split string into pieces to use
 vector<string> splitLine(const string& line, char delimeter) {
 	vector<string> words;
 	string word;
@@ -10,15 +11,19 @@ vector<string> splitLine(const string& line, char delimeter) {
 	return words;
 }
 
+// load database from file on init
 Database::Database()
 {
 	loadDatabases();
 }
 
+// add entry
 void Database::add(string info, int what)
 {
 	string paths[] = PATHS;
 	fstream file;
+
+	// opening file and adding entry to file
 	file.open(paths[what], ios::app);
 	if (file.good()) {
 		file << '\n' + info;
@@ -27,6 +32,8 @@ void Database::add(string info, int what)
 	vector<string> entry = splitLine(info, ';');
 	float tempScore = atof(entry[2].c_str());
 	if (tempScore > 10 || tempScore < 0) throw string("Ocena poza skala! 0-10 to dopuszczalny zakres!");
+
+	// adding entry to database
 	switch (what) {
 	case SERIES:
 		series += Series(entry[0], entry[1], tempScore, stoi(entry[3]));
@@ -40,6 +47,7 @@ void Database::add(string info, int what)
 	}
 }
 
+// remove entry
 void Database::remove(unsigned int toDelete, int what)
 {
 	string paths[] = PATHS;
@@ -48,6 +56,7 @@ void Database::remove(unsigned int toDelete, int what)
 	vector<string> lines;
 	string line;
 
+	// opening file and reading all lines but one to remove
 	file.open(paths[what], ios::in);
 	if (file.good()) {
 		while (getline(file, line)) {
@@ -60,6 +69,8 @@ void Database::remove(unsigned int toDelete, int what)
 			
 		}
 		file.close();
+
+		// writing lines that are read
 		file.open(paths[what], ios::out);
 		if (file.good()) {
 			for (auto &addLine : lines) {
@@ -67,6 +78,8 @@ void Database::remove(unsigned int toDelete, int what)
 			}
 		}
 		file.close();
+
+		// removing entry from database
 		switch (what) {
 		case SERIES:
 			series -= toDelete;
@@ -85,6 +98,7 @@ void Database::remove(unsigned int toDelete, int what)
 	}
 }
 
+// edit entry
 void Database::edit(int what, int which, string info)
 {
 	string paths[] = PATHS;
@@ -95,7 +109,8 @@ void Database::edit(int what, int which, string info)
 	vector<string> entry = splitLine(info, ';');
 
 	
-
+	// opening file and reading every line but that one to edit
+	// edited line is added instead of original entry
 	file.open(paths[what], ios::in);
 	if (file.good()) {
 		while (getline(file, line)) {
@@ -111,6 +126,8 @@ void Database::edit(int what, int which, string info)
 
 		}
 		file.close();
+
+		// writing lines that are read
 		file.open(paths[what], ios::out);
 		if (file.good()) {
 			for (auto &addLine : lines) {
@@ -120,6 +137,7 @@ void Database::edit(int what, int which, string info)
 		file.close();
 	}
 
+	// editing entry in database
 	switch (what) {
 	case SERIES:
 		series.edit(Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
@@ -134,9 +152,12 @@ void Database::edit(int what, int which, string info)
 	
 }
 
+// how many specified productions in database
 int Database::howMany(int what)
 {
 	int n;
+
+	// how many entries in database based on type of production
 	switch (what) {
 	case SERIES:
 		n = series.howMany();
@@ -151,6 +172,7 @@ int Database::howMany(int what)
 	return n;
 }
 
+// count number of seasons across all series
 int Database::countSeasons()
 {
 	int total = 0;
@@ -160,6 +182,7 @@ int Database::countSeasons()
 	return total;
 }
 
+// get best place 
 int Database::getBestPlace()
 {
 	int best = 0;
@@ -169,6 +192,7 @@ int Database::getBestPlace()
 	return best;
 }
 
+// get worst place
 int Database::getWorstPlace()
 {
 	int worst = 0;
@@ -178,6 +202,7 @@ int Database::getWorstPlace()
 	return worst;
 }
 
+// show everything
 void Database::show()
 {	
 	cout << "=====================" << endl;
@@ -195,6 +220,7 @@ void Database::show()
 	cout << "\n\n";
 }
 
+// show specified production type
 void Database::show(int what)
 {
 	switch (what) {
@@ -210,6 +236,7 @@ void Database::show(int what)
 	}
 }
 
+// show one entry of specified production type
 void Database::show(int what, int which)
 {
 	switch (what) {
@@ -225,6 +252,7 @@ void Database::show(int what, int which)
 	}
 }
 
+// show sorted productions of specified type
 void Database::showSorted(int what)
 {
 	switch (what) {
@@ -240,15 +268,19 @@ void Database::showSorted(int what)
 	}
 }
 
+// load database
 void Database::loadDatabases()
 {
 	fstream file;
 	string paths[] = PATHS;
 	for (int i = 0; i < 3; i++)
-	{
+	{	
+		// opening file
 		file.open(paths[i], ios::in);
 		if (file.good()) {
 			string line;
+			
+			// reading line by line
 			while (getline(file, line)) {
 				if (line != "") {
 					vector<string> entry = splitLine(line, ';');
