@@ -85,7 +85,39 @@ void Database::remove(unsigned int toDelete, int what)
 
 void Database::edit(int what, int which, string info)
 {
+	string paths[] = PATHS;
+	int counter = 0;
+	fstream file;
+	vector<string> lines;
+	string line;
 	vector<string> entry = splitLine(info, ';');
+
+	
+
+	file.open(paths[what], ios::in);
+	if (file.good()) {
+		while (getline(file, line)) {
+			if (line != "") {
+				if (counter != which - 1) {
+					lines.push_back(line);
+				}
+				else {
+					lines.push_back(info);
+				}
+				counter++;
+			}
+
+		}
+		file.close();
+		file.open(paths[what], ios::out);
+		if (file.good()) {
+			for (auto &addLine : lines) {
+				file << '\n' + addLine;
+			}
+		}
+		file.close();
+	}
+
 	switch (what) {
 	case SERIES:
 		series.edit(Series(entry[0], entry[1], ::atof(entry[2].c_str()), stoi(entry[3])), which);
