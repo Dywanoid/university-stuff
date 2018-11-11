@@ -2,6 +2,64 @@
 
 Interface::Interface()
 {
+	Database db;
+	bool exit = false;
+	int choice;
+
+	cout << "Witaj w aplikacji!" << endl;
+	while (!exit) {
+		cout << "Co chcialbys wykonac?" << endl;
+		showOptions();
+		choice = getInput<int>();
+		system("cls");
+		switch (choice) {
+		case 0: // show all data
+			db.show();
+			endOption();
+			break;
+		case 1: // add production
+			try {
+				addProduction(db);
+			}
+			catch (string ex) {
+				cout << ex << endl;
+			}
+			endOption();
+			break;
+		case 2: // remove production
+			try {
+				removeProduction(db);
+			}
+			catch (string ex) {
+				cout << ex << endl;
+			}
+			endOption();
+			break;
+		case 3: // edit production
+			try {
+				editProduction(db);
+			}
+			catch (string ex) {
+				cout << ex << endl;
+			}
+			endOption();
+			break;
+		case 4: // recommendations
+			recommendations(db);
+			endOption();
+			break;
+		case 5: // statistics
+			statistics(db);
+			endOption();
+			break;
+		case 9:
+			exit = true;
+			break;
+		default:
+			cout << "Nie ma takiego!" << endl;
+			endOption();
+		}
+	}
 }
 
 
