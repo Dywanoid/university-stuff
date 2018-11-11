@@ -57,7 +57,7 @@ Interface::Interface()
 			exit = true;
 			break;
 		default:
-			cout << "Nie ma takiego!" << endl;
+			cout << "Nie ma takiej opcji!" << endl;
 			endOption();
 		}
 	}
