@@ -23,6 +23,10 @@ public:
 	void add(string, int);
 	void remove(unsigned int, int);
 	void edit(int, int, string);
+	int howMany(int);
+	int countSeasons();
+	int getBestPlace();
+	int getWorstPlace();
 	void show();
 	void show(int);
 	void show(int, int);

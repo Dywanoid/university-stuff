@@ -17,7 +17,8 @@ public:
 	void edit(const T&, int);
 	void showAll();
 	void showAll(int);
-	bool isInPool(string);
+	int howMany();
+	vector<string> getAllSpecials();
 	void operator+=(const T& obj) {
 		selected.push_back(obj);
 	}
@@ -62,12 +63,20 @@ void Pool<T>::showAll(int which)
 	cout << selected[which - 1].showFull() << endl;
 }
 
+template<class T>
+int Pool<T>::howMany()
+{
+	return selected.size();
+}
 
 template<class T>
-bool Pool<T>::isInPool(string)
+vector<string> Pool<T>::getAllSpecials()
 {
-
-	return false;
+	vector<string> results;
+	for (auto &select : selected) {
+		results.push_back(select.getSpecial());
+	}
+	return results;
 }
 
 template<class T>

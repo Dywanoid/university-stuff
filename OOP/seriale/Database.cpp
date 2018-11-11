@@ -132,6 +132,50 @@ void Database::edit(int what, int which, string info)
 	
 }
 
+int Database::howMany(int what)
+{
+	int n;
+	switch (what) {
+	case SERIES:
+		n = series.howMany();
+		break;
+	case MOVIE:
+		n = movies.howMany();
+		break;
+	case STREAM:
+		n = streams.howMany();
+		break;
+	}
+	return n;
+}
+
+int Database::countSeasons()
+{
+	int total = 0;
+	for (auto &seasons : series.getAllSpecials()) {
+		total += stoi(seasons);
+	};
+	return total;
+}
+
+int Database::getBestPlace()
+{
+	int best = 0;
+	for (auto &places : movies.getAllSpecials()) {
+		if (!best || stoi(places) < best) best = stoi(places);
+	};
+	return best;
+}
+
+int Database::getWorstPlace()
+{
+	int worst = 0;
+	for (auto &places : movies.getAllSpecials()) {
+		if (!worst || stoi(places) > worst) worst = stoi(places);
+	};
+	return worst;
+}
+
 void Database::show()
 {	
 	cout << "=====================" << endl;

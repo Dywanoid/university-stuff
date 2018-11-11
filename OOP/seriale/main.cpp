@@ -1,10 +1,13 @@
 #include "Database.h"
+// #include "Interface.h"
 
 void showOptions() {
 	cout << "0. Pokaz wszystko!" << endl;
 	cout << "1. Dodaj.." << endl;
 	cout << "2. Usun.." << endl;
 	cout << "3. Edytuj.." << endl;
+	cout << "4. Rekomendacje.." << endl;
+	cout << "5. Statystyki.." << endl;
 	cout << "9. Wyjdz!" << endl;
 }
 
@@ -126,6 +129,22 @@ void editProduction(Database& db) {
 	
 };
 
+void statistics(Database& db) {
+	cout << "Statystyki:\n";
+	cout << "\nSERIALE:\n";
+	cout << "Liczba seriali: " << db.howMany(SERIES) << endl;
+	if(db.howMany(SERIES)) cout << "Laczna liczba sezonow: " << db.countSeasons() << endl;
+	cout << "\nFILMY:\n";
+	cout << "Liczba filmow: " << db.howMany(MOVIE) << endl;
+	if (db.howMany(MOVIE)) {
+		cout << "Pozycja najlepszego filmu: " << db.getBestPlace() << endl;
+		cout << "Pozycja najgorszego filmu: " << db.getWorstPlace() << endl;
+	}
+	cout << "\nSTREAMY:\n";
+	cout << "Liczba streamow: " << db.howMany(STREAM) << endl;
+	// najlepsze, najgorsze miejsce
+};
+
 int main() {
 	try {
 		Database db;
@@ -168,6 +187,10 @@ int main() {
 				catch (string ex) {
 					cout << ex << endl;
 				}
+				endOption();
+				break;
+			case 5: // statistics
+				statistics(db);
 				endOption();
 				break;
 			case 9:
