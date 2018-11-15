@@ -1,7 +1,10 @@
 package project;
 
+import project.components.Subscription;
 import project.entities.Distributor;
 import project.products.Series;
+
+import java.io.*;
 
 import java.util.Date;
 import java.util.ArrayList;

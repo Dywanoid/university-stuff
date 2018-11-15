@@ -10,10 +10,10 @@ public class User {
     private Date birthday;
     private String email;
     private String creditCardNumber;
-    private int subscription; // TODO: change this to some other stuff than ints (enums?)
+    private String subscription;
     private ArrayList<Product> products;
 
-    public User(String name, Date birthday, String email, String creditCardNumber, int subscription, ArrayList<Product> products) {
+    public User(String name, Date birthday, String email, String creditCardNumber, String subscription, ArrayList<Product> products) {
         this.name = name;
         this.birthday = birthday;
         this.email = email;
@@ -54,11 +54,11 @@ public class User {
         this.creditCardNumber = creditCardNumber;
     }
 
-    public int getSubscription() {
+    public String getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(int subscription) {
+    public void setSubscription(String subscription) {
         this.subscription = subscription;
     }
 
