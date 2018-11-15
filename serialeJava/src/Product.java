@@ -1,30 +1,75 @@
+import java.util.ArrayList;
 import java.util.Date;
 
 abstract class Product {
+    private String imgPath;
     private String title;
     private String description;
+    private Date productionDate;
     private int duration;
-    private float score;
-    private String imgPath;
     private Distributor distributor;
-    private Date date;
+    private ArrayList<String> countries;
+    private float score;
 
-    Product(String title, String description, int duration, float score, String imgPath) {
+    Product(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score) {
+        this.imgPath = imgPath;
         this.title = title;
         this.description = description;
+        this.productionDate = productionDate;
         this.duration = duration;
+        this.distributor = distributor;
+        this.countries = countries;
         this.score = score;
-        this.imgPath = imgPath;
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "title='" + title + '\'' +
+                "imgPath='" + imgPath + '\'' +
+                ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
+                ", productionDate=" + productionDate +
                 ", duration=" + duration +
+                ", distributor=" + distributor +
+                ", countries=" + countries +
                 ", score=" + score +
-                ", imgPath='" + imgPath + '\'' +
                 '}';
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public Date getProductionDate() {
+        return productionDate;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public Distributor getDistributor() {
+        return distributor;
+    }
+
+    public ArrayList<String> getCountries() {
+        return countries;
+    }
+
+    public float getScore() {
+        return score;
+    }
+
+    public void setScore(float score) {
+        this.score = score;
     }
 }

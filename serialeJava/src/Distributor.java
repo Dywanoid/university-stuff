@@ -1,2 +1,4 @@
 class Distributor {
+    Distributor() {
+    }
 }

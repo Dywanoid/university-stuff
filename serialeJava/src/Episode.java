@@ -10,4 +10,16 @@ public class Episode {
         this.premiereDate = premiereDate;
         this.duration = duration;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Date getPremiereDate() {
+        return premiereDate;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
 }
