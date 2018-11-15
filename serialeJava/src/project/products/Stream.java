@@ -1,4 +1,4 @@
-package project.products.stream;
+package project.products;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,8 +1,9 @@
 package project.products;
 
+import project.entities.distributor.Distributor;
+
 import java.util.ArrayList;
 import java.util.Date;
-import project.entities.distributor.Distributor;
 
 public abstract class Product {
     private String imgPath;
@@ -14,7 +15,7 @@ public abstract class Product {
     private ArrayList<String> countries;
     private float score;
 
-    public Product(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score) {
+    Product(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score) {
         this.imgPath = imgPath;
         this.title = title;
         this.description = description;

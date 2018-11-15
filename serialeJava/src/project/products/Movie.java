@@ -1,4 +1,4 @@
-package project.products.movie;
+package project.products;
 
 import java.util.ArrayList;
 import java.util.Date;

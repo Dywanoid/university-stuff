@@ -1,4 +1,4 @@
-package project.products.series;
+package project.products.components;
 
 import java.util.Date;
 
