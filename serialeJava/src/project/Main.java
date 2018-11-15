@@ -1,3 +1,8 @@
+package project;
+
+import project.entities.distributor.Distributor;
+import project.products.series.Series;
+
 import java.util.Date;
 import java.util.ArrayList;
 

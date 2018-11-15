@@ -1,3 +1,5 @@
+package project.products.series;
+
 import java.util.Date;
 
 public class Episode {

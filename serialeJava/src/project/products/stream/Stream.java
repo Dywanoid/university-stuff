@@ -1,7 +1,11 @@
+package project.products.stream;
+
 import java.util.ArrayList;
 import java.util.Date;
+import project.entities.distributor.Distributor;
+import project.products.Product;
 
-public class Stream extends Product{
+public class Stream extends Product {
     private Date date;
     private double price;
 

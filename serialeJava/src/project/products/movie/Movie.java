@@ -1,7 +1,11 @@
+package project.products.movie;
+
 import java.util.ArrayList;
 import java.util.Date;
+import project.entities.distributor.Distributor;
+import project.products.Product;
 
-public class Movie extends Product{
+public class Movie extends Product {
     private String genre;
     private ArrayList<String> actors;
     private String trailerURL;

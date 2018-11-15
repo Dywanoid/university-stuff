@@ -1,13 +1,17 @@
+package project.products.series;
+
 import java.util.ArrayList;
 import java.util.Date;
+import project.entities.distributor.Distributor;
+import project.products.Product;
 
-class Series extends Product {
+public class Series extends Product {
 
     private int numberOfSeasons;
     private ArrayList<Season> seasons;
     private String genre;
 
-    Series(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, int numberOfSeasons, ArrayList<Season> seasons, String genre) {
+    public Series(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, int numberOfSeasons, ArrayList<Season> seasons, String genre) {
         super(imgPath, title, description, productionDate, duration, distributor, countries, score);
         this.numberOfSeasons = numberOfSeasons;
         this.seasons = seasons;
@@ -17,7 +21,7 @@ class Series extends Product {
     @Override
     public String toString() {
         String poprzedni = super.toString();
-        return poprzedni + "\nSeries{" +
+        return poprzedni + "\nproject.products.series{" +
                 "numberOfSeasons=" + numberOfSeasons +
                 ", seasons=" + seasons +
                 ", genre='" + genre + '\'' +

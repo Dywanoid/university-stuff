@@ -1,3 +1,7 @@
+package project.entities.user;
+
+import project.products.Product;
+
 import java.util.Date;
 import java.util.ArrayList;
 
