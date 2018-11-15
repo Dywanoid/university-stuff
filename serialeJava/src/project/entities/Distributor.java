@@ -1,4 +1,4 @@
-package project.entities.distributor;
+package project.entities;
 
 public class Distributor {
     private static int numberOfDistributors = 0;

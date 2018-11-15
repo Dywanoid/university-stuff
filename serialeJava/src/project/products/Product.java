@@ -1,6 +1,6 @@
 package project.products;
 
-import project.entities.distributor.Distributor;
+import project.entities.Distributor;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -2,8 +2,7 @@ package project.products;
 
 import java.util.ArrayList;
 import java.util.Date;
-import project.entities.distributor.Distributor;
-import project.products.Product;
+import project.entities.Distributor;
 
 public class Stream extends Product {
     private Date date;

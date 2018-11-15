@@ -1,4 +1,4 @@
-package project.products.components;
+package project.components;
 
 import java.util.ArrayList;
 

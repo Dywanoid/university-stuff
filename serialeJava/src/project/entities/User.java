@@ -1,4 +1,4 @@
-package project.entities.user;
+package project.entities;
 
 import project.products.Product;
 

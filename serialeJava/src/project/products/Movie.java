@@ -2,8 +2,7 @@ package project.products;
 
 import java.util.ArrayList;
 import java.util.Date;
-import project.entities.distributor.Distributor;
-import project.products.Product;
+import project.entities.Distributor;
 
 public class Movie extends Product {
     private String genre;

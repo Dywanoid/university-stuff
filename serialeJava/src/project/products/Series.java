@@ -3,8 +3,8 @@ package project.products;
 import java.util.ArrayList;
 import java.util.Date;
 
-import project.entities.distributor.Distributor;
-import project.products.components.Season;
+import project.entities.Distributor;
+import project.components.Season;
 
 public class Series extends Product {
     private String genre;

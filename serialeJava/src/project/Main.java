@@ -1,6 +1,6 @@
 package project;
 
-import project.entities.distributor.Distributor;
+import project.entities.Distributor;
 import project.products.Series;
 
 import java.util.Date;
