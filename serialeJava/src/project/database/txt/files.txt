@@ -1,5 +1,9 @@
 actors
 countries
 descriptions
+email1
+email2
 genres
+names1
+names2
 titles

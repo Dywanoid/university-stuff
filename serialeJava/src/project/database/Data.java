@@ -17,7 +17,6 @@ public class Data {
     private ArrayList<String> files = new ArrayList<>();
     private Map<String, Integer> linesCount = new HashMap<>();
     private Map<String, ArrayList<String>> data = new HashMap<>();
-    private Random generator = new Random();
 
     public Data() {
         getFilesNames();
@@ -65,21 +64,16 @@ public class Data {
     }
 
     public String getRandomText(String name) {
-        int lines = linesCount.get(name);
-        int randomLine = generator.nextInt(lines - 1);
-
+        int randomLine = (int) Math.floor(Math.random() * linesCount.get(name));
         return data.get(name).get(randomLine);
     }
 
-    public int getRandomInt(int from, int to) { // 5, 10
-        int result = generator.nextInt(to - from);
-        return result + from;
+    public int getRandomInt(int from, int to) {
+        return from + (int) Math.floor(Math.random() * (to - from + 1));
     }
 
     public float getRandomFloat(float from, float to) {
-        double result = generator.nextDouble();
-    //TODO: Finish this
-        return 2.1f;
+        return from + ((float) Math.random() * (to - from));
     }
 }
 
