@@ -1,10 +1,8 @@
 package project;
 
-import project.components.Subscription;
 import project.entities.Distributor;
 import project.products.Series;
-
-import java.io.*;
+import project.database.Data;
 
 import java.util.Date;
 import java.util.ArrayList;
@@ -26,7 +24,8 @@ public class Main {
                 1,
                 new ArrayList<>(),
                 5);
-        System.out.println(test.toString());
+        Data d = new Data();
+        System.out.println(d.getRandomText("titles"));
 
     }
 

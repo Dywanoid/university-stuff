@@ -5,7 +5,7 @@ public class Subscription implements java.io.Serializable{
     private int numberOfDevices;
     private String maxResolution;
 
-    Subscription(float price, int numberOfDevices, String maxResolution) {
+    public Subscription(float price, int numberOfDevices, String maxResolution) {
         this.price = price;
         this.numberOfDevices = numberOfDevices;
         this.maxResolution = maxResolution;

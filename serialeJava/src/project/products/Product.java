@@ -35,7 +35,7 @@ public abstract class Product {
                 ", productionDate=" + productionDate +
                 ", duration=" + duration +
                 ", distributor=" + distributor +
-                ", countries=" + countries +
+                ", countries.txt=" + countries +
                 ", score=" + score +
                 '}';
     }
