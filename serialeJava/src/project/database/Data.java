@@ -2,10 +2,7 @@ package project.database;
 
 import project.components.Subscription;
 
-import project.components.Subscription;
-
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.io.File;
 
@@ -69,9 +66,9 @@ public class Data {
 
     public String getRandomText(String name) {
         int lines = linesCount.get(name);
-        int rand = generator.nextInt(lines - 1);
+        int randomLine = generator.nextInt(lines - 1);
 
-        return data.get(name).get(rand);
+        return data.get(name).get(randomLine);
     }
 }
 
