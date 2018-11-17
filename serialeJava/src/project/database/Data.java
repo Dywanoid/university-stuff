@@ -70,6 +70,17 @@ public class Data {
 
         return data.get(name).get(randomLine);
     }
+
+    public int getRandomInt(int from, int to) { // 5, 10
+        int result = generator.nextInt(to - from);
+        return result + from;
+    }
+
+    public float getRandomFloat(float from, float to) {
+        double result = generator.nextDouble();
+    //TODO: Finish this
+        return 2.1f;
+    }
 }
 
 // SERIALIZACJA
