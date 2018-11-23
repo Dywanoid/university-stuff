@@ -5,6 +5,7 @@ import project.products.Series;
 import project.database.Data;
 import project.entities.Simulation;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.ArrayList;
 
@@ -13,7 +14,12 @@ public class Main {
     public static void main(String[] args) {
         Simulation sim = new Simulation();
         sim.start();
-
+        String testujemy = "XDDDD";
+        try {
+            System.out.println(Utilities.hashFunction(testujemy));
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
 //        Series test = new Series("path",
 //                "tytul",
 //                "opis",

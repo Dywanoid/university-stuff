@@ -1,19 +1,13 @@
 package project.entities;
 
-import java.util.ArrayList;
-
 public class Simulation {
-    private VOD current;
-    private ArrayList<VOD> vods = new ArrayList<>();
+    private VOD vod;
 
     public Simulation() {
-        VOD vod = new VOD();
-
-        this.current = vod;
-        this.vods.add(vod);
+        this.vod = new VOD();
     }
 
     public void start() {
-        current.start();
+        vod.start();
     }
 }

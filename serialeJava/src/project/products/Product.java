@@ -5,6 +5,9 @@ import project.entities.Distributor;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Abstract class for other products: series, movie, stream
+ */
 public abstract class Product {
     private String imgPath;
     private String title;
@@ -15,6 +18,17 @@ public abstract class Product {
     private ArrayList<String> countries;
     private float score;
 
+    /**
+     *
+     * @param imgPath path to image
+     * @param title title of product
+     * @param description description of product
+     * @param productionDate production date of product
+     * @param duration duration of product in minutes
+     * @param distributor distributor of product
+     * @param countries countries in which product is available
+     * @param score score of product
+     */
     Product(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score) {
         this.imgPath = imgPath;
         this.title = title;

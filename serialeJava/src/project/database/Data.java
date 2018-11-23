@@ -2,9 +2,12 @@ package project.database;
 
 import project.components.Subscription;
 
-import java.io.FileNotFoundException;
-import java.util.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class Data {
     private static Map<String, Subscription> subsciptions = Map.of(
@@ -18,6 +21,7 @@ public class Data {
     private Map<String, Integer> linesCount = new HashMap<>();
     private Map<String, ArrayList<String>> data = new HashMap<>();
 
+
     public Data() {
         getFilesNames();
         readFiles();
@@ -26,32 +30,34 @@ public class Data {
     private void getFilesNames() {
         try {
             Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "files.txt"));
-            while(fileIn.hasNextLine()) {
+            while (fileIn.hasNextLine()) {
                 String fileName = fileIn.nextLine();
                 files.add(fileName);
                 linesCount.put(fileName, 0);
                 data.put(fileName, new ArrayList<>());
             }
             fileIn.close();
+        } catch (FileNotFoundException i) {
+            i.printStackTrace();
         }
-        catch (FileNotFoundException i){i.printStackTrace();}
     }
 
     private void readFiles() {
-        for (String name: files) {
+        for (String name : files) {
             try {
                 Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + name + ".txt"));
                 int count = 0;
                 ArrayList<String> entries = new ArrayList<>();
-                while(fileIn.hasNextLine()) {
+                while (fileIn.hasNextLine()) {
                     count++;
                     entries.add(fileIn.nextLine());
                 }
                 linesCount.put(name, count);
                 data.put(name, entries);
                 fileIn.close();
+            } catch (FileNotFoundException i) {
+                i.printStackTrace();
             }
-            catch(FileNotFoundException i) {i.printStackTrace();}
         }
     }
 
@@ -60,7 +66,7 @@ public class Data {
         return "Data{" +
                 "\nfiles=" + files +
                 ", \nlinesCount=" + linesCount +
-                ", \ndata=" + data +'}';
+                ", \ndata=" + data + '}';
     }
 
     public String getRandomText(String name) {
@@ -72,8 +78,9 @@ public class Data {
         return from + (int) Math.floor(Math.random() * (to - from + 1));
     }
 
+
     public float getRandomFloat(float from, float to) {
-        return from + ((float) Math.random() * (to - from));
+        return (float) ((int) ((from + ((float) Math.random() * (to - from))) * 100)) / 100;
     }
 }
 
