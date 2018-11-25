@@ -1,32 +1,28 @@
 package project.products;
 
 import java.util.ArrayList;
-import java.util.Date;
+
+import project.components.Sale;
 import project.entities.Distributor;
 
 public class Stream extends Product {
-    private Date date;
-    private double price;
+    private int date;
+    private Sale sale;
 
-    public Stream(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, Date date, double price) {
-        super(imgPath, title, description, productionDate, duration, distributor, countries, score);
-        this.date = date;
-        this.price = price;
+    public Stream() {
     }
 
-    public Date getDate() {
+    public Stream(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, int date) {
+        super(imgPath, title, description, productionDate, duration, distributor, countries, score);
+        this.date = date;
+    }
+
+    public int getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(int date) {
         this.date = date;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 }

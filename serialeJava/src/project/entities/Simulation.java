@@ -1,9 +1,12 @@
 package project.entities;
 
 public class Simulation {
-    private VOD vod;
+    public VOD vod;
+    private WindowApp windowApp;
+    private int simulationTime = 0;
 
     public Simulation() {
+
         this.vod = new VOD();
     }
 

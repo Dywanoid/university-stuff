@@ -1,22 +1,25 @@
 package project.products;
 
 import java.util.ArrayList;
-import java.util.Date;
+
+import project.components.Sale;
 import project.entities.Distributor;
 
 public class Movie extends Product {
     private String genre;
     private ArrayList<String> actors;
     private String trailerURL;
-    private float price;
-    private int avalibleToWatchTime; // TODO: change this (something like time type?)
+    private int avalibleToWatchTime;
+    private Sale sale;
 
-    public Movie(String imgPath, String title, String description, Date productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, String genre, ArrayList<String> actors, String trailerURL, float price, int avalibleToWatchTime) {
+    public Movie() {
+    }
+
+    public Movie(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, String genre, ArrayList<String> actors, String trailerURL, int avalibleToWatchTime) {
         super(imgPath, title, description, productionDate, duration, distributor, countries, score);
         this.genre = genre;
         this.actors = actors;
         this.trailerURL = trailerURL;
-        this.price = price;
         this.avalibleToWatchTime = avalibleToWatchTime;
     }
 
@@ -42,14 +45,6 @@ public class Movie extends Product {
 
     public void setTrailerURL(String trailerURL) {
         this.trailerURL = trailerURL;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
     }
 
     public int getAvalibleToWatchTime() {

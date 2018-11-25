@@ -1,9 +1,10 @@
-actors
-countries
-descriptions
+actor
+country
+description
+distributorName
 email1
 email2
-genres
-names1
-names2
-titles
+genre
+name1
+name2
+title

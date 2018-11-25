@@ -2,24 +2,25 @@ package project.entities;
 
 import project.products.Product;
 
-import java.util.Date;
 import java.util.ArrayList;
 
 public class User {
+    private static int newUserID = 0;
+    private int ID;
     private String name;
-    private Date birthday;
+    private String birthday;
     private String email;
     private String creditCardNumber;
     private String subscription;
-    private ArrayList<Product> products;
+    private ArrayList<Product> boughtProducts;
 
-    public User(String name, Date birthday, String email, String creditCardNumber, String subscription, ArrayList<Product> products) {
+    public User(String name, String birthday, String email, String creditCardNumber, String subscription, ArrayList<Product> products) {
         this.name = name;
         this.birthday = birthday;
         this.email = email;
         this.creditCardNumber = creditCardNumber;
         this.subscription = subscription;
-        this.products = products;
+        this.boughtProducts = products;
     }
 
     public String getName() {
@@ -30,11 +31,11 @@ public class User {
         this.name = name;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -62,11 +63,11 @@ public class User {
         this.subscription = subscription;
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+    public ArrayList<Product> getBoughtProducts() {
+        return boughtProducts;
     }
 
-    public void setProducts(ArrayList<Product> products) {
-        this.products = products;
+    public void setBoughtProducts(ArrayList<Product> boughtProducts) {
+        this.boughtProducts = boughtProducts;
     }
 }

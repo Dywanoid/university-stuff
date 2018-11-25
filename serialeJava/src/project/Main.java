@@ -1,25 +1,28 @@
 package project;
 
-import project.entities.Distributor;
-import project.products.Series;
-import project.database.Data;
 import project.entities.Simulation;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.ArrayList;
-
+import project.utils.Utilities;
+import project.utils.MyDate;
 public class Main {
 
     public static void main(String[] args) {
         Simulation sim = new Simulation();
         sim.start();
-        String testujemy = "XDDDD";
-        try {
-            System.out.println(Utilities.hashFunction(testujemy));
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+//        sim.vod.newDistributor();
+//        sim.vod.newDistributor();
+//        sim.vod.newDistributor();
+//        sim.vod.newDistributor();
+//        sim.vod.showDistributors();
+        for (int i = 0; i < 30; i++) {
+            System.out.println(Utilities.getRandomDate(0,0));
         }
+
+    }
+
+}
+
+//        System.out.println(Utilities.hashFunction("XD"));
+
 //        Series test = new Series("path",
 //                "tytul",
 //                "opis",
@@ -35,15 +38,10 @@ public class Main {
 //                new ArrayList<>(),
 //                5);
 
-//        Data d = new Data();
+//        VODdata d = new VODdata();
 //        for (int i = 0; i < 15; i++) {
 //            System.out.println(d.getRandomText("names1")+" "+d.getRandomText("names2"));
 //            System.out.println(d.getRandomText("email1")+"@"+d.getRandomText("email2"));
 //            System.out.println(d.getRandomInt(10, 5));
 //            System.out.println(d.getRandomFloat(5.23f, 6.11f));
 //        }
-
-
-    }
-
-}

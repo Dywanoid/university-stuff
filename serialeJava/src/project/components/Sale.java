@@ -1,23 +1,25 @@
 package project.components;
 
-import java.util.Date;
+import project.products.Product;
+import java.util.ArrayList;
 
 public class Sale {
-    private Date startDate;
-    private Date endDate;
+    private int startDate;
+    private int endDate;
     private float reduction;
+    private ArrayList<Product> coveredProducts;
 
-    public Sale(Date startDate, Date endDate, float reduction) {
+    public Sale(int startDate, int endDate, float reduction) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.reduction = reduction;
     }
 
-    public Date getStartDate() {
+    public int getStartDate() {
         return startDate;
     }
 
-    public Date getEndDate() {
+    public int getEndDate() {
         return endDate;
     }
 

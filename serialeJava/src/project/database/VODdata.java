@@ -1,5 +1,6 @@
 package project.database;
 
+import project.utils.Utilities;
 import project.components.Subscription;
 
 import java.io.File;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Data {
+public class VODdata {
     private static Map<String, Subscription> subsciptions = Map.of(
             "Basic", new Subscription(29.99f, 1, "HD"),
             "Family", new Subscription(39.99f, 2, "FullHD"),
@@ -22,7 +23,7 @@ public class Data {
     private Map<String, ArrayList<String>> data = new HashMap<>();
 
 
-    public Data() {
+    public VODdata() {
         getFilesNames();
         readFiles();
     }
@@ -63,25 +64,17 @@ public class Data {
 
     @Override
     public String toString() {
-        return "Data{" +
+        return "VODdata{" +
                 "\nfiles=" + files +
                 ", \nlinesCount=" + linesCount +
                 ", \ndata=" + data + '}';
     }
 
     public String getRandomText(String name) {
-        int randomLine = (int) Math.floor(Math.random() * linesCount.get(name));
+        int randomLine = Utilities.getRandomInt(0, linesCount.get(name) - 1);
         return data.get(name).get(randomLine);
     }
 
-    public int getRandomInt(int from, int to) {
-        return from + (int) Math.floor(Math.random() * (to - from + 1));
-    }
-
-
-    public float getRandomFloat(float from, float to) {
-        return (float) ((int) ((from + ((float) Math.random() * (to - from))) * 100)) / 100;
-    }
 }
 
 // SERIALIZACJA

@@ -1,13 +1,11 @@
 package project.components;
 
-import java.util.Date;
-
 public class Episode {
     private String title;
-    private Date premiereDate;
+    private String premiereDate;
     private int duration;
 
-    public Episode(String title, Date premiereDate, int duration) {
+    public Episode(String title, String premiereDate, int duration) {
         this.title = title;
         this.premiereDate = premiereDate;
         this.duration = duration;
@@ -17,7 +15,7 @@ public class Episode {
         return title;
     }
 
-    public Date getPremiereDate() {
+    public String getPremiereDate() {
         return premiereDate;
     }
 
