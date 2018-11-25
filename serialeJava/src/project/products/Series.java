@@ -2,7 +2,6 @@ package project.products;
 
 import java.util.ArrayList;
 
-import project.entities.Distributor;
 import project.components.Season;
 
 public class Series extends Product {
@@ -15,15 +14,6 @@ public class Series extends Product {
     public Series() {
     }
 
-    public Series(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, String genre, ArrayList<String> actors, int numberOfSeasons, ArrayList<Season> seasons, int numberOfEpisodes) {
-        super(imgPath, title, description, productionDate, duration, distributor, countries, score);
-        this.genre = genre;
-        this.actors = actors;
-        this.numberOfSeasons = numberOfSeasons;
-        this.seasons = seasons;
-        this.numberOfEpisodes = numberOfEpisodes;
-    }
-
     @Override
     public String toString() {
         return super.toString() + "\nSeries{" +
@@ -33,6 +23,13 @@ public class Series extends Product {
                 ", seasons=" + seasons +
                 ", numberOfEpisodes=" + numberOfEpisodes +
                 '}';
+    }
+    public void generateSeasons() {
+
+    }
+
+    public void calculateDuration() {
+
     }
 
     public void addSeason(Season season) {

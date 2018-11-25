@@ -75,6 +75,17 @@ public class VODdata {
         return data.get(name).get(randomLine);
     }
 
+    public ArrayList<String> getRandomText(String name, int numberOfTexts) {
+        ArrayList<String> texts = new ArrayList<>();
+        final int nTexts = numberOfTexts <= 0 ? Utilities.getRandomInt(1, linesCount.get(name)) : numberOfTexts;
+        for (int i = 0; i < nTexts; i++) {
+            String randomText = data.get(name).get(Utilities.getRandomInt(0, linesCount.get(name) - 1));
+            if(!texts.contains(randomText)) {
+                texts.add(randomText);
+            }
+        }
+        return texts;
+    }
 }
 
 // SERIALIZACJA

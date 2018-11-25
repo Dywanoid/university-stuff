@@ -1,20 +1,12 @@
 package project.products;
 
-import java.util.ArrayList;
-
 import project.components.Sale;
-import project.entities.Distributor;
 
 public class Stream extends Product {
     private int date;
     private Sale sale;
 
     public Stream() {
-    }
-
-    public Stream(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, int date) {
-        super(imgPath, title, description, productionDate, duration, distributor, countries, score);
-        this.date = date;
     }
 
     public int getDate() {
@@ -25,4 +17,11 @@ public class Stream extends Product {
         this.date = date;
     }
 
+    public Sale getSale() {
+        return sale;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
+    }
 }

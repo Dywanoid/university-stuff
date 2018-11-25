@@ -3,7 +3,6 @@ package project.products;
 import java.util.ArrayList;
 
 import project.components.Sale;
-import project.entities.Distributor;
 
 public class Movie extends Product {
     private String genre;
@@ -15,13 +14,6 @@ public class Movie extends Product {
     public Movie() {
     }
 
-    public Movie(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score, String genre, ArrayList<String> actors, String trailerURL, int avalibleToWatchTime) {
-        super(imgPath, title, description, productionDate, duration, distributor, countries, score);
-        this.genre = genre;
-        this.actors = actors;
-        this.trailerURL = trailerURL;
-        this.avalibleToWatchTime = avalibleToWatchTime;
-    }
 
     public String getGenre() {
         return genre;
@@ -53,5 +45,13 @@ public class Movie extends Product {
 
     public void setAvalibleToWatchTime(int avalibleToWatchTime) {
         this.avalibleToWatchTime = avalibleToWatchTime;
+    }
+
+    public Sale getSale() {
+        return sale;
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
     }
 }

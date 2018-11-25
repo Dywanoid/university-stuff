@@ -8,15 +8,8 @@ public class Main {
     public static void main(String[] args) {
         Simulation sim = new Simulation();
         sim.start();
-//        sim.vod.newDistributor();
-//        sim.vod.newDistributor();
-//        sim.vod.newDistributor();
-//        sim.vod.newDistributor();
-//        sim.vod.showDistributors();
-        for (int i = 0; i < 30; i++) {
-            System.out.println(Utilities.getRandomDate(0,0));
-        }
-
+        sim.vod.newDistributor();
+        sim.vod.showDistributors();
     }
 
 }
