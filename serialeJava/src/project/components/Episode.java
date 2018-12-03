@@ -11,6 +11,15 @@ public class Episode {
         this.duration = duration;
     }
 
+    @Override
+    public String toString() {
+        return "Episode{" +
+                "title='" + title + '\'' +
+                ", premiereDate='" + premiereDate + '\'' +
+                ", duration=" + duration +
+                '}';
+    }
+
     public String getTitle() {
         return title;
     }

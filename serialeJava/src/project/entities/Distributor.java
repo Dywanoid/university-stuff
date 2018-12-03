@@ -5,6 +5,8 @@ import java.util.Random;
 import project.utils.Utilities;
 import project.database.VODdata;
 import project.products.*;
+import project.components.Episode;
+import project.components.Season;
 
 public class Distributor {
     private static int numberOfDistributors = 0;
@@ -12,7 +14,7 @@ public class Distributor {
     private int ID;
     private ArrayList<Product> products = new ArrayList<>();
 
-    public Distributor(String name) {
+    Distributor(String name) {
         this.name = name;
         this.ID = numberOfDistributors++;
     }
@@ -22,6 +24,7 @@ public class Distributor {
         return "Distributor{" +
                 "name='" + name + '\'' +
                 ", ID=" + ID +
+                ", products=" + products +
                 '}';
     }
 
@@ -58,22 +61,40 @@ public class Distributor {
     }
 
     private void generateSeries(VODdata data, Series product) {
+        int numberOfSeasons = Utilities.getRandomInt(1, 5);
+        int numberOfEpisodes = Utilities.getRandomInt(numberOfSeasons * 3, numberOfSeasons * 6);
+        ArrayList<Season> seasons = new ArrayList<>();
+        for (int s = 0; s < numberOfSeasons; s++) {
+            ArrayList<Episode> episodes = new ArrayList<>();
+            for (int e = 0; e < numberOfEpisodes; e++) {
+                episodes.add(new Episode("NAME","DATE", Utilities.getRandomInt(30, 70))); // TODO: CHANGE THOSE STRINGS
+            }
+            seasons.add(new Season(episodes, s + 1));
+        }
+
         generateProduct(data, product);
+
         product.setGenre(data.getRandomText("genre"));
         product.setActors(data.getRandomText("actor", 5));
-        int numberOfSeasons = Utilities.getRandomInt(1, 5);
         product.setNumberOfSeasons(numberOfSeasons);
-        product.setNumberOfEpisodes(Utilities.getRandomInt(numberOfSeasons * 3, numberOfSeasons * 6));
-        product.generateSeasons();
+        product.setNumberOfEpisodes(numberOfEpisodes);
+        product.setSeasons(seasons);
         product.calculateDuration();
     }
 
     private void generateMovie(VODdata data, Movie product) {
         generateProduct(data, product);
+        product.setGenre(data.getRandomText("genre"));
+        product.setActors(data.getRandomText("actor", 5));
+        product.setTrailerURL("URL"); // TODO: CHANGE THIS
+        product.setAvalibleToWatchTime(Utilities.getRandomInt(30, 90));
+        product.setSale(null); // TODO: sales?
     }
 
     private void generateStream(VODdata data, Stream product) {
         generateProduct(data, product);
+        product.setDate(Utilities.getRandomInt(15, 100));
+        product.setSale(null); // TODO: sales?
     }
 
     public static int getNumberOfDistributors() {

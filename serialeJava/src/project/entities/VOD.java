@@ -3,6 +3,7 @@ package project.entities;
 import project.database.VODdata;
 import project.products.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class VOD {
     private ArrayList<Product> products = new ArrayList<>();
@@ -26,7 +27,10 @@ public class VOD {
         }
     }
 
-    void newProduct() {
-
+    public void newProducts() {
+        for (var dist: distributors) {
+            if((int) ((new Random()).nextFloat() * 3) == 2)
+            dist.newProduct(data);
+        }
     }
 }

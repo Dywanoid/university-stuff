@@ -16,6 +16,14 @@ public class Season {
             this.whichSeason = whichSeason;
     }
 
+    @Override
+    public String toString() {
+        return "Season{" +
+                "episodes=" + episodes +
+                ", whichSeason=" + whichSeason +
+                '}';
+    }
+
     public ArrayList<Episode> getEpisodes() {
         return episodes;
     }

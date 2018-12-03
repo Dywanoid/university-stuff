@@ -14,6 +14,16 @@ public class Movie extends Product {
     public Movie() {
     }
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "genre='" + genre + '\'' +
+                ", actors=" + actors +
+                ", trailerURL='" + trailerURL + '\'' +
+                ", avalibleToWatchTime=" + avalibleToWatchTime +
+                ", sale=" + sale +
+                '}';
+    }
 
     public String getGenre() {
         return genre;

@@ -9,6 +9,14 @@ public class Stream extends Product {
     public Stream() {
     }
 
+    @Override
+    public String toString() {
+        return "Stream{" +
+                "date=" + date +
+                ", sale=" + sale +
+                '}';
+    }
+
     public int getDate() {
         return date;
     }

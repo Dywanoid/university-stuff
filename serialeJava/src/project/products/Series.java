@@ -16,7 +16,7 @@ public class Series extends Product {
 
     @Override
     public String toString() {
-        return super.toString() + "\nSeries{" +
+        return "Series "+ getTitle() +" {" +
                 "genre='" + genre + '\'' +
                 ", actors=" + actors +
                 ", numberOfSeasons=" + numberOfSeasons +
@@ -24,12 +24,15 @@ public class Series extends Product {
                 ", numberOfEpisodes=" + numberOfEpisodes +
                 '}';
     }
-    public void generateSeasons() {
-
-    }
 
     public void calculateDuration() {
-
+        int totalDuration = 0;
+        for (var season: seasons) {
+            for (var episode: season.getEpisodes()) {
+                totalDuration += episode.getDuration();
+            }
+        }
+        this.setDuration(totalDuration);
     }
 
     public void addSeason(Season season) {
