@@ -1,15 +1,21 @@
 package project;
 
+import javafx.application.Application;
 import project.entities.Simulation;
 import project.utils.Utilities;
 import project.utils.MyDate;
+import project.window.WindowApp;
 public class Main {
 
     public static void main(String[] args) {
         Simulation sim = new Simulation();
         sim.start();
         sim.vod.newDistributor();
+        sim.vod.newProducts();
         sim.vod.showDistributors();
+
+        Application.launch(WindowApp.class);
+
     }
 
 }
