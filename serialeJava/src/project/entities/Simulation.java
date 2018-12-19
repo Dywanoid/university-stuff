@@ -1,15 +1,15 @@
 package project.entities;
 
+import project.window.WindowApp;
+import javafx.application.Application;
+
 public class Simulation {
-    public VOD vod;
+    public static VOD vod;
+    public WindowApp app;
     private int simulationTime = 0;
 
     public Simulation() {
-
-        this.vod = new VOD();
-    }
-
-    public void start() {
-        vod.start();
+        vod = new VOD();
+        Application.launch(WindowApp.class);
     }
 }

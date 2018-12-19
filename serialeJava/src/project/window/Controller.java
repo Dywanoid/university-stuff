@@ -1,9 +1,15 @@
 package project.window;
 
 import javafx.fxml.FXML;
+import project.entities.VOD;
 
 public class Controller {
-    public Controller() {
+    private VOD model = null;
+
+    public Controller(){}
+
+    void setModel(VOD model) {
+        this.model = model;
     }
 
     @FXML
@@ -15,9 +21,14 @@ public class Controller {
     private void clickXDD() {
         System.out.println("Wcisnales XDD");
     }
+
     @FXML
     private void clickXDDD() {
         System.out.println("Wcisnales XDDD");
     }
 
+    @FXML
+    private void addDist() {
+        model.newDistributor();
+    }
 }

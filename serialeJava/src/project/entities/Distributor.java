@@ -8,15 +8,18 @@ import project.products.*;
 import project.components.Episode;
 import project.components.Season;
 
-public class Distributor {
+public class Distributor  implements Runnable{
+    private boolean alive = true;
     private static int numberOfDistributors = 0;
     private String name;
     private int ID;
     private ArrayList<Product> products = new ArrayList<>();
 
-    Distributor(String name) {
+    public Distributor(String name) {
         this.name = name;
         this.ID = numberOfDistributors++;
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -50,7 +53,7 @@ public class Distributor {
     }
 
     private void generateProduct(VODdata data, Product product) {
-        product.setImgPath("empty");
+        product.setImgPath("empty"); // TODO: change this
         product.setTitle(data.getRandomText("title"));
         product.setDescription(data.getRandomText("description"));
         product.setProductionDate(Utilities.getRandomDate(365 * -40, 10));
@@ -108,4 +111,23 @@ public class Distributor {
     public int getID() {
         return ID;
     }
+
+    @Override
+    public void run() {
+        while(alive) {
+            long sleepTime = (long) (1000 * Math.random() * 4);
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            System.out.println(name + sleepTime);
+
+        }
+    }
+
+    public void kill() {
+        alive = false;
+    }
+
 }

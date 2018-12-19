@@ -11,14 +11,13 @@ public class VOD {
     private ArrayList<Distributor> distributors = new ArrayList<>();
     private VODdata data = new VODdata();
 
-    void start() {
-        System.out.println("start");
-    }
+    VOD() {}
 
     public void newDistributor() {
         String name = data.getRandomText("distributorName");
         Distributor newDist = new Distributor(name);
         distributors.add(newDist);
+        showDistributors();
     }
 
     public void showDistributors() {
