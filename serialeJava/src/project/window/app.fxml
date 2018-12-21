@@ -1,41 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.window.Controller">
-  <children>
-    <SplitPane dividerPositions="0.17037861915367483, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-      <items>
-        <AnchorPane />
-        <ScrollPane prefHeight="-1.0" prefWidth="-1.0">
-          <content>
-            <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0" />
-          </content>
-        </ScrollPane>
-        <AnchorPane>
-          <children>
-            <VBox alignment="CENTER" layoutX="41.0" layoutY="75.0" prefHeight="200.0" prefWidth="100.0">
-              <children>
-                <Button contentDisplay="CENTER" mnemonicParsing="false" onMouseClicked="#clickXD" text="XD" />
-                <Button mnemonicParsing="false" onMouseClicked="#clickXDD" text="XDD" />
-                <Button mnemonicParsing="false" onMouseClicked="#clickXDDD" text="XDDD" />
-                        <Button mnemonicParsing="false" onMouseClicked="#addDist" text="new" />
-              </children>
+
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.window.Controller">
+   <children>
+      <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0">
+         <children>
+            <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #02c2d1;">
+               <children>
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#controlPanel" prefHeight="32.0" prefWidth="190.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Control panel" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#productsPanel" prefHeight="32.0" prefWidth="200.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Products" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#objectsPanel" prefHeight="32.0" prefWidth="184.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Objects" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#saveSimulation" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Save" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#loadSimulation" prefHeight="32.0" prefWidth="186.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Load" />
+               </children>
             </VBox>
-          </children>
-        </AnchorPane>
-      </items>
-    </SplitPane>
-    <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
-      <padding>
-        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-      </padding>
-    </HBox>
-  </children>
+            <Pane fx:id="contentPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: #aabbcc;" />
+      <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #024fdc;">
+        <children>
+                  <Button mnemonicParsing="false" onMouseClicked="#addDist" prefHeight="37.0" prefWidth="54.0" text="new" />
+        </children>
+      </VBox>
+         </children>
+      </HBox>
+   </children>
 </VBox>

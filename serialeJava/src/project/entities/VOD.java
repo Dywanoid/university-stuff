@@ -32,4 +32,16 @@ public class VOD {
             dist.newProduct(data);
         }
     }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public ArrayList<Distributor> getDistributors() {
+        return distributors;
+    }
 }
