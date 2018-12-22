@@ -14,10 +14,12 @@ public class Distributor  implements Runnable{
     private String name;
     private int ID;
     private ArrayList<Product> products = new ArrayList<>();
+    private VOD VODpointer = null;
 
-    public Distributor(String name) {
+    public Distributor(String name, VOD pointer) {
         this.name = name;
         this.ID = numberOfDistributors++;
+        this.VODpointer = pointer;
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -31,21 +33,23 @@ public class Distributor  implements Runnable{
                 '}';
     }
 
-    public void newProduct(VODdata data) {
+    public void newRandomProduct(VODdata data) {
         Product product = null;
-        int wynik = (int) ((new Random()).nextFloat() * 3);
-        System.out.println(wynik);
-        switch (wynik) {
+        int result = (int) ((new Random()).nextFloat() * 3);
+        switch (result) {
             case 0:
                 product = new Series();
                 generateSeries(data, (Series) product);
+                VODpointer.seriesAdded();
                 break;
             case 1:
                 product = new Movie();
                 generateMovie(data, (Movie) product);
+                VODpointer.movieAdded();
                 break;
             case 2:
                 product = new Stream();
+                VODpointer.streamAdded();
                 generateStream(data, (Stream) product);
                 break;
         }
@@ -98,6 +102,13 @@ public class Distributor  implements Runnable{
         generateProduct(data, product);
         product.setDate(Utilities.getRandomInt(15, 100));
         product.setSale(null); // TODO: sales?
+    }
+
+    public void newSeries(VODdata data) {
+        Product product = new Series();
+        generateProduct(data, product);
+        generateSeries(data, (Series) product);
+        VODpointer.seriesAdded();
     }
 
     public static int getNumberOfDistributors() {

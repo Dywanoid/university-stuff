@@ -5,24 +5,27 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.window.Controller">
    <children>
       <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0">
          <children>
-            <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #02c2d1;">
+            <VBox fx:id="menuPane" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #02c2d1;">
                <children>
-                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#controlPanel" prefHeight="32.0" prefWidth="190.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Control panel" />
-                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#productsPanel" prefHeight="32.0" prefWidth="200.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Products" />
-                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#objectsPanel" prefHeight="32.0" prefWidth="184.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Objects" />
-                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#saveSimulation" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Save" />
-                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#loadSimulation" prefHeight="32.0" prefWidth="186.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000;" text="Load" />
+                  <Button fx:id="controlButton" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#controlPanel" prefHeight="32.0" prefWidth="190.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000; -fx-border-radius: 0;" text="Control panel" />
+                  <Button fx:id="productsButton" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#productsPanel" prefHeight="32.0" prefWidth="200.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000; -fx-border-radius: 0; -fx-background-radius: 0;" text="Products" />
+                  <Button fx:id="objectsButton" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#objectsPanel" prefHeight="32.0" prefWidth="184.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000; -fx-border-radius: 0;" text="Objects" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#saveSimulation" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000; -fx-border-radius: 0;" text="Save" />
+                  <Button alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#loadSimulation" prefHeight="32.0" prefWidth="186.0" style="-fx-background-color: #F0F0F0; -fx-text-fill: #000000; -fx-border-radius: 0;" text="Load" />
                </children>
             </VBox>
-            <Pane fx:id="contentPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: #aabbcc;" />
-      <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #024fdc;">
+            <Pane fx:id="contentPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: #E3E3E3;" />
+      <VBox fx:id="actionPane" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="150.0" style="-fx-background-color: #024fdc;">
         <children>
-                  <Button mnemonicParsing="false" onMouseClicked="#addDist" prefHeight="37.0" prefWidth="54.0" text="new" />
+                  <Button fx:id="newDistributorButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addDist" text="New distributor" />
+                  <Button fx:id="newUserButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addUser" text="New user" />
+                  <Button fx:id="newSeriesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New series" />
+                  <Button fx:id="newMovieButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New movie" />
+                  <Button fx:id="newStreamButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New stream" />
         </children>
       </VBox>
          </children>

@@ -12,15 +12,13 @@ public class User {
     private String email;
     private String creditCardNumber;
     private String subscription;
-    private ArrayList<Product> boughtProducts;
+    private ArrayList<Product> boughtProducts = new ArrayList<>();
+    private VOD VODpointer;
 
-    public User(String name, String birthday, String email, String creditCardNumber, String subscription, ArrayList<Product> products) {
+    public User(String name, VOD pointer) {
+        this.ID = newUserID++;
         this.name = name;
-        this.birthday = birthday;
-        this.email = email;
-        this.creditCardNumber = creditCardNumber;
-        this.subscription = subscription;
-        this.boughtProducts = products;
+        this.VODpointer = pointer;
     }
 
     public String getName() {

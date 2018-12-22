@@ -2,46 +2,122 @@ package project.entities;
 
 import project.database.VODdata;
 import project.products.*;
+import project.utils.Utilities;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 public class VOD {
     private ArrayList<Product> products = new ArrayList<>();
+    private int nProducts = 0;
+    private int nSeries = 0;
+    private int nMovies = 0;
+    private int nStreams = 0;
     private ArrayList<User> users = new ArrayList<>();
+    private int nUsers = 0;
     private ArrayList<Distributor> distributors = new ArrayList<>();
+    private int nDistributors = 0;
     private VODdata data = new VODdata();
 
     VOD() {}
 
     public void newDistributor() {
         String name = data.getRandomText("distributorName");
-        Distributor newDist = new Distributor(name);
+        Distributor newDist = new Distributor(name, this);
         distributors.add(newDist);
-        showDistributors();
+        distributorAdded();
     }
 
-    public void showDistributors() {
-        for(Distributor d : distributors) {
-            System.out.println(d.toString());
+    public void newUser() {
+    String name = String.format("%s %s",data.getRandomText("name1"), data.getRandomText("name2"));
+    User newUser = new User(name, this);
+
+    String birthday = Utilities.getRandomDate(-365 * 60, -365*18);
+    newUser.setBirthday(birthday);
+    System.out.println(birthday);
+
+    String email = String.format("%s@%s",data.getRandomText("email1"), data.getRandomText("email2"));
+    newUser.setEmail(email);
+
+    newUser.setCreditCardNumber("");
+
+    newUser.setSubscription("");
+    userAdded();
+
+    }
+
+    public void newSeries() {
+        if(distributors.size() > 0) {
+            distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newSeries(data);
         }
     }
 
-    public void newProducts() {
+    public void newMovie() {
+
+    }
+
+    public void newStream() {
+
+    }
+
+//    public void showDistributors() {
+//        for(Distributor d : distributors) {
+//            System.out.println(d.toString());
+//        }
+//    }
+
+    public void newRandomProducts() {
         for (var dist: distributors) {
             if((int) ((new Random()).nextFloat() * 3) == 2)
-            dist.newProduct(data);
+            dist.newRandomProduct(data);
         }
     }
 
-    public ArrayList<Product> getProducts() {
-        return products;
+
+    void seriesAdded() {
+        nSeries++;
+        nProducts++;
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
+    void movieAdded() {
+        nMovies++;
+        nProducts++;
     }
 
-    public ArrayList<Distributor> getDistributors() {
-        return distributors;
+    void streamAdded() {
+        nStreams++;
+        nProducts++;
+    }
+
+    void userAdded() {
+        nUsers++;
+    }
+
+    void distributorAdded() {
+        nDistributors++;
+    }
+
+    public int getnProducts() {
+        return nProducts;
+    }
+
+    public int getnSeries() {
+        return nSeries;
+    }
+
+    public int getnMovies() {
+        return nMovies;
+    }
+
+    public int getnStreams() {
+        return nStreams;
+    }
+
+    public int getnUsers() {
+        return nUsers;
+    }
+
+    public int getnDistributors() {
+        return nDistributors;
     }
 }

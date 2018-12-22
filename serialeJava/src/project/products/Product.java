@@ -18,17 +18,6 @@ public abstract class Product {
     Product() {
     }
 
-    Product(String imgPath, String title, String description, String productionDate, int duration, Distributor distributor, ArrayList<String> countries, float score) {
-        this.imgPath = imgPath;
-        this.title = title;
-        this.description = description;
-        this.productionDate = productionDate;
-        this.duration = duration;
-        this.distributor = distributor;
-        this.countries = countries;
-        this.score = score;
-    }
-
     @Override
     public String toString() {
         return "project.products.Product{" +
