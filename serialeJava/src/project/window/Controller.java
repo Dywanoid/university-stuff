@@ -1,8 +1,13 @@
 package project.window;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import project.entities.Distributor;
@@ -29,7 +34,6 @@ public class Controller {
     @FXML Button newSeriesButton;
     @FXML Button newMovieButton;
     @FXML Button newStreamButton;
-
 
     public Controller(){}
 
@@ -73,17 +77,17 @@ public class Controller {
     }
     @FXML
     private void addSeries() {
-        model.newDistributor();
+        model.newSeries();
         change();
     }
     @FXML
     private void addMovie() {
-        model.newDistributor();
+        model.newMovie();
         change();
     }
     @FXML
     private void addStream() {
-        model.newDistributor();
+        model.newStream();
         change();
     }
 
@@ -122,7 +126,27 @@ public class Controller {
         if(!currentPanel.equals("products")) {
             clearButtons();
             currentPanel = "products";
+
+            VBox vbox = new VBox();
+            HBox hbox = new HBox();
+            // labelka i textfield do wyszukiwania (przycisk, zeby optymalizacja byla)
+            Label label = new Label();
+            label.setText("Search: ");
+            label.setPadding(new Insets(5, 5, 5, 5));
+            TextField textfield = new TextField();
+            textfield.setId("searchBar");
+            Button button = new Button();
+            button.setText("ok");
+            button.setOnAction(this::searchHandle);
+
+
+            hbox.getChildren().addAll(label, textfield, button);
+            // wyswietlone potem wszystkie produkty (stworzyc musze template (obrazek i reszta)
+
+            vbox.getChildren().add(hbox);
             contentPane.getChildren().clear();
+            contentPane.getChildren().add(vbox);
+
             productsButton.setStyle("-fx-background-color: #E3E3E3");
 
         }
@@ -147,5 +171,10 @@ public class Controller {
     @FXML
     private void loadSimulation() {
         System.out.println("loaded");
+    }
+
+    private void searchHandle(ActionEvent actionEvent) {
+        TextField tf = (TextField) contentPane.lookup("#searchBar");
+        System.out.println(tf.getText());
     }
 }

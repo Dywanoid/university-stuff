@@ -109,6 +109,25 @@ public class Distributor  implements Runnable{
         generateProduct(data, product);
         generateSeries(data, (Series) product);
         VODpointer.seriesAdded();
+        products.add(product);
+    }
+
+    public void newMovie(VODdata data) {
+        Product product = new Movie();
+        generateProduct(data, product);
+        generateMovie(data, (Movie) product);
+        VODpointer.movieAdded();
+        products.add(product);
+
+    }
+
+    public void newStream(VODdata data) {
+        Product product = new Stream();
+        generateProduct(data, product);
+        generateStream(data, (Stream) product);
+        VODpointer.streamAdded();
+        products.add(product);
+
     }
 
     public static int getNumberOfDistributors() {

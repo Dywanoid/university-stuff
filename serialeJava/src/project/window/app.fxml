@@ -23,9 +23,9 @@
         <children>
                   <Button fx:id="newDistributorButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addDist" text="New distributor" />
                   <Button fx:id="newUserButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addUser" text="New user" />
-                  <Button fx:id="newSeriesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New series" />
-                  <Button fx:id="newMovieButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New movie" />
-                  <Button fx:id="newStreamButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="New stream" />
+                  <Button fx:id="newSeriesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addSeries" text="New series" />
+                  <Button fx:id="newMovieButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addMovie" text="New movie" />
+                  <Button fx:id="newStreamButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#addStream" text="New stream" />
         </children>
       </VBox>
          </children>

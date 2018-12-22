@@ -53,11 +53,15 @@ public class VOD {
     }
 
     public void newMovie() {
-
+        if(distributors.size() > 0) {
+            distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newMovie(data);
+        }
     }
 
     public void newStream() {
-
+        if(distributors.size() > 0) {
+            distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newStream(data);
+        }
     }
 
 //    public void showDistributors() {
