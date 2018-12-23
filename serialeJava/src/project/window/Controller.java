@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import project.entities.Distributor;
 import project.entities.User;
 import project.entities.VOD;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
+    private Stage stage = null;
 
     @FXML Pane menuPane;
     @FXML Pane contentPane;
@@ -39,6 +41,15 @@ public class Controller {
 
     void setModel(VOD model) {
         this.model = model;
+    }
+
+    void setStage(Stage stage) {
+        this.stage = stage;
+        stage.setOnCloseRequest( event -> {
+            System.out.println("Closing Stage");
+            model.killDistributors();
+        } );
+
     }
 
     private void clearButtons() {
@@ -176,5 +187,7 @@ public class Controller {
     private void searchHandle(ActionEvent actionEvent) {
         TextField tf = (TextField) contentPane.lookup("#searchBar");
         System.out.println(tf.getText());
+        System.out.println(model.getProducts());
     }
+
 }

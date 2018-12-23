@@ -14,9 +14,9 @@ public class Distributor  implements Runnable{
     private String name;
     private int ID;
     private ArrayList<Product> products = new ArrayList<>();
-    private VOD VODpointer = null;
+    private VOD VODpointer;
 
-    public Distributor(String name, VOD pointer) {
+    Distributor(String name, VOD pointer) {
         this.name = name;
         this.ID = numberOfDistributors++;
         this.VODpointer = pointer;
@@ -33,27 +33,19 @@ public class Distributor  implements Runnable{
                 '}';
     }
 
-    public void newRandomProduct(VODdata data) {
-        Product product = null;
+    void newRandomProduct(VODdata data) {
         int result = (int) ((new Random()).nextFloat() * 3);
         switch (result) {
             case 0:
-                product = new Series();
-                generateSeries(data, (Series) product);
-                VODpointer.seriesAdded();
+                newSeries(data);
                 break;
             case 1:
-                product = new Movie();
-                generateMovie(data, (Movie) product);
-                VODpointer.movieAdded();
+                newMovie(data);
                 break;
             case 2:
-                product = new Stream();
-                VODpointer.streamAdded();
-                generateStream(data, (Stream) product);
+                newStream(data);
                 break;
         }
-        products.add(product);
     }
 
     private void generateProduct(VODdata data, Product product) {
@@ -104,30 +96,31 @@ public class Distributor  implements Runnable{
         product.setSale(null); // TODO: sales?
     }
 
-    public void newSeries(VODdata data) {
-        Product product = new Series();
+    void newSeries(VODdata data) {
+        Series product = new Series();
         generateProduct(data, product);
-        generateSeries(data, (Series) product);
+        generateSeries(data,  product);
         VODpointer.seriesAdded();
         products.add(product);
+        VODpointer.addProduct(product);
     }
 
-    public void newMovie(VODdata data) {
-        Product product = new Movie();
+    void newMovie(VODdata data) {
+        Movie product = new Movie();
         generateProduct(data, product);
-        generateMovie(data, (Movie) product);
+        generateMovie(data, product);
         VODpointer.movieAdded();
         products.add(product);
-
+        VODpointer.addProduct(product);
     }
 
-    public void newStream(VODdata data) {
-        Product product = new Stream();
+    void newStream(VODdata data) {
+        Stream product = new Stream();
         generateProduct(data, product);
-        generateStream(data, (Stream) product);
+        generateStream(data, product);
         VODpointer.streamAdded();
         products.add(product);
-
+        VODpointer.addProduct(product);
     }
 
     public static int getNumberOfDistributors() {
@@ -151,12 +144,12 @@ public class Distributor  implements Runnable{
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            System.out.println(name + sleepTime);
+            if(alive) {System.out.println(name + " " + sleepTime);}
 
         }
     }
 
-    public void kill() {
+    void kill() {
         alive = false;
     }
 

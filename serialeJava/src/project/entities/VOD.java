@@ -93,11 +93,11 @@ public class VOD {
         nProducts++;
     }
 
-    void userAdded() {
+    private void userAdded() {
         nUsers++;
     }
 
-    void distributorAdded() {
+    private void distributorAdded() {
         nDistributors++;
     }
 
@@ -123,5 +123,19 @@ public class VOD {
 
     public int getnDistributors() {
         return nDistributors;
+    }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    void addProduct(Product product) {
+        products.add(product);
+    }
+
+    public void killDistributors() {
+        for (Distributor dist: distributors) {
+            dist.kill();
+        }
     }
 }

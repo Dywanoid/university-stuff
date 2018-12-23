@@ -16,6 +16,7 @@ public class WindowApp extends Application {
 
         Controller contr = loader.getController();
         contr.setModel(Simulation.vod);
+        contr.setStage(stage);
         contr.controlPanel();
 
         stage.setTitle("Seriale");
