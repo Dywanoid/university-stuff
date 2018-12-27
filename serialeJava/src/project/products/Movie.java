@@ -10,6 +10,7 @@ public class Movie extends Product {
     private String trailerURL;
     private int avalibleToWatchTime;
     private Sale sale;
+    private final String type = "Movie";
 
     public Movie() {
     }
@@ -23,6 +24,11 @@ public class Movie extends Product {
                 ", avalibleToWatchTime=" + avalibleToWatchTime +
                 ", sale=" + sale +
                 '}';
+    }
+
+    @Override
+    public String getType() {
+        return type;
     }
 
     public String getGenre() {

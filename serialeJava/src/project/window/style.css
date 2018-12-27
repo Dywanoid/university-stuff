@@ -1,0 +1,46 @@
+.productListItem {
+    -fx-background-color:transparent;
+}
+
+.productListItem:hover{
+    -fx-background-color:transparent;
+}
+
+.menuPane {
+    -fx-background-color: #F27059;
+}
+
+.menuPane Button {
+    -fx-background-color: #F25C54;
+}
+
+.menuPane Button:hover {
+    -fx-background-color: #DC544D;
+}
+
+.contentPane{
+    -fx-background-color: #F79D65;
+}
+
+
+.actionPane {
+    -fx-background-color: #F27059;
+}
+
+.actionPane Button {
+    -fx-background-color: #F4845F;
+
+}
+
+.actionPane Button:hover {
+    -fx-background-color: #DE7857;
+
+}
+
+.selectedButton {
+   -fx-background-color: #F79D65;
+}
+
+.selectedButton:hover {
+    -fx-background-color: #E18F5C;
+}

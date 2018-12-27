@@ -17,7 +17,11 @@ public class VOD {
     private int nUsers = 0;
     private ArrayList<Distributor> distributors = new ArrayList<>();
     private int nDistributors = 0;
-    private VODdata data = new VODdata();
+    public VODdata data = null;
+
+    public void init() {
+        data = new VODdata();
+    }
 
     VOD() {}
 

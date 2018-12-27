@@ -1,5 +1,6 @@
 package project.database;
 
+import javafx.scene.image.Image;
 import project.utils.Utilities;
 import project.components.Subscription;
 
@@ -17,20 +18,24 @@ public class VODdata {
             "Premium", new Subscription(49.99f, 4, "UltraHD"));
 
     private final static String PROJECT_PATH = "./src/project";
-    private final static String TXT_PATH = "/database/txt/";
+    private final static String TXT_PATH = "/database/txt";
+    private final static String IMG_PATH = "/database/img";
+
     private ArrayList<String> files = new ArrayList<>();
     private Map<String, Integer> linesCount = new HashMap<>();
     private Map<String, ArrayList<String>> data = new HashMap<>();
+    private ArrayList<Image> images = new ArrayList<>();
 
 
     public VODdata() {
         getFilesNames();
         readFiles();
+        getImages();
     }
 
     private void getFilesNames() {
         try {
-            Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "files.txt"));
+            Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "/files.txt"));
             while (fileIn.hasNextLine()) {
                 String fileName = fileIn.nextLine();
                 files.add(fileName);
@@ -46,7 +51,7 @@ public class VODdata {
     private void readFiles() {
         for (String name : files) {
             try {
-                Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + name + ".txt"));
+                Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "/" + name + ".txt"));
                 int count = 0;
                 ArrayList<String> entries = new ArrayList<>();
                 while (fileIn.hasNextLine()) {
@@ -59,6 +64,15 @@ public class VODdata {
             } catch (FileNotFoundException i) {
                 i.printStackTrace();
             }
+        }
+    }
+
+    private void getImages() {
+    File imgFolder = new File(PROJECT_PATH + IMG_PATH);
+    File[] listOfFiles = imgFolder.listFiles();
+        for (var file : listOfFiles) {
+            System.out.println(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName()));
+            images.add(new Image(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName())));
         }
     }
 
@@ -86,6 +100,11 @@ public class VODdata {
         }
         return texts;
     }
+
+    public Image getRandomImage() {
+        return images.get(Utilities.getRandomInt(0, images.size() - 1));
+    }
+
 }
 
 // SERIALIZACJA

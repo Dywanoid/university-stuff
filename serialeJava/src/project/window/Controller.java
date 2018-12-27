@@ -1,12 +1,22 @@
 package project.window;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.beans.property.StringProperty;
+
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -23,9 +33,9 @@ public class Controller {
     private String currentPanel = "start";
     private Stage stage = null;
 
-    @FXML Pane menuPane;
+    @FXML VBox menuPane;
     @FXML Pane contentPane;
-    @FXML Pane actionPane;
+    @FXML VBox actionPane;
 
     @FXML Button controlButton;
     @FXML Button productsButton;
@@ -53,11 +63,9 @@ public class Controller {
     }
 
     private void clearButtons() {
-        String style = "-fx-background-color: #F0F0F0";
-        controlButton.setStyle(style);
-        productsButton.setStyle(style);
-        objectsButton.setStyle(style);
-
+        controlButton.getStyleClass().clear();
+        productsButton.getStyleClass().clear();
+        objectsButton.getStyleClass().clear();
     }
 
     private void change() {
@@ -128,7 +136,8 @@ public class Controller {
 
             contentPane.getChildren().clear();
             contentPane.getChildren().add(vbox);
-            controlButton.setStyle("-fx-background-color: #E3E3E3");
+            controlButton.getStyleClass().clear();
+            controlButton.getStyleClass().add("selectedButton");
         }
     }
 
@@ -138,27 +147,63 @@ public class Controller {
             clearButtons();
             currentPanel = "products";
 
-            VBox vbox = new VBox();
-            HBox hbox = new HBox();
-            // labelka i textfield do wyszukiwania (przycisk, zeby optymalizacja byla)
+            VBox mainVBOX = new VBox();
+            HBox searchBarHBOX = new HBox();
+            AnchorPane listAnchor = new AnchorPane();
+            VBox listVBOX = new VBox();
+
             Label label = new Label();
             label.setText("Search: ");
             label.setPadding(new Insets(5, 5, 5, 5));
+
             TextField textfield = new TextField();
             textfield.setId("searchBar");
+//            textfield.textProperty().addListener((observable -> ));
+
             Button button = new Button();
             button.setText("ok");
             button.setOnAction(this::searchHandle);
 
 
-            hbox.getChildren().addAll(label, textfield, button);
-            // wyswietlone potem wszystkie produkty (stworzyc musze template (obrazek i reszta)
+            searchBarHBOX.getChildren().addAll(label, textfield, button);
+            mainVBOX.getChildren().add(searchBarHBOX);
 
-            vbox.getChildren().add(hbox);
+
+
+            ArrayList<Product> products = model.getProducts();
+
+            for (var product : products) {
+                HBox productPanel = new HBox();
+                productPanel.getStyleClass().add("productListItem");
+
+                VBox labelsVBOX = new VBox();
+                ImageView imageView = new ImageView();
+
+                Image image = product.getImage();
+
+                Label title = new Label(product.getTitle());
+                Label description = new Label(product.getDescription());
+                Label typeAndProductionDate = new Label(String.format("Type: %s, Prod. date: %s", product.getType(), product.getProductionDate()));
+                Label score = new Label(String.format("%.2f", product.getScore()));
+
+                imageView.setImage(image);
+                labelsVBOX.getChildren().addAll(title, typeAndProductionDate, description);
+
+                productPanel.getChildren().addAll(imageView, labelsVBOX, score);
+                listVBOX.getChildren().add(productPanel);
+            }
+            listAnchor.getChildren().add(listVBOX);
+            AnchorPane.setTopAnchor(listVBOX, 0.0);
+            AnchorPane.setBottomAnchor(listVBOX, 0.0);
+            AnchorPane.setLeftAnchor(listVBOX, 0.0);
+            AnchorPane.setRightAnchor(listVBOX, 0.0);
+
+            mainVBOX.getChildren().add(listAnchor);
+
             contentPane.getChildren().clear();
-            contentPane.getChildren().add(vbox);
-
-            productsButton.setStyle("-fx-background-color: #E3E3E3");
+            contentPane.getChildren().add(mainVBOX);
+            productsButton.getStyleClass().clear();
+            productsButton.getStyleClass().add("selectedButton");
 
         }
     }
@@ -169,7 +214,8 @@ public class Controller {
             clearButtons();
             currentPanel = "objects";
             contentPane.getChildren().clear();
-            objectsButton.setStyle("-fx-background-color: #E3E3E3");
+            objectsButton.getStyleClass().clear();
+            objectsButton.getStyleClass().add("selectedButton");
 
         }
     }
@@ -187,7 +233,11 @@ public class Controller {
     private void searchHandle(ActionEvent actionEvent) {
         TextField tf = (TextField) contentPane.lookup("#searchBar");
         System.out.println(tf.getText());
-        System.out.println(model.getProducts());
+        ArrayList<String> names = new ArrayList<>();
+        for (Product p: model.getProducts()) {
+            names.add(p.getTitle());
+        }
+        System.out.println(names);
     }
 
 }

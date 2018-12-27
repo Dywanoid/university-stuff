@@ -1,11 +1,12 @@
 package project.products;
 
+import javafx.scene.image.Image;
 import project.entities.Distributor;
 
 import java.util.ArrayList;
 
 public abstract class Product {
-    private String imgPath;
+    private Image image;
     private String title;
     private String description;
     private String productionDate;
@@ -14,30 +15,33 @@ public abstract class Product {
     private ArrayList<String> countries;
     private float score;
     private float price;
+    private final String type = "Product";
 
     Product() {
     }
 
     @Override
     public String toString() {
-        return "project.products.Product{" +
-                "imgPath='" + imgPath + '\'' +
+        return "Product{" +
+                "image=" + image +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", productionDate=" + productionDate +
+                ", productionDate='" + productionDate + '\'' +
                 ", duration=" + duration +
                 ", distributor=" + distributor +
-                ", countries.txt=" + countries +
+                ", countries=" + countries +
                 ", score=" + score +
+                ", price=" + price +
+                ", type='" + type + '\'' +
                 '}';
     }
 
-    public String getImgPath() {
-        return imgPath;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public String getTitle() {
@@ -102,5 +106,13 @@ public abstract class Product {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getGenre() {
+        return "";
     }
 }

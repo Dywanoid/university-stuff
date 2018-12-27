@@ -49,7 +49,7 @@ public class Distributor  implements Runnable{
     }
 
     private void generateProduct(VODdata data, Product product) {
-        product.setImgPath("empty"); // TODO: change this
+        product.setImage(data.getRandomImage()); // TODO: change this
         product.setTitle(data.getRandomText("title"));
         product.setDescription(data.getRandomText("description"));
         product.setProductionDate(Utilities.getRandomDate(365 * -40, 10));

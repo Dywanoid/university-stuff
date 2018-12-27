@@ -15,6 +15,7 @@ public class WindowApp extends Application {
         Parent root = loader.load();
 
         Controller contr = loader.getController();
+        Simulation.vod.init();
         contr.setModel(Simulation.vod);
         contr.setStage(stage);
         contr.controlPanel();
