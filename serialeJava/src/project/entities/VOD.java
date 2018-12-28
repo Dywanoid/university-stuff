@@ -17,7 +17,7 @@ public class VOD {
     private int nUsers = 0;
     private ArrayList<Distributor> distributors = new ArrayList<>();
     private int nDistributors = 0;
-    public VODdata data = null;
+    VODdata data = null;
 
     public void init() {
         data = new VODdata();
@@ -38,7 +38,6 @@ public class VOD {
 
     String birthday = Utilities.getRandomDate(-365 * 60, -365*18);
     newUser.setBirthday(birthday);
-    System.out.println(birthday);
 
     String email = String.format("%s@%s",data.getRandomText("email1"), data.getRandomText("email2"));
     newUser.setEmail(email);
@@ -46,6 +45,7 @@ public class VOD {
     newUser.setCreditCardNumber("");
 
     newUser.setSubscription("");
+    users.add(newUser);
     userAdded();
 
     }
@@ -68,19 +68,12 @@ public class VOD {
         }
     }
 
-//    public void showDistributors() {
-//        for(Distributor d : distributors) {
-//            System.out.println(d.toString());
-//        }
-//    }
-
     public void newRandomProducts() {
         for (var dist: distributors) {
             if((int) ((new Random()).nextFloat() * 3) == 2)
             dist.newRandomProduct(data);
         }
     }
-
 
     void seriesAdded() {
         nSeries++;
@@ -140,6 +133,12 @@ public class VOD {
     public void killDistributors() {
         for (Distributor dist: distributors) {
             dist.kill();
+        }
+    }
+
+    public void killUsers() {
+        for (User user: users) {
+          user.kill();
         }
     }
 }

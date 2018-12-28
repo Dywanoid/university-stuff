@@ -8,7 +8,7 @@ import project.products.*;
 import project.components.Episode;
 import project.components.Season;
 
-public class Distributor  implements Runnable{
+public class Distributor implements Runnable{
     private boolean alive = true;
     private static int numberOfDistributors = 0;
     private String name;
@@ -49,7 +49,7 @@ public class Distributor  implements Runnable{
     }
 
     private void generateProduct(VODdata data, Product product) {
-        product.setImage(data.getRandomImage()); // TODO: change this
+        product.setImage(data.getRandomImage());
         product.setTitle(data.getRandomText("title"));
         product.setDescription(data.getRandomText("description"));
         product.setProductionDate(Utilities.getRandomDate(365 * -40, 10));
@@ -85,7 +85,7 @@ public class Distributor  implements Runnable{
         generateProduct(data, product);
         product.setGenre(data.getRandomText("genre"));
         product.setActors(data.getRandomText("actor", 5));
-        product.setTrailerURL("URL"); // TODO: CHANGE THIS
+        product.setTrailerURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         product.setAvalibleToWatchTime(Utilities.getRandomInt(30, 90));
         product.setSale(null); // TODO: sales?
     }
@@ -144,7 +144,13 @@ public class Distributor  implements Runnable{
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            if(alive) {System.out.println(name + " " + sleepTime);}
+            if(alive) {
+                if(Math.random() * 100 > 60) {
+                    newRandomProduct(VODpointer.data);
+                }
+
+                System.out.println(name + " " + sleepTime);
+            }
 
         }
     }

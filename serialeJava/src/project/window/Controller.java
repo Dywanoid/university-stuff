@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.StringProperty;
+import javafx.scene.layout.Priority;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -20,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import project.entities.Distributor;
 import project.entities.User;
@@ -31,7 +33,6 @@ import java.util.ArrayList;
 public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
-    private Stage stage = null;
 
     @FXML VBox menuPane;
     @FXML Pane contentPane;
@@ -54,10 +55,10 @@ public class Controller {
     }
 
     void setStage(Stage stage) {
-        this.stage = stage;
         stage.setOnCloseRequest( event -> {
             System.out.println("Closing Stage");
             model.killDistributors();
+            model.killUsers();
         } );
 
     }
@@ -94,16 +95,19 @@ public class Controller {
         model.newUser();
         change();
     }
+
     @FXML
     private void addSeries() {
         model.newSeries();
         change();
     }
+
     @FXML
     private void addMovie() {
         model.newMovie();
         change();
     }
+
     @FXML
     private void addStream() {
         model.newStream();
@@ -148,9 +152,10 @@ public class Controller {
             currentPanel = "products";
 
             VBox mainVBOX = new VBox();
+            mainVBOX.setPrefWidth(400);
             HBox searchBarHBOX = new HBox();
             AnchorPane listAnchor = new AnchorPane();
-            VBox listVBOX = new VBox();
+            listAnchor.getChildren().add(generateProductList(""));
 
             Label label = new Label();
             label.setText("Search: ");
@@ -158,45 +163,22 @@ public class Controller {
 
             TextField textfield = new TextField();
             textfield.setId("searchBar");
-//            textfield.textProperty().addListener((observable -> ));
+            textfield.textProperty().addListener((observable, oldValue, newValue) ->{
+                listAnchor.getChildren().clear();
+                if(newValue != null && !newValue.isEmpty()) {
+                    listAnchor.getChildren().add(generateProductList(newValue));
+                } else {
+                    listAnchor.getChildren().add(generateProductList(""));
+                }
+            });
 
-            Button button = new Button();
-            button.setText("ok");
-            button.setOnAction(this::searchHandle);
-
-
-            searchBarHBOX.getChildren().addAll(label, textfield, button);
+            searchBarHBOX.getChildren().addAll(label, textfield);
             mainVBOX.getChildren().add(searchBarHBOX);
 
 
 
-            ArrayList<Product> products = model.getProducts();
 
-            for (var product : products) {
-                HBox productPanel = new HBox();
-                productPanel.getStyleClass().add("productListItem");
 
-                VBox labelsVBOX = new VBox();
-                ImageView imageView = new ImageView();
-
-                Image image = product.getImage();
-
-                Label title = new Label(product.getTitle());
-                Label description = new Label(product.getDescription());
-                Label typeAndProductionDate = new Label(String.format("Type: %s, Prod. date: %s", product.getType(), product.getProductionDate()));
-                Label score = new Label(String.format("%.2f", product.getScore()));
-
-                imageView.setImage(image);
-                labelsVBOX.getChildren().addAll(title, typeAndProductionDate, description);
-
-                productPanel.getChildren().addAll(imageView, labelsVBOX, score);
-                listVBOX.getChildren().add(productPanel);
-            }
-            listAnchor.getChildren().add(listVBOX);
-            AnchorPane.setTopAnchor(listVBOX, 0.0);
-            AnchorPane.setBottomAnchor(listVBOX, 0.0);
-            AnchorPane.setLeftAnchor(listVBOX, 0.0);
-            AnchorPane.setRightAnchor(listVBOX, 0.0);
 
             mainVBOX.getChildren().add(listAnchor);
 
@@ -206,6 +188,72 @@ public class Controller {
             productsButton.getStyleClass().add("selectedButton");
 
         }
+    }
+
+    private boolean checkProduct(Product product, String text) {
+        boolean useThisProduct = false;
+
+        // if searched phrase is in title, use it
+        if(product.getTitle().contains(text)) {
+            useThisProduct = true;
+        } else {
+            // if searched phrase is in any actor's name, use it
+            if(!product.getType().equals("stream")) {
+                for (String actor: product.getActors()) {
+                    if(actor.contains(text)) {
+                        useThisProduct = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        return useThisProduct;
+    };
+
+    private ScrollPane generateProductList(String searchText) {
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.getStyleClass().add("scrollPane");
+        ArrayList<Product> products = new ArrayList<>(model.getProducts());
+        products.removeIf(prod -> !checkProduct(prod, searchText)); // TODO: wyszukiwanie po aktorach
+        VBox listVBOX = new VBox();
+        listVBOX.setSpacing(5);
+        for (var product : products) {
+            HBox productPanel = new HBox();
+            productPanel.setSpacing(10);
+            productPanel.getStyleClass().add("productListItem");
+
+            VBox labelsVBOX = new VBox();
+            ImageView imageView = new ImageView();
+
+            Image image = product.getImage();
+
+            Label title = new Label(product.getTitle());
+            title.setFont(new Font("Cambria", 16));
+
+            Label description = new Label(product.getDescription());
+            Label typeAndProductionDate = new Label(String.format("Type: %s, Prod. date: %s", product.getType(), product.getProductionDate()));
+            Label score = new Label(String.format("%.2f", product.getScore()));
+            score.setFont(new Font("Arial", 16));
+
+            imageView.setImage(image);
+            labelsVBOX.getChildren().addAll(title, typeAndProductionDate, description);
+            HBox.setHgrow(imageView, Priority.ALWAYS);
+            HBox.setHgrow(labelsVBOX, Priority.ALWAYS);
+            HBox.setHgrow(score, Priority.ALWAYS);
+            productPanel.getChildren().addAll(imageView, labelsVBOX, score);
+            listVBOX.getChildren().add(productPanel);
+        }
+        scrollPane.setPrefSize(325, 600);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        scrollPane.setContent(listVBOX);
+        AnchorPane.setTopAnchor(scrollPane, 0.0);
+        AnchorPane.setBottomAnchor(scrollPane, 0.0);
+        AnchorPane.setLeftAnchor(scrollPane, 0.0);
+        return scrollPane;
     }
 
     @FXML
@@ -228,16 +276,6 @@ public class Controller {
     @FXML
     private void loadSimulation() {
         System.out.println("loaded");
-    }
-
-    private void searchHandle(ActionEvent actionEvent) {
-        TextField tf = (TextField) contentPane.lookup("#searchBar");
-        System.out.println(tf.getText());
-        ArrayList<String> names = new ArrayList<>();
-        for (Product p: model.getProducts()) {
-            names.add(p.getTitle());
-        }
-        System.out.println(names);
     }
 
 }

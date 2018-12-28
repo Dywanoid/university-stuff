@@ -68,11 +68,14 @@ public class VODdata {
     }
 
     private void getImages() {
-    File imgFolder = new File(PROJECT_PATH + IMG_PATH);
-    File[] listOfFiles = imgFolder.listFiles();
-        for (var file : listOfFiles) {
-            System.out.println(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName()));
-            images.add(new Image(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName())));
+        File imgFolder = new File(PROJECT_PATH + IMG_PATH);
+        File[] listOfFiles = imgFolder.listFiles();
+        try {
+            for (var file : listOfFiles) {
+                images.add(new Image(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName())));
+            }
+        } catch(NullPointerException e) {
+            e.printStackTrace();
         }
     }
 

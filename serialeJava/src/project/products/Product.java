@@ -40,6 +40,9 @@ public abstract class Product {
         return image;
     }
 
+    public ArrayList<String> getActors() {
+        return new ArrayList<String>();
+    }
     public void setImage(Image image) {
         this.image = image;
     }

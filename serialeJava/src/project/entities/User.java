@@ -4,7 +4,7 @@ import project.products.Product;
 
 import java.util.ArrayList;
 
-public class User {
+public class User implements Runnable{
     private static int newUserID = 0;
     private int ID;
     private String name;
@@ -14,11 +14,14 @@ public class User {
     private String subscription;
     private ArrayList<Product> boughtProducts = new ArrayList<>();
     private VOD VODpointer;
+    private boolean alive = true;
 
-    public User(String name, VOD pointer) {
+    User(String name, VOD pointer) {
         this.ID = newUserID++;
         this.name = name;
         this.VODpointer = pointer;
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     public String getName() {
@@ -67,5 +70,25 @@ public class User {
 
     public void setBoughtProducts(ArrayList<Product> boughtProducts) {
         this.boughtProducts = boughtProducts;
+    }
+
+    @Override
+    public void run() {
+        while(alive) {
+            long sleepTime = (long) (1000 * Math.random() * 4);
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            if(alive) {
+                System.out.println(name + " " + sleepTime);
+            }
+
+        }
+    }
+
+    void kill() {
+        alive = false;
     }
 }
