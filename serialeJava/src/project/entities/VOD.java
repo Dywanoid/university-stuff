@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class VOD {
-    private ArrayList<Product> products = new ArrayList<>();
+    private volatile ArrayList<Product> products = new ArrayList<>();
     private int nProducts = 0;
     private int nSeries = 0;
     private int nMovies = 0;
@@ -126,7 +126,7 @@ public class VOD {
         return products;
     }
 
-    void addProduct(Product product) {
+    synchronized void addProduct(Product product) {
         products.add(product);
     }
 

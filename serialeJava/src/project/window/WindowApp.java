@@ -14,11 +14,11 @@ public class WindowApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
         Parent root = loader.load();
 
-        Controller contr = loader.getController();
+        Controller controller = loader.getController();
         Simulation.vod.init();
-        contr.setModel(Simulation.vod);
-        contr.setStage(stage);
-        contr.controlPanel();
+        controller.setModel(Simulation.vod);
+        controller.setStage(stage);
+        controller.controlPanel();
 
         stage.setTitle("Seriale");
         stage.setScene(new Scene(root, 800, 600));

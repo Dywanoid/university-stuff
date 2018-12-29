@@ -1,13 +1,16 @@
 package project.window;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.StringProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.Priority;
 
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,25 +31,27 @@ import project.entities.User;
 import project.entities.VOD;
 import project.products.Product;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
 
-    @FXML VBox menuPane;
-    @FXML Pane contentPane;
-    @FXML VBox actionPane;
+    @FXML private VBox menuPane;
+    @FXML private Pane contentPane;
+    @FXML private VBox actionPane;
+    @FXML private AnchorPane productInfoPane;
 
-    @FXML Button controlButton;
-    @FXML Button productsButton;
-    @FXML Button objectsButton;
+    @FXML private Button controlButton;
+    @FXML private Button productsButton;
+    @FXML private Button objectsButton;
 
-    @FXML Button newDistributorButton;
-    @FXML Button newUserButton;
-    @FXML Button newSeriesButton;
-    @FXML Button newMovieButton;
-    @FXML Button newStreamButton;
+    @FXML private Button newDistributorButton;
+    @FXML private Button newUserButton;
+    @FXML private Button newSeriesButton;
+    @FXML private Button newMovieButton;
+    @FXML private Button newStreamButton;
 
     public Controller(){}
 
@@ -55,6 +60,7 @@ public class Controller {
     }
 
     void setStage(Stage stage) {
+        stage.setOnHidden(e -> Platform.exit());
         stage.setOnCloseRequest( event -> {
             System.out.println("Closing Stage");
             model.killDistributors();
@@ -175,11 +181,6 @@ public class Controller {
             searchBarHBOX.getChildren().addAll(label, textfield);
             mainVBOX.getChildren().add(searchBarHBOX);
 
-
-
-
-
-
             mainVBOX.getChildren().add(listAnchor);
 
             contentPane.getChildren().clear();
@@ -210,19 +211,33 @@ public class Controller {
 
 
         return useThisProduct;
-    };
+    }
 
     private ScrollPane generateProductList(String searchText) {
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.getStyleClass().add("scrollPane");
         ArrayList<Product> products = new ArrayList<>(model.getProducts());
-        products.removeIf(prod -> !checkProduct(prod, searchText)); // TODO: wyszukiwanie po aktorach
+        products.removeIf(prod -> !checkProduct(prod, searchText));
         VBox listVBOX = new VBox();
         listVBOX.setSpacing(5);
         for (var product : products) {
             HBox productPanel = new HBox();
             productPanel.setSpacing(10);
             productPanel.getStyleClass().add("productListItem");
+
+            productPanel.setOnMouseClicked((MouseEvent e) -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("productInfo.fxml"));
+                    productInfoPane = loader.load();
+                    Stage stage = new Stage();
+                    stage.setTitle("Product info");
+                    stage.setScene(new Scene(productInfoPane, 800, 450));
+                    stage.show();
+                } catch (Exception ex) {
+                    System.out.println("Error with loading another window!");
+                }
+               displayInfo(product);
+            });
 
             VBox labelsVBOX = new VBox();
             ImageView imageView = new ImageView();
@@ -254,6 +269,13 @@ public class Controller {
         AnchorPane.setBottomAnchor(scrollPane, 0.0);
         AnchorPane.setLeftAnchor(scrollPane, 0.0);
         return scrollPane;
+    }
+
+    private void displayInfo(Product product) {
+        Label tescik = new Label(String.format("%d %s", product.getID(), product.getTitle()));
+        productInfoPane.getChildren().add(tescik);
+//        System.out.println(productInfoPane.getChildren());
+
     }
 
     @FXML

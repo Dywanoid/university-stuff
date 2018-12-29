@@ -88,12 +88,14 @@ public class Distributor implements Runnable{
         product.setTrailerURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
         product.setAvalibleToWatchTime(Utilities.getRandomInt(30, 90));
         product.setSale(null); // TODO: sales?
+
     }
 
     private void generateStream(VODdata data, Stream product) {
         generateProduct(data, product);
         product.setDate(Utilities.getRandomInt(15, 100));
         product.setSale(null); // TODO: sales?
+
     }
 
     void newSeries(VODdata data) {
@@ -149,7 +151,7 @@ public class Distributor implements Runnable{
                     newRandomProduct(VODpointer.data);
                 }
 
-                System.out.println(name + " " + sleepTime);
+//                System.out.println(name + " " + sleepTime);
             }
 
         }

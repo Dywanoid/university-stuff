@@ -6,6 +6,8 @@ import project.entities.Distributor;
 import java.util.ArrayList;
 
 public abstract class Product {
+    private static volatile  int freeID = 0;
+    private int ID;
     private Image image;
     private String title;
     private String description;
@@ -18,6 +20,11 @@ public abstract class Product {
     private final String type = "Product";
 
     Product() {
+        setSafeID();
+    }
+
+    private synchronized void setSafeID() {
+        this.ID = freeID++;
     }
 
     @Override
@@ -36,12 +43,16 @@ public abstract class Product {
                 '}';
     }
 
+    public int getID() {
+        return ID;
+    }
+
     public Image getImage() {
         return image;
     }
 
     public ArrayList<String> getActors() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
     public void setImage(Image image) {
         this.image = image;
