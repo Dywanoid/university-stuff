@@ -1,21 +1,12 @@
 package project.window;
 
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Priority;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,12 +17,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import project.entities.Distributor;
-import project.entities.User;
 import project.entities.VOD;
 import project.products.Product;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Controller {
@@ -65,6 +53,7 @@ public class Controller {
             System.out.println("Closing Stage");
             model.killDistributors();
             model.killUsers();
+            model.close();
         } );
 
     }
@@ -75,9 +64,9 @@ public class Controller {
         objectsButton.getStyleClass().clear();
     }
 
-    private void change() {
+    private void refreshScreen() {
         String current = currentPanel;
-        currentPanel = "change";
+        currentPanel = "refreshScreen";
         switch (current) {
             case "control":
                 controlPanel();
@@ -94,30 +83,30 @@ public class Controller {
     @FXML
     private void addDist() {
         model.newDistributor();
-        change();
+        refreshScreen();
     }
     @FXML
     private void addUser() {
         model.newUser();
-        change();
+        refreshScreen();
     }
 
     @FXML
     private void addSeries() {
         model.newSeries();
-        change();
+        refreshScreen();
     }
 
     @FXML
     private void addMovie() {
         model.newMovie();
-        change();
+        refreshScreen();
     }
 
     @FXML
     private void addStream() {
         model.newStream();
-        change();
+        refreshScreen();
     }
 
     @FXML
@@ -146,7 +135,6 @@ public class Controller {
 
             contentPane.getChildren().clear();
             contentPane.getChildren().add(vbox);
-            controlButton.getStyleClass().clear();
             controlButton.getStyleClass().add("selectedButton");
         }
     }
@@ -185,7 +173,6 @@ public class Controller {
 
             contentPane.getChildren().clear();
             contentPane.getChildren().add(mainVBOX);
-            productsButton.getStyleClass().clear();
             productsButton.getStyleClass().add("selectedButton");
 
         }
@@ -231,7 +218,7 @@ public class Controller {
                     productInfoPane = loader.load();
                     Stage stage = new Stage();
                     stage.setTitle("Product info");
-                    stage.setScene(new Scene(productInfoPane, 800, 450));
+                    stage.setScene(new Scene(productInfoPane, 400, 450));
                     stage.show();
                 } catch (Exception ex) {
                     System.out.println("Error with loading another window!");
@@ -273,7 +260,20 @@ public class Controller {
 
     private void displayInfo(Product product) {
         Label tescik = new Label(String.format("%d %s", product.getID(), product.getTitle()));
-        productInfoPane.getChildren().add(tescik);
+        HBox hbox = new HBox();
+
+        ImageView imageView = new ImageView();
+        Image image = product.getImage();
+        imageView.setImage(image);
+        Label title = new Label(product.getTitle());
+        String typeString = product.getType();
+        Label type = new Label(typeString);
+        Label genre = null;
+        if(!typeString.equals("stream")) {
+            genre = new Label(product.getGenre());
+        }
+        hbox.getChildren().addAll(imageView, title, type, genre);
+        productInfoPane.getChildren().add(hbox);
 //        System.out.println(productInfoPane.getChildren());
 
     }
@@ -284,7 +284,6 @@ public class Controller {
             clearButtons();
             currentPanel = "objects";
             contentPane.getChildren().clear();
-            objectsButton.getStyleClass().clear();
             objectsButton.getStyleClass().add("selectedButton");
 
         }

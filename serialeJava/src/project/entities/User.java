@@ -16,6 +16,9 @@ public class User implements Runnable{
     private VOD VODpointer;
     private boolean alive = true;
 
+    // for monitor
+    User() {}
+
     User(String name, VOD pointer) {
         this.ID = newUserID++;
         this.name = name;
@@ -82,7 +85,8 @@ public class User implements Runnable{
                 ex.printStackTrace();
             }
             if(alive) {
-                System.out.println(name + " " + sleepTime);
+                VODpointer.watchSomething();
+//                System.out.println(name + " " + sleepTime);
             }
 
         }
@@ -90,5 +94,10 @@ public class User implements Runnable{
 
     void kill() {
         alive = false;
+    }
+
+    public void deleteMe() {
+        kill();
+        VODpointer.deleteUser(this);
     }
 }

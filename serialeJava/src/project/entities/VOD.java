@@ -9,15 +9,17 @@ import java.util.Random;
 
 public class VOD {
     private volatile ArrayList<Product> products = new ArrayList<>();
-    private int nProducts = 0;
-    private int nSeries = 0;
-    private int nMovies = 0;
-    private int nStreams = 0;
-    private ArrayList<User> users = new ArrayList<>();
-    private int nUsers = 0;
+    private volatile int nProducts = 0;
+    private volatile int nSeries = 0;
+    private volatile int nMovies = 0;
+    private volatile int nStreams = 0;
+    private volatile ArrayList<User> users = new ArrayList<>();
+    private volatile int nUsers = 0;
     private ArrayList<Distributor> distributors = new ArrayList<>();
     private int nDistributors = 0;
     VODdata data = null;
+    private boolean closed = false;
+    private final User userMonitor = new User();
 
     public void init() {
         data = new VODdata();
@@ -45,7 +47,9 @@ public class VOD {
     newUser.setCreditCardNumber("");
 
     newUser.setSubscription("");
-    users.add(newUser);
+    synchronized (userMonitor) {
+        users.add(newUser);
+    }
     userAdded();
 
     }
@@ -75,54 +79,77 @@ public class VOD {
         }
     }
 
-    void seriesAdded() {
+    synchronized void seriesAdded() {
         nSeries++;
         nProducts++;
     }
 
-    void movieAdded() {
+    synchronized void movieAdded() {
         nMovies++;
         nProducts++;
     }
 
-    void streamAdded() {
+    synchronized void streamAdded() {
         nStreams++;
         nProducts++;
     }
 
-    private void userAdded() {
+    synchronized private void userAdded() {
         nUsers++;
     }
 
-    private void distributorAdded() {
+    synchronized  private void distributorAdded() {
         nDistributors++;
     }
 
-    public int getnProducts() {
+    synchronized void seriesDeleted() {
+        nSeries--;
+        nProducts--;
+    }
+
+    synchronized void movieDeleted() {
+        nMovies--;
+        nProducts--;
+    }
+
+    synchronized void streamDeleted() {
+        nStreams--;
+        nProducts--;
+    }
+
+    synchronized private void userDeleted() {
+        nUsers--;
+    }
+
+    synchronized private void distributorDeleted() {
+        nDistributors--;
+    }
+
+    synchronized public int getnProducts() {
         return nProducts;
     }
 
-    public int getnSeries() {
+    synchronized public int getnSeries() {
         return nSeries;
     }
 
-    public int getnMovies() {
+    synchronized public int getnMovies() {
         return nMovies;
     }
 
-    public int getnStreams() {
+    synchronized public int getnStreams() {
         return nStreams;
     }
 
-    public int getnUsers() {
+    synchronized  public int getnUsers() {
         return nUsers;
     }
 
-    public int getnDistributors() {
+    synchronized public int getnDistributors() {
         return nDistributors;
     }
 
-    public ArrayList<Product> getProducts() {
+    synchronized public ArrayList<Product> getProducts() {
         return products;
     }
 
@@ -130,15 +157,46 @@ public class VOD {
         products.add(product);
     }
 
-    public void killDistributors() {
+    synchronized public void killDistributors() {
         for (Distributor dist: distributors) {
             dist.kill();
         }
     }
 
-    public void killUsers() {
+    synchronized  public void killUsers() {
         for (User user: users) {
           user.kill();
         }
+    }
+
+    public void close() {
+        closed = true;
+    }
+
+    boolean closed() {
+        return closed;
+    }
+
+    synchronized void watchSomething() {
+        if(products.size() > 0) products.get((int) (Math.random() * products.size())).watchThisProduct(Simulation.getSimulationTime());
+    }
+
+    synchronized void deleteProduct(Product product) {
+        switch(product.getType()) {
+            case "Series":
+                seriesDeleted();
+                break;
+            case "Movie":
+                movieDeleted();
+                break;
+            case "Stream":
+                streamDeleted();
+                break;
+        }
+        products.remove(product);
+    }
+
+    synchronized public void deleteUser(User user) {
+        users.remove(user);
     }
 }

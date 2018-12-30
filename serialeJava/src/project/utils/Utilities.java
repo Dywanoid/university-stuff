@@ -27,9 +27,15 @@ public class Utilities {
         }
         return "";
     }
+
+    public static int getRandomInt(int to) {
+        return (int) Math.floor(Math.random() * (to + 1));
+    }
+
     public static int getRandomInt(int from, int to) {
         return from + (int) Math.floor(Math.random() * (to - from + 1));
     }
+
 
     public static float getRandomFloat(float from, float to) {
         return (float) ((int) ((from + ((float) Math.random() * (to - from))) * 100)) / 100;

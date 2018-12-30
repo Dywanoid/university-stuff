@@ -15,6 +15,7 @@ public class Distributor implements Runnable{
     private int ID;
     private ArrayList<Product> products = new ArrayList<>();
     private VOD VODpointer;
+    private final Integer productMonitor = 0;
 
     Distributor(String name, VOD pointer) {
         this.name = name;
@@ -102,27 +103,34 @@ public class Distributor implements Runnable{
         Series product = new Series();
         generateProduct(data, product);
         generateSeries(data,  product);
-        VODpointer.seriesAdded();
-        products.add(product);
-        VODpointer.addProduct(product);
+        synchronized (productMonitor) {
+            VODpointer.seriesAdded();
+            products.add(product);
+            VODpointer.addProduct(product);
+        }
     }
 
     void newMovie(VODdata data) {
         Movie product = new Movie();
         generateProduct(data, product);
         generateMovie(data, product);
-        VODpointer.movieAdded();
-        products.add(product);
-        VODpointer.addProduct(product);
+        synchronized (productMonitor) {
+            VODpointer.movieAdded();
+            products.add(product);
+        }
+            VODpointer.addProduct(product);
+
     }
 
     void newStream(VODdata data) {
         Stream product = new Stream();
         generateProduct(data, product);
         generateStream(data, product);
-        VODpointer.streamAdded();
-        products.add(product);
-        VODpointer.addProduct(product);
+        synchronized (productMonitor) {
+            VODpointer.streamAdded();
+            products.add(product);
+            VODpointer.addProduct(product);
+        }
     }
 
     public static int getNumberOfDistributors() {
@@ -137,6 +145,14 @@ public class Distributor implements Runnable{
         return ID;
     }
 
+    public void deleteProductFromMe(Product product) {
+        products.remove(product);
+    }
+
+    public void deleteProductFromVOD(Product product) {
+        VODpointer.deleteProduct(product);
+    }
+
     @Override
     public void run() {
         while(alive) {
@@ -148,7 +164,7 @@ public class Distributor implements Runnable{
             }
             if(alive) {
                 if(Math.random() * 100 > 60) {
-                    newRandomProduct(VODpointer.data);
+//                    newRandomProduct(VODpointer.data);
                 }
 
 //                System.out.println(name + " " + sleepTime);

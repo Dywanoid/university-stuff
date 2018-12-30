@@ -4,9 +4,11 @@ import javafx.scene.image.Image;
 import project.entities.Distributor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Product {
-    private static volatile  int freeID = 0;
+    private static volatile int freeID = 0;
     private int ID;
     private Image image;
     private String title;
@@ -18,6 +20,7 @@ public abstract class Product {
     private float score;
     private float price;
     private final String type = "Product";
+    private volatile Map<Integer, Integer> viewData = new HashMap<>();
 
     Product() {
         setSafeID();
@@ -30,21 +33,22 @@ public abstract class Product {
     @Override
     public String toString() {
         return "Product{" +
-                "image=" + image +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", productionDate='" + productionDate + '\'' +
-                ", duration=" + duration +
-                ", distributor=" + distributor +
-                ", countries=" + countries +
-                ", score=" + score +
-                ", price=" + price +
-                ", type='" + type + '\'' +
+                "ID=" + ID +
+                ", viewData=" + viewData +
                 '}';
     }
 
     public int getID() {
         return ID;
+    }
+
+    public Map<Integer, Integer> getViewData() {
+        return viewData;
+    }
+
+    public synchronized void watchThisProduct(int time) {
+        // if there is no value for this specific time it will be 1 for now, if it exists it will be incremented
+        viewData.merge(time, 1, (a, b) -> a + b);
     }
 
     public Image getImage() {
@@ -128,5 +132,12 @@ public abstract class Product {
 
     public String getGenre() {
         return "";
+    }
+
+    public void deleteMe() {
+        // od dystrybutora i od voda i od usera(?)
+        distributor.deleteProductFromMe(this);
+        distributor.deleteProductFromVOD(this);
+
     }
 }
