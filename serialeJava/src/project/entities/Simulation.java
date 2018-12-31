@@ -7,6 +7,7 @@ public class Simulation  implements Runnable {
     public static VOD vod;
     private static volatile int simulationTime = 0;
     private boolean alive = true;
+    private int timeUnderLine = 0;
 
     public Simulation() {
         vod = new VOD();
@@ -32,6 +33,16 @@ public class Simulation  implements Runnable {
                 Thread.sleep(1000);
                 System.out.println("Time: " + getSimulationTime());
                 increaseTime();
+                if(vod.getMoney() < 0) {
+                    timeUnderLine++;
+                } else {
+                    timeUnderLine = 0;
+                }
+                if(timeUnderLine > 10) {
+                    System.out.println("Simulation stops!");
+                    kill();
+                    vod.close();
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

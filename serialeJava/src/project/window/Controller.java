@@ -1,8 +1,12 @@
 package project.window;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.Priority;
 
 import javafx.fxml.FXML;
@@ -20,28 +24,45 @@ import javafx.stage.Stage;
 import project.entities.VOD;
 import project.products.Product;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
 
-    @FXML private VBox menuPane;
-    @FXML private Pane contentPane;
-    @FXML private VBox actionPane;
-    @FXML private AnchorPane productInfoPane;
+    @FXML
+    private VBox menuPane;
+    @FXML
+    private Pane contentPane;
+    @FXML
+    private VBox actionPane;
+    @FXML
+    private AnchorPane productInfoPane;
 
-    @FXML private Button controlButton;
-    @FXML private Button productsButton;
-    @FXML private Button objectsButton;
+    @FXML
+    private Button controlButton;
+    @FXML
+    private Button productsButton;
+    @FXML
+    private Button objectsButton;
 
-    @FXML private Button newDistributorButton;
-    @FXML private Button newUserButton;
-    @FXML private Button newSeriesButton;
-    @FXML private Button newMovieButton;
-    @FXML private Button newStreamButton;
+    @FXML
+    private Button newDistributorButton;
+    @FXML
+    private Button newUserButton;
+    @FXML
+    private Button newSeriesButton;
+    @FXML
+    private Button newMovieButton;
+    @FXML
+    private Button newStreamButton;
 
-    public Controller(){}
+    public Controller() {
+    }
 
     void setModel(VOD model) {
         this.model = model;
@@ -49,12 +70,12 @@ public class Controller {
 
     void setStage(Stage stage) {
         stage.setOnHidden(e -> Platform.exit());
-        stage.setOnCloseRequest( event -> {
+        stage.setOnCloseRequest(event -> {
             System.out.println("Closing Stage");
             model.killDistributors();
             model.killUsers();
             model.close();
-        } );
+        });
 
     }
 
@@ -85,6 +106,7 @@ public class Controller {
         model.newDistributor();
         refreshScreen();
     }
+
     @FXML
     private void addUser() {
         model.newUser();
@@ -111,7 +133,7 @@ public class Controller {
 
     @FXML
     void controlPanel() {
-        if(!currentPanel.equals("control")) {
+        if (!currentPanel.equals("control")) {
             clearButtons();
             currentPanel = "control";
 
@@ -141,7 +163,7 @@ public class Controller {
 
     @FXML
     void productsPanel() {
-        if(!currentPanel.equals("products")) {
+        if (!currentPanel.equals("products")) {
             clearButtons();
             currentPanel = "products";
 
@@ -157,9 +179,9 @@ public class Controller {
 
             TextField textfield = new TextField();
             textfield.setId("searchBar");
-            textfield.textProperty().addListener((observable, oldValue, newValue) ->{
+            textfield.textProperty().addListener((observable, oldValue, newValue) -> {
                 listAnchor.getChildren().clear();
-                if(newValue != null && !newValue.isEmpty()) {
+                if (newValue != null && !newValue.isEmpty()) {
                     listAnchor.getChildren().add(generateProductList(newValue));
                 } else {
                     listAnchor.getChildren().add(generateProductList(""));
@@ -182,13 +204,13 @@ public class Controller {
         boolean useThisProduct = false;
 
         // if searched phrase is in title, use it
-        if(product.getTitle().contains(text)) {
+        if (product.getTitle().contains(text)) {
             useThisProduct = true;
         } else {
             // if searched phrase is in any actor's name, use it
-            if(!product.getType().equals("stream")) {
-                for (String actor: product.getActors()) {
-                    if(actor.contains(text)) {
+            if (!product.getType().equals("stream")) {
+                for (String actor : product.getActors()) {
+                    if (actor.contains(text)) {
                         useThisProduct = true;
                         break;
                     }
@@ -218,12 +240,12 @@ public class Controller {
                     productInfoPane = loader.load();
                     Stage stage = new Stage();
                     stage.setTitle("Product info");
-                    stage.setScene(new Scene(productInfoPane, 400, 450));
+                    stage.setScene(new Scene(productInfoPane, 550, 450));
                     stage.show();
                 } catch (Exception ex) {
                     System.out.println("Error with loading another window!");
                 }
-               displayInfo(product);
+                displayInfo(product);
             });
 
             VBox labelsVBOX = new VBox();
@@ -259,7 +281,10 @@ public class Controller {
     }
 
     private void displayInfo(Product product) {
+        Map<Integer, Integer> data = product.getViewData();
+
         Label tescik = new Label(String.format("%d %s", product.getID(), product.getTitle()));
+        VBox vbox = new VBox();
         HBox hbox = new HBox();
 
         ImageView imageView = new ImageView();
@@ -269,18 +294,40 @@ public class Controller {
         String typeString = product.getType();
         Label type = new Label(typeString);
         Label genre = null;
-        if(!typeString.equals("stream")) {
+        if (!typeString.equals("stream")) {
             genre = new Label(product.getGenre());
         }
         hbox.getChildren().addAll(imageView, title, type, genre);
-        productInfoPane.getChildren().add(hbox);
-//        System.out.println(productInfoPane.getChildren());
+        vbox.getChildren().add(hbox);
+        if(data.size() > 0) {
+            final NumberAxis xAxis = new NumberAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setLabel("Time of simulation");
+            yAxis.setLabel("Times watched");
 
+            final LineChart<Number, Number> lineChart =
+                    new LineChart<>(xAxis, yAxis);
+
+            lineChart.setTitle("watched over time");
+
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName("Product's info");
+            int maximumTime = Collections.max(data.keySet());
+            for (int t = 0; t <= maximumTime; t++) {
+                Integer value = data.get(t);
+
+                series.getData().add(new XYChart.Data<>(t, value != null ? value : 0));
+            }
+
+            lineChart.getData().add(series);
+            vbox.getChildren().add(lineChart);
+        }
+        productInfoPane.getChildren().add(vbox);
     }
 
     @FXML
     void objectsPanel() {
-        if(!currentPanel.equals("objects")) {
+        if (!currentPanel.equals("objects")) {
             clearButtons();
             currentPanel = "objects";
             contentPane.getChildren().clear();

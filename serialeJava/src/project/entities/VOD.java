@@ -20,6 +20,7 @@ public class VOD {
     VODdata data = null;
     private boolean closed = false;
     private final User userMonitor = new User();
+    private volatile int money = -1;
 
     public void init() {
         data = new VODdata();
@@ -198,5 +199,9 @@ public class VOD {
 
     synchronized public void deleteUser(User user) {
         users.remove(user);
+    }
+
+    synchronized int getMoney() {
+        return money;
     }
 }
