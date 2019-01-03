@@ -1,5 +1,8 @@
 package project.entities;
 
+import project.components.License;
+import project.components.Sale;
+import project.components.Subscription;
 import project.database.VODdata;
 import project.products.*;
 import project.utils.Utilities;
@@ -20,7 +23,7 @@ public class VOD {
     VODdata data = null;
     private boolean closed = false;
     private final User userMonitor = new User();
-    private volatile int money = -1;
+    private volatile float money = 0;
 
     public void init() {
         data = new VODdata();
@@ -45,20 +48,21 @@ public class VOD {
     String email = String.format("%s@%s",data.getRandomText("email1"), data.getRandomText("email2"));
     newUser.setEmail(email);
 
+    // TODO: change this
     newUser.setCreditCardNumber("");
 
-    newUser.setSubscription("");
+    newUser.setSubscription(data.getRandomSubscription());
     synchronized (userMonitor) {
         users.add(newUser);
     }
     userAdded();
-
     }
 
     public void newSeries() {
         if(distributors.size() > 0) {
             distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newSeries(data);
         }
+
     }
 
     public void newMovie() {
@@ -75,8 +79,9 @@ public class VOD {
 
     public void newRandomProducts() {
         for (var dist: distributors) {
-            if((int) ((new Random()).nextFloat() * 3) == 2)
-            dist.newRandomProduct(data);
+            if((int) ((new Random()).nextFloat() * 3) == 2) {
+                dist.newRandomProduct(data);
+            }
         }
     }
 
@@ -103,19 +108,36 @@ public class VOD {
         nDistributors++;
     }
 
-    synchronized void seriesDeleted() {
+    synchronized private void seriesDeleted() {
         nSeries--;
         nProducts--;
     }
 
-    synchronized void movieDeleted() {
+    synchronized private void movieDeleted() {
         nMovies--;
         nProducts--;
     }
 
-    synchronized void streamDeleted() {
+    synchronized private void streamDeleted() {
         nStreams--;
         nProducts--;
+    }
+
+    synchronized void payForProduct(Product product) {
+        float price = product.getPrice();
+        float reduction = 1;
+        Sale sale = product.getSale();
+        if(sale != null) reduction -= sale.getReduction();
+        money += price * reduction;
+    }
+
+    synchronized void takeSubscriptionMoney() {
+        for (User user: users) {
+            Subscription subscribtion = user.getSubscription();
+            if(subscribtion!= null) {
+                money += subscribtion.getPrice() ;
+            }
+        }
     }
 
     synchronized private void userDeleted() {
@@ -178,8 +200,14 @@ public class VOD {
         return closed;
     }
 
-    synchronized void watchSomething() {
-        if(products.size() > 0) products.get((int) (Math.random() * products.size())).watchThisProduct(Simulation.getSimulationTime());
+    synchronized Product watchSomething() {
+        if(products.size() > 0) {
+            Product randProduct = products.get((int) (Math.random() * products.size()));
+            randProduct.watchThisProduct(Simulation.getSimulationTime());
+            randProduct.getDistributor().watchedProduct();
+            return randProduct;
+        }
+        return null;
     }
 
     synchronized void deleteProduct(Product product) {
@@ -197,11 +225,23 @@ public class VOD {
         products.remove(product);
     }
 
-    synchronized public void deleteUser(User user) {
+    synchronized void deleteUser(User user) {
         users.remove(user);
     }
 
-    synchronized int getMoney() {
+    synchronized public float getMoney() {
         return money;
+    }
+
+    synchronized void pay() {
+        for(Distributor distributor: distributors) {
+            License license = distributor.getLicense();
+            if(license.isMonthly()) {
+                money -= license.getMonthlyFee();
+            } else {
+                money -= license.getFee() * distributor.getWatched();
+                distributor.clearWatched();
+            }
+        }
     }
 }

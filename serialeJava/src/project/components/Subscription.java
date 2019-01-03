@@ -1,6 +1,6 @@
 package project.components;
 
-public class Subscription implements java.io.Serializable{
+public class Subscription {
     private float price;
     private int numberOfDevices;
     private String maxResolution;
@@ -13,11 +13,7 @@ public class Subscription implements java.io.Serializable{
 
     @Override
     public String toString() {
-        return "Subscription{" +
-                "price=" + price +
-                ", numberOfDevices=" + numberOfDevices +
-                ", maxResolution='" + maxResolution + '\'' +
-                '}';
+        return "Subscription{" + "price=" + price + '}';
     }
 
     public float getPrice() {

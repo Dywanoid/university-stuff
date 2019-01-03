@@ -1,5 +1,6 @@
 package project.entities;
 
+import project.components.Subscription;
 import project.products.Product;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class User implements Runnable{
     private String birthday;
     private String email;
     private String creditCardNumber;
-    private String subscription;
+    private Subscription subscription;
     private ArrayList<Product> boughtProducts = new ArrayList<>();
     private VOD VODpointer;
     private boolean alive = true;
@@ -59,11 +60,11 @@ public class User implements Runnable{
         this.creditCardNumber = creditCardNumber;
     }
 
-    public String getSubscription() {
+    public Subscription getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(String subscription) {
+    public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
     }
 
@@ -71,8 +72,8 @@ public class User implements Runnable{
         return boughtProducts;
     }
 
-    public void setBoughtProducts(ArrayList<Product> boughtProducts) {
-        this.boughtProducts = boughtProducts;
+    public void deleteProduct(Product product) {
+        boughtProducts.remove(product);
     }
 
     @Override
@@ -85,8 +86,12 @@ public class User implements Runnable{
                 ex.printStackTrace();
             }
             if(alive) {
-                VODpointer.watchSomething();
-//                System.out.println(name + " " + sleepTime);
+                Product product = VODpointer.watchSomething();
+                if(product != null && subscription == null && !boughtProducts.contains(product)) {
+                    VODpointer.payForProduct(product);
+                    boughtProducts.add(product);
+                    product.addUser(this);
+                }
             }
 
         }

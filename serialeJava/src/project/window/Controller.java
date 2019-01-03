@@ -34,6 +34,7 @@ public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
 
+
     @FXML
     private VBox menuPane;
     @FXML
@@ -85,7 +86,7 @@ public class Controller {
         objectsButton.getStyleClass().clear();
     }
 
-    private void refreshScreen() {
+    public void refreshScreen() {
         String current = currentPanel;
         currentPanel = "refreshScreen";
         switch (current) {
@@ -151,10 +152,9 @@ public class Controller {
             numberOfUsers.setText("Number of users: " + model.getnUsers());
 
             Label numberOfDistributors = new Label();
-            numberOfDistributors.setText("Number of distributors: " + model.getnDistributors());
-            vbox.getChildren().addAll(numberOfProducts, numberOfUsers, numberOfDistributors);
-
-
+            numberOfDistributors.setText(String.format("Number of distributors: %s\n\n", model.getnDistributors()));
+            Label moneyLabel = new Label(String.format("Money in bank: %.2f", model.getMoney()));
+            vbox.getChildren().addAll(numberOfProducts, numberOfUsers, numberOfDistributors, moneyLabel);
             contentPane.getChildren().clear();
             contentPane.getChildren().add(vbox);
             controlButton.getStyleClass().add("selectedButton");
@@ -166,7 +166,6 @@ public class Controller {
         if (!currentPanel.equals("products")) {
             clearButtons();
             currentPanel = "products";
-
             VBox mainVBOX = new VBox();
             mainVBOX.setPrefWidth(400);
             HBox searchBarHBOX = new HBox();
@@ -196,6 +195,17 @@ public class Controller {
             contentPane.getChildren().clear();
             contentPane.getChildren().add(mainVBOX);
             productsButton.getStyleClass().add("selectedButton");
+
+        }
+    }
+
+    @FXML
+    void objectsPanel() {
+        if (!currentPanel.equals("objects")) {
+            clearButtons();
+            currentPanel = "objects";
+            contentPane.getChildren().clear();
+            objectsButton.getStyleClass().add("selectedButton");
 
         }
     }
@@ -283,7 +293,6 @@ public class Controller {
     private void displayInfo(Product product) {
         Map<Integer, Integer> data = product.getViewData();
 
-        Label tescik = new Label(String.format("%d %s", product.getID(), product.getTitle()));
         VBox vbox = new VBox();
         HBox hbox = new HBox();
 
@@ -324,18 +333,6 @@ public class Controller {
         }
         productInfoPane.getChildren().add(vbox);
     }
-
-    @FXML
-    void objectsPanel() {
-        if (!currentPanel.equals("objects")) {
-            clearButtons();
-            currentPanel = "objects";
-            contentPane.getChildren().clear();
-            objectsButton.getStyleClass().add("selectedButton");
-
-        }
-    }
-
     @FXML
     private void saveSimulation() {
         System.out.println("saved");

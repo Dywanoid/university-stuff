@@ -4,19 +4,13 @@ import project.products.Product;
 import java.util.ArrayList;
 
 public class Sale {
-    private int startDate;
     private int endDate;
     private float reduction;
-    private ArrayList<Product> coveredProducts;
+    private ArrayList<Product> coveredProducts = new ArrayList<>();
 
-    public Sale(int startDate, int endDate, float reduction) {
-        this.startDate = startDate;
+    public Sale(int endDate, float reduction) {
         this.endDate = endDate;
         this.reduction = reduction;
-    }
-
-    public int getStartDate() {
-        return startDate;
     }
 
     public int getEndDate() {
@@ -25,5 +19,15 @@ public class Sale {
 
     public float getReduction() {
         return reduction;
+    }
+
+    public void addProduct(Product product) {
+        coveredProducts.add(product);
+    }
+
+    public void finishSale() {
+        for (Product product: coveredProducts) {
+            product.setSale(null);
+        }
     }
 }

@@ -70,12 +70,10 @@ public class VODdata {
     private void getImages() {
         File imgFolder = new File(PROJECT_PATH + IMG_PATH);
         File[] listOfFiles = imgFolder.listFiles();
-        try {
+        if(listOfFiles != null) {
             for (var file : listOfFiles) {
                 images.add(new Image(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName())));
             }
-        } catch(NullPointerException e) {
-            e.printStackTrace();
         }
     }
 
@@ -108,6 +106,10 @@ public class VODdata {
         return images.get(Utilities.getRandomInt(0, images.size() - 1));
     }
 
+    public Subscription getRandomSubscription() {
+        int rand = (int) (Math.random() * 4);
+        return  rand == 3 ? null : (Subscription) subsciptions.values().toArray()[rand];
+    }
 }
 
 // SERIALIZACJA

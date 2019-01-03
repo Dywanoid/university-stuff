@@ -30,15 +30,19 @@ public class Simulation  implements Runnable {
     public void run() {
         while(alive && !vod.closed()) {
             try {
-                Thread.sleep(1000);
+                if(simulationTime % 30 == 0 && simulationTime > 0) {
+                    vod.takeSubscriptionMoney();
+                    vod.pay();
+                }
                 System.out.println("Time: " + getSimulationTime());
                 increaseTime();
+                Thread.sleep(1000);
                 if(vod.getMoney() < 0) {
                     timeUnderLine++;
                 } else {
                     timeUnderLine = 0;
                 }
-                if(timeUnderLine > 10) {
+                if(timeUnderLine > 90) {
                     System.out.println("Simulation stops!");
                     kill();
                     vod.close();

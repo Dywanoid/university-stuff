@@ -1,7 +1,9 @@
 package project.products;
 
 import javafx.scene.image.Image;
+import project.components.Sale;
 import project.entities.Distributor;
+import project.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,8 @@ public abstract class Product {
     private float price;
     private final String type = "Product";
     private volatile Map<Integer, Integer> viewData = new HashMap<>();
+    private ArrayList<User> usersOwning = new ArrayList<>();
+    private Sale sale = null;
 
     Product() {
         setSafeID();
@@ -37,6 +41,10 @@ public abstract class Product {
                 ", viewData=" + viewData +
                 '}';
     }
+
+    public Sale getSale() {return sale;}
+
+    public void setSale(Sale sale) {}
 
     public int getID() {
         return ID;
@@ -134,10 +142,16 @@ public abstract class Product {
         return "";
     }
 
+    public void addUser(User user) {
+        usersOwning.add(user);
+    }
+
     public void deleteMe() {
-        // od dystrybutora i od voda i od usera(?)
         distributor.deleteProductFromMe(this);
         distributor.deleteProductFromVOD(this);
+        for (User user: usersOwning) {
+            user.deleteProduct(this);
+        }
 
     }
 }
