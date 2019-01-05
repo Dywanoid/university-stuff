@@ -48,8 +48,11 @@ public class VOD {
     String email = String.format("%s@%s",data.getRandomText("email1"), data.getRandomText("email2"));
     newUser.setEmail(email);
 
-    // TODO: change this
-    newUser.setCreditCardNumber("");
+    newUser.setCreditCardNumber(String.format("%d %d %d %d",
+            Utilities.getRandomInt(1000, 9999),
+            Utilities.getRandomInt(1000, 9999),
+            Utilities.getRandomInt(1000, 9999),
+            Utilities.getRandomInt(1000, 9999)));
 
     newUser.setSubscription(data.getRandomSubscription());
     synchronized (userMonitor) {
@@ -262,6 +265,12 @@ public class VOD {
 
     synchronized void deleteUser(User user) {
         users.remove(user);
+        userDeleted();
+    }
+
+    synchronized void deleteDistributor(Distributor distributor) {
+        distributors.remove(distributor);
+        distributorDeleted();
     }
 
     synchronized public float getMoney() {

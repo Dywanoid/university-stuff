@@ -1,6 +1,5 @@
 package project.entities;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -107,15 +106,15 @@ public class Distributor implements Runnable{
 
     }
 
-    public License getLicense() {
+    License getLicense() {
         return license;
     }
 
-    synchronized public int getWatched() {
+    synchronized int getWatched() {
         return watched;
     }
 
-    synchronized public void watchedProduct() {
+    synchronized void watchedProduct() {
         watched++;
     }
 
@@ -153,12 +152,8 @@ public class Distributor implements Runnable{
         }
     }
 
-    public static int getNumberOfDistributors() {
-        return numberOfDistributors;
-    }
-
-    public void setLicense(License license) {
-        this.license = license;
+    public int numberOfProducts() {
+        return products.size();
     }
 
     public String getName() {
@@ -255,5 +250,23 @@ public class Distributor implements Runnable{
 
     synchronized void clearWatched() {
         watched = 0;
+    }
+
+    public void deleteMe() {
+        VODpointer.deleteDistributor(this);
+
+        for(Sale sale: sales) {
+            sale.finishSale();
+        }
+        sales.clear();
+
+        for(Product product: products) {
+            product.unownUsers();
+            deleteProductFromVOD(product);
+        }
+        products.clear();
+
+        numberOfDistributors--;
+        kill();
     }
 }

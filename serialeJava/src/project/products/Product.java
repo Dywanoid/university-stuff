@@ -21,7 +21,6 @@ public abstract class Product {
     private ArrayList<String> countries;
     private float score;
     private float price;
-    private final String type = "Product";
     private volatile Map<Integer, Integer> viewData = new HashMap<>();
     private ArrayList<User> usersOwning = new ArrayList<>();
     private Sale sale = null;
@@ -135,7 +134,7 @@ public abstract class Product {
     }
 
     public String getType() {
-        return type;
+        return "Product";
     }
 
     public String getGenre() {
@@ -149,9 +148,13 @@ public abstract class Product {
     public void deleteMe() {
         distributor.deleteProductFromMe(this);
         distributor.deleteProductFromVOD(this);
+        unownUsers();
+
+    }
+
+    public void unownUsers() {
         for (User user: usersOwning) {
             user.deleteProduct(this);
         }
-
     }
 }

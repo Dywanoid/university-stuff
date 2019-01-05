@@ -38,13 +38,8 @@ public class Controller {
     private VOD model = null;
     private String currentPanel = "start";
 
-
-    @FXML
-    private VBox menuPane;
     @FXML
     private Pane contentPane;
-    @FXML
-    private VBox actionPane;
     @FXML
     private AnchorPane productInfoPane;
     @FXML
@@ -56,17 +51,6 @@ public class Controller {
     private Button productsButton;
     @FXML
     private Button objectsButton;
-
-    @FXML
-    private Button newDistributorButton;
-    @FXML
-    private Button newUserButton;
-    @FXML
-    private Button newSeriesButton;
-    @FXML
-    private Button newMovieButton;
-    @FXML
-    private Button newStreamButton;
 
     public Controller() {
     }
@@ -261,7 +245,7 @@ public class Controller {
                                 objectInfoPane = loader.load();
                                 Stage stage = new Stage();
                                 stage.setTitle("Object info");
-                                stage.setScene(new Scene(objectInfoPane, 550, 450));
+                                stage.setScene(new Scene(objectInfoPane, 300, 300));
                                 stage.show();
                             } catch (Exception ex) {
                                 System.out.println("Error with loading another window!");
@@ -452,17 +436,66 @@ public class Controller {
     }
 
     private void displayObjectInfo(String idName) {
-        int id = Integer.parseInt(idName.substring(4, 4 + idName.substring(4).indexOf(" ")));
+        String stringID = idName.substring(4, 4 + idName.substring(4).indexOf(" "));
+        int id = Integer.parseInt(stringID);
         String type = (String)((ComboBox) contentPane.lookup("#comboBox")).getValue();
         switch(type) {
             case "Distributors":
                 Distributor distributor = model.getDistributor(id);
+
+                HBox distributorHBox = new HBox();
+                VBox distributorVBox = new VBox();
+
+                Label dID = new Label("ID: " + stringID);
+                Label distributorName = new Label("Name: " + distributor.getName());
+                Label nProducts = new Label(String.format("Number of products: %d", distributor.numberOfProducts()));
+                Button distributorButton = new Button("Delete this distributor!");
+                distributorButton.setOnAction(actionEvent -> {distributor.deleteMe(); refreshScreen(); distributorButton.setOnAction(null);});
+
+                distributorVBox.getChildren().addAll(dID, distributorName, nProducts);
+                distributorHBox.getChildren().addAll(distributorVBox, distributorButton);
+
+                objectInfoPane.getChildren().clear();
+                objectInfoPane.getChildren().add(distributorHBox);
                 break;
             case "Users":
                 User user = model.getUser(id);
+
+                HBox userHBox = new HBox();
+                VBox userVBox = new VBox();
+
+                Label uID = new Label("ID: " + stringID);
+                Label userName = new Label("Name: " + user.getName());
+                Label userBirthday = new Label("Birthday: " + user.getBirthday());
+                Label userEmail = new Label("Email: " + user.getEmail());
+                Label userCreditCardNumber = new Label("Credit card number: \n  " + user.getCreditCardNumber());
+                Button userButton = new Button("Delete this user!");
+                userButton.setOnAction(actionEvent -> {user.deleteMe(); refreshScreen(); userButton.setOnAction(null);});
+
+                userVBox.getChildren().addAll(uID, userName, userBirthday, userEmail, userCreditCardNumber);
+                userHBox.getChildren().addAll(userVBox, userButton);
+
+                objectInfoPane.getChildren().clear();
+                objectInfoPane.getChildren().add(userHBox);
                 break;
             case "Products":
                 Product product = model. getProduct(id);
+
+                HBox productHBox = new HBox();
+                VBox productVBox = new VBox();
+
+                Label pID = new Label("ID: " + stringID);
+                Label productName = new Label("Title: " + product.getTitle());
+                Label productProductionDate = new Label("Production date: " + product.getProductionDate());
+                Label productDuration = new Label("Duration: " + product.getDuration());
+                Button productButton = new Button("Delete this product!");
+                productButton.setOnAction(actionEvent -> {product.deleteMe(); refreshScreen(); productButton.setOnAction(null);});
+
+                productVBox.getChildren().addAll(pID, productName, productProductionDate, productDuration);
+                productHBox.getChildren().addAll(productVBox, productButton);
+
+                objectInfoPane.getChildren().clear();
+                objectInfoPane.getChildren().add(productHBox);
                 break;
         }
     }

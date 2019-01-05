@@ -32,15 +32,11 @@ public class User implements Runnable{
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -48,23 +44,22 @@ public class User implements Runnable{
         return email;
     }
 
-    public void setEmail(String email) {
+    void setEmail(String email) {
         this.email = email;
     }
 
     public String getCreditCardNumber() {
         return creditCardNumber;
     }
-
-    public void setCreditCardNumber(String creditCardNumber) {
+    void setCreditCardNumber(String creditCardNumber) {
         this.creditCardNumber = creditCardNumber;
     }
 
-    public Subscription getSubscription() {
+    Subscription getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(Subscription subscription) {
+    void setSubscription(Subscription subscription) {
         this.subscription = subscription;
     }
 
