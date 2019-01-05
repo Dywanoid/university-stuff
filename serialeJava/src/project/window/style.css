@@ -51,3 +51,27 @@
 .selectedButton:hover {
     -fx-background-color: #E18F5C;
 }
+
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.list-view  .list-cell:even {
+    -fx-background-color: #F7A573;
+}
+
+.list-view  .list-cell:odd {
+    -fx-background-color: #E18F5C;
+}
+
+.combo-box .list-cell:even {
+    -fx-background-color: #FFF;
+    -fx-text-fill: black;
+
+}
+
+.combo-box .list-cell:odd {
+    -fx-background-color: #FFF;
+    -fx-text-fill: black;
+
+}

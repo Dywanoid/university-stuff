@@ -176,6 +176,41 @@ public class VOD {
         return products;
     }
 
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public ArrayList<Distributor> getDistributors() {
+        return distributors;
+    }
+
+    public Distributor getDistributor(int id) {
+        for (Distributor distributor: distributors) {
+            if(distributor.getID() == id) {
+                return distributor;
+            }
+        }
+        return null;
+    }
+
+    public User getUser(int id) {
+        for (User user: users) {
+            if(user.getID() == id) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public Product getProduct(int id) {
+        for (Product product: products) {
+            if(product.getID() == id) {
+                return product;
+            }
+        }
+        return null;
+    }
+
     synchronized void addProduct(Product product) {
         products.add(product);
     }
@@ -236,11 +271,13 @@ public class VOD {
     synchronized void pay() {
         for(Distributor distributor: distributors) {
             License license = distributor.getLicense();
-            if(license.isMonthly()) {
-                money -= license.getMonthlyFee();
-            } else {
-                money -= license.getFee() * distributor.getWatched();
-                distributor.clearWatched();
+            if(license != null) {
+                if(license.isMonthly()) {
+                    money -= license.getMonthlyFee();
+                } else {
+                    money -= license.getFee() * distributor.getWatched();
+                    distributor.clearWatched();
+                }
             }
         }
     }

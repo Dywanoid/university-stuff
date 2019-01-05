@@ -1,7 +1,5 @@
 package project.components;
 
-import project.entities.Distributor;
-
 public class License {
     private boolean monthly;
     private float fee;

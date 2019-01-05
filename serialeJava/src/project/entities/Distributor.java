@@ -212,7 +212,7 @@ public class Distributor implements Runnable{
     synchronized private void checkLicense() {
         if (license == null) {
             newLicense();
-        } else if(license.getEndDate() < Simulation.getSimulationTime()) {
+        } else if(license.getEndDate() <= Simulation.getSimulationTime()) {
             license = null;
             newLicense();
         }

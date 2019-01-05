@@ -53,7 +53,7 @@ public class Simulation  implements Runnable {
         }
     }
 
-    public void kill() {
+    private void kill() {
         alive = false;
     }
 

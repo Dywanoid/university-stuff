@@ -76,6 +76,10 @@ public class User implements Runnable{
         boughtProducts.remove(product);
     }
 
+    public int getID() {
+        return ID;
+    }
+
     @Override
     public void run() {
         while(alive) {

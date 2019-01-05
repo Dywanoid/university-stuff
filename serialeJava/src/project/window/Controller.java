@@ -1,6 +1,9 @@
 package project.window;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -22,6 +25,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import project.components.Subscription;
 import project.database.VODdata;
+import project.entities.Distributor;
+import project.entities.User;
 import project.entities.VOD;
 import project.products.Product;
 
@@ -42,6 +47,8 @@ public class Controller {
     private VBox actionPane;
     @FXML
     private AnchorPane productInfoPane;
+    @FXML
+    private AnchorPane objectInfoPane;
 
     @FXML
     private Button controlButton;
@@ -189,26 +196,6 @@ public class Controller {
         }
     }
 
-    private void changePrices() {
-        String text;
-
-        text = ((TextField) (contentPane.lookup("#tf1"))).getCharacters().toString();
-        if(!text.isEmpty()) {
-            VODdata.changeSubscriptionPrice("Basic", Float.parseFloat(text));
-        }
-
-        text = ((TextField) (contentPane.lookup("#tf2"))).getCharacters().toString();
-        if(!text.isEmpty()) {
-            VODdata.changeSubscriptionPrice("Family", Float.parseFloat(text));
-        }
-
-        text = ((TextField) (contentPane.lookup("#tf3"))).getCharacters().toString();
-        if(!text.isEmpty()) {
-            VODdata.changeSubscriptionPrice("Premium", Float.parseFloat(text));
-        }
-        refreshScreen();
-    }
-
     @FXML
     void productsPanel() {
         if (!currentPanel.equals("products")) {
@@ -252,10 +239,71 @@ public class Controller {
         if (!currentPanel.equals("objects")) {
             clearButtons();
             currentPanel = "objects";
+            ObservableList<String> options = FXCollections.observableArrayList("Distributors", "Users", "Products");
+
+
+            VBox vbox = new VBox();
+            HBox hbox = new HBox();
+            Label label = new Label("Pick: ");
+            label.setPadding(new Insets(5, 5, 5, 5));
+
+            ComboBox<? extends String> comboBox = new ComboBox<>(options);
+            comboBox.setId("comboBox");
+            comboBox.valueProperty().addListener((ChangeListener<String>) (ov, oldValue, newValue) -> populateList(newValue));
+
+            ListView<? extends String> listView = new ListView<>();
+            listView.setId("list-view");
+            listView.getSelectionModel().selectedItemProperty().addListener(
+                    (ChangeListener<String>) (ov, oldValue, newValue) -> {
+                        if(newValue != null) {
+                            try {
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("objectInfo.fxml"));
+                                objectInfoPane = loader.load();
+                                Stage stage = new Stage();
+                                stage.setTitle("Object info");
+                                stage.setScene(new Scene(objectInfoPane, 550, 450));
+                                stage.show();
+                            } catch (Exception ex) {
+                                System.out.println("Error with loading another window!");
+                            }
+                            displayObjectInfo(newValue);
+                        }
+                    });
+
             contentPane.getChildren().clear();
+            hbox.getChildren().addAll(label, comboBox);
+            hbox.setSpacing(5);
+            vbox.getChildren().addAll(hbox, listView);
+            vbox.setSpacing(10);
+            contentPane.getChildren().add(vbox);
             objectsButton.getStyleClass().add("selectedButton");
 
         }
+    }
+
+    private void populateList(String chosen) {
+        ObservableList<String> listViewEntries = FXCollections.observableArrayList();
+        switch(chosen) {
+            case "Distributors":
+                for(Distributor distributor: model.getDistributors()) {
+                    listViewEntries.add(String.format("ID: %s Name: %s", distributor.getID(), distributor.getName()));
+                }
+                break;
+            case "Users":
+                for(User user: model.getUsers()) {
+                    listViewEntries.add(String.format("ID: %s Name: %s", user.getID(), user.getName()));
+                }
+                break;
+            case "Products":
+                for(Product product: model.getProducts()) {
+                    listViewEntries.add(String.format("ID: %s Title: %s", product.getID(), product.getTitle()));
+                }
+                break;
+        }
+
+        // it will work fine
+        ListView<String> listView = (ListView<String>) (contentPane.lookup("#list-view"));
+        listView.setItems(listViewEntries);
     }
 
     private boolean checkProduct(Product product, String text) {
@@ -285,9 +333,10 @@ public class Controller {
         scrollPane.getStyleClass().add("scrollPane");
         ArrayList<Product> products = new ArrayList<>(model.getProducts());
         products.removeIf(prod -> !checkProduct(prod, searchText));
+        ArrayList<Product> productsToDisplay = products.size() > 100 ? new ArrayList<>(products.subList(0, 100)) : products;
         VBox listVBOX = new VBox();
         listVBOX.setSpacing(5);
-        for (var product : products) {
+        for (var product : productsToDisplay) {
             HBox productPanel = new HBox();
             productPanel.setSpacing(10);
             productPanel.getStyleClass().add("productListItem");
@@ -303,7 +352,7 @@ public class Controller {
                 } catch (Exception ex) {
                     System.out.println("Error with loading another window!");
                 }
-                displayInfo(product);
+                displayProductInfo(product);
             });
 
             VBox labelsVBOX = new VBox();
@@ -338,7 +387,27 @@ public class Controller {
         return scrollPane;
     }
 
-    private void displayInfo(Product product) {
+    private void changePrices() {
+        String text;
+
+        text = ((TextField) (contentPane.lookup("#tf1"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Basic", Float.parseFloat(text));
+        }
+
+        text = ((TextField) (contentPane.lookup("#tf2"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Family", Float.parseFloat(text));
+        }
+
+        text = ((TextField) (contentPane.lookup("#tf3"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Premium", Float.parseFloat(text));
+        }
+        refreshScreen();
+    }
+
+    private void displayProductInfo(Product product) {
         Map<Integer, Integer> data = product.getViewData();
 
         VBox vbox = new VBox();
@@ -381,6 +450,23 @@ public class Controller {
         }
         productInfoPane.getChildren().add(vbox);
     }
+
+    private void displayObjectInfo(String idName) {
+        int id = Integer.parseInt(idName.substring(4, 4 + idName.substring(4).indexOf(" ")));
+        String type = (String)((ComboBox) contentPane.lookup("#comboBox")).getValue();
+        switch(type) {
+            case "Distributors":
+                Distributor distributor = model.getDistributor(id);
+                break;
+            case "Users":
+                User user = model.getUser(id);
+                break;
+            case "Products":
+                Product product = model. getProduct(id);
+                break;
+        }
+    }
+
     @FXML
     private void saveSimulation() {
         System.out.println("saved");
