@@ -1,32 +1,15 @@
 package project.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.*;
 
 public class Utilities {
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
     private static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-    private static final DateTimeFormatter dateFormat8 = DateTimeFormatter.ofPattern(DATE_FORMAT);
-
-    public static String hashFunction(String whatToHash) {
-        try {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-        byte[] bytes = whatToHash.getBytes(StandardCharsets.UTF_8);
-        return whatToHash + " -> " +String.format("%064x", new BigInteger(1, messageDigest.digest(bytes)));
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
-        }
-        return "";
-    }
 
     public static int getRandomInt(int to) {
         return (int) Math.floor(Math.random() * (to + 1));

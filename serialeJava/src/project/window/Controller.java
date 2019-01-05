@@ -1,7 +1,6 @@
 package project.window;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -21,13 +20,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import project.components.Subscription;
+import project.database.VODdata;
 import project.entities.VOD;
 import project.products.Product;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Controller {
@@ -86,7 +85,7 @@ public class Controller {
         objectsButton.getStyleClass().clear();
     }
 
-    public void refreshScreen() {
+    private void refreshScreen() {
         String current = currentPanel;
         currentPanel = "refreshScreen";
         switch (current) {
@@ -153,12 +152,61 @@ public class Controller {
 
             Label numberOfDistributors = new Label();
             numberOfDistributors.setText(String.format("Number of distributors: %s\n\n", model.getnDistributors()));
-            Label moneyLabel = new Label(String.format("Money in bank: %.2f", model.getMoney()));
-            vbox.getChildren().addAll(numberOfProducts, numberOfUsers, numberOfDistributors, moneyLabel);
+            Label moneyLabel = new Label(String.format("Money in bank: %.2f\n\n", model.getMoney()));
+
+            Map<String, Subscription> map = VODdata.getSubscriptions();
+            HBox prices = new HBox();
+            VBox pricesLabels = new VBox();
+            VBox pricesTextFields = new VBox();
+
+            Label subLabel1 = new Label(String.format("Price of Basic subscription: %.2f", map.get("Basic").getPrice()));
+            Label subLabel2 = new Label(String.format("Price of Family subscription: %.2f", map.get("Family").getPrice()));
+            Label subLabel3 = new Label(String.format("Price of Premium subscription: %.2f", map.get("Premium").getPrice()));
+            pricesLabels.getChildren().addAll(subLabel1, subLabel2, subLabel3);
+            pricesLabels.setSpacing(10);
+
+            TextField subTF1 = new TextField();
+            subTF1.setId("tf1");
+            TextField subTF2 = new TextField();
+            subTF2.setId("tf2");
+            TextField subTF3 = new TextField();
+            subTF3.setId("tf3");
+
+            pricesTextFields.getChildren().addAll(subTF1, subTF2, subTF3);
+
+
+            Button pricesButton = new Button("change prices");
+            pricesButton.setPadding(new Insets(30, 26, 26, 26));
+            pricesButton.setOnAction(actionEvent -> changePrices());
+
+
+            prices.getChildren().addAll(pricesLabels, pricesTextFields, pricesButton);
+            prices.setSpacing(10);
+            vbox.getChildren().addAll(numberOfProducts, numberOfUsers, numberOfDistributors, moneyLabel, prices);
             contentPane.getChildren().clear();
             contentPane.getChildren().add(vbox);
             controlButton.getStyleClass().add("selectedButton");
         }
+    }
+
+    private void changePrices() {
+        String text;
+
+        text = ((TextField) (contentPane.lookup("#tf1"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Basic", Float.parseFloat(text));
+        }
+
+        text = ((TextField) (contentPane.lookup("#tf2"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Family", Float.parseFloat(text));
+        }
+
+        text = ((TextField) (contentPane.lookup("#tf3"))).getCharacters().toString();
+        if(!text.isEmpty()) {
+            VODdata.changeSubscriptionPrice("Premium", Float.parseFloat(text));
+        }
+        refreshScreen();
     }
 
     @FXML
@@ -344,3 +392,4 @@ public class Controller {
     }
 
 }
+

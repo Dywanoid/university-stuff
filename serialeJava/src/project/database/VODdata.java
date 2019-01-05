@@ -33,6 +33,14 @@ public class VODdata {
         getImages();
     }
 
+    public static Map<String, Subscription> getSubscriptions() {
+        return subsciptions;
+    }
+
+    public static void changeSubscriptionPrice(String key, Float price) {
+        subsciptions.get(key).setPrice(price);
+    }
+
     private void getFilesNames() {
         try {
             Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "/files.txt"));
