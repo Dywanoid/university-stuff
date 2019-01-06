@@ -28,6 +28,9 @@ public class Series extends Product implements Serializable {
         return "Series";
     }
 
+    /**
+     * Calculating duration of series - every episode counts
+     */
     public void calculateDuration() {
         int totalDuration = 0;
         for (var season: seasons) {

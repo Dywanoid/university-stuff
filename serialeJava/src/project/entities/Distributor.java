@@ -120,6 +120,9 @@ public class Distributor implements Runnable, Serializable {
         return watched;
     }
 
+    /**
+     * Product from this distributor is being watched
+     */
     synchronized void watchedProduct() {
         watched++;
     }
@@ -219,10 +222,18 @@ public class Distributor implements Runnable, Serializable {
         }
     }
 
+    /**
+     * Deleting product from this distributor
+     * @param product product which will be deleted
+     */
     public void deleteProductFromMe(Product product) {
         products.remove(product);
     }
 
+    /**
+     * Deleting product from VOD
+     * @param product product which will be deleted
+     */
     public void deleteProductFromVOD(Product product) {
         VODpointer.deleteProduct(product);
     }
@@ -258,6 +269,9 @@ public class Distributor implements Runnable, Serializable {
         watched = 0;
     }
 
+    /**
+     * Deleting Distributor from VOD, deleting all Sales, clearing Products and killing thread
+     */
     public void deleteMe() {
         VODpointer.deleteDistributor(this);
 

@@ -56,6 +56,7 @@ public class User implements Runnable, Serializable {
     public String getCreditCardNumber() {
         return creditCardNumber;
     }
+
     void setCreditCardNumber(String creditCardNumber) {
         this.creditCardNumber = creditCardNumber;
     }
@@ -68,6 +69,10 @@ public class User implements Runnable, Serializable {
         this.subscription = subscription;
     }
 
+    /**
+     * Delete product from this User
+     * @param product [Product]product which will be deleted
+     */
     public void deleteProduct(Product product) {
         boughtProducts.remove(product);
     }
@@ -101,6 +106,9 @@ public class User implements Runnable, Serializable {
         alive = false;
     }
 
+    /**
+     * Deleting user from VOD and killing thread
+     */
     public void deleteMe() {
         kill();
         VODpointer.deleteUser(this);

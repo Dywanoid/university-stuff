@@ -35,12 +35,18 @@ public class VOD implements Serializable {
         this.controller = controller;
     }
 
+    /**
+     * Refresh screen
+     */
     void refresh() {
         controller.refreshScreen(false);
     }
 
     VOD() {}
 
+    /**
+     * New Distributor is added
+     */
     public void newDistributor() {
         String name = data.getRandomText("distributorName");
         Distributor newDist = new Distributor(name, this);
@@ -48,6 +54,9 @@ public class VOD implements Serializable {
         distributorAdded();
     }
 
+    /**
+     * New User is added
+     */
     public void newUser() {
     String name = String.format("%s %s",data.getRandomText("name1"), data.getRandomText("name2"));
     User newUser = new User(name, this);
@@ -71,6 +80,9 @@ public class VOD implements Serializable {
     userAdded();
     }
 
+    /**
+     * New Series is added
+     */
     public void newSeries() {
         if(distributors.size() > 0) {
             distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newSeries(data);
@@ -78,12 +90,18 @@ public class VOD implements Serializable {
 
     }
 
+    /**
+     * New Movie is added
+     */
     public void newMovie() {
         if(distributors.size() > 0) {
             distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newMovie(data);
         }
     }
 
+    /**
+     * New Stream is added
+     */
     public void newStream() {
         if(distributors.size() > 0) {
             distributors.get(Utilities.getRandomInt(0, distributors.size() - 1)).newStream(data);
@@ -128,6 +146,10 @@ public class VOD implements Serializable {
         nProducts--;
     }
 
+    /**
+     * Paying for Product not owned by User who doesn't have Subscription
+     * @param product Product being bought
+     */
     synchronized void payForProduct(Product product) {
         float price = product.getPrice();
         float reduction = 1;
@@ -137,6 +159,9 @@ public class VOD implements Serializable {
         refresh();
     }
 
+    /**
+     * Getting money from Subscriptions
+     */
     synchronized void takeSubscriptionMoney() {
         for (User user: users) {
             Subscription subscription = user.getSubscription();
@@ -222,18 +247,27 @@ public class VOD implements Serializable {
         products.add(product);
     }
 
+    /**
+     * Killing all Distributor threads
+     */
     synchronized public void killDistributors() {
         for (Distributor dist: distributors) {
             dist.kill();
         }
     }
 
+    /**
+     * Killing all User threads
+     */
     synchronized  public void killUsers() {
         for (User user: users) {
           user.kill();
         }
     }
 
+    /**
+     * Close VOD - kill thread
+     */
     public void close() {
         closed = true;
     }
@@ -242,6 +276,10 @@ public class VOD implements Serializable {
         return closed;
     }
 
+    /**
+     * Watch random Product from VOD
+     * @return Product if being watched, null instead
+     */
     synchronized Product watchSomething() {
         if(products.size() > 0) {
             Product randProduct = products.get((int) (Math.random() * products.size()));
@@ -252,6 +290,10 @@ public class VOD implements Serializable {
         return null;
     }
 
+    /**
+     * Delete specific Product from VOD
+     * @param product Product that will be deleted
+     */
     synchronized void deleteProduct(Product product) {
         switch(product.getType()) {
             case "Series":
@@ -267,11 +309,19 @@ public class VOD implements Serializable {
         products.remove(product);
     }
 
+    /**
+     * Delete User from VOD
+     * @param user User that will be deleted
+     */
     synchronized void deleteUser(User user) {
         users.remove(user);
         userDeleted();
     }
 
+    /**
+     * Delete Distributor from VOD
+     * @param distributor Distributor that will be deleted
+     */
     synchronized void deleteDistributor(Distributor distributor) {
         distributors.remove(distributor);
         distributorDeleted();
@@ -281,6 +331,9 @@ public class VOD implements Serializable {
         return money;
     }
 
+    /**
+     * Paying distributors money depending on License
+     */
     synchronized void pay() {
         for(Distributor distributor: distributors) {
             License license = distributor.getLicense();

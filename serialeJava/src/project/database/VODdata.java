@@ -38,6 +38,11 @@ public class VODdata implements Serializable {
         return subsciptions;
     }
 
+    /**
+     * Change Subscription price
+     * @param key name of Subscription
+     * @param price new price
+     */
     public static void changeSubscriptionPrice(String key, Float price) {
         subsciptions.get(key).setPrice(price);
     }
@@ -94,11 +99,22 @@ public class VODdata implements Serializable {
                 ", \ndata=" + data + '}';
     }
 
+    /**
+     * Get random text from database
+     * @param name name of text(i.e. "genre", "email1", etc)
+     * @return random text
+     */
     public String getRandomText(String name) {
         int randomLine = Utilities.getRandomInt(0, linesCount.get(name) - 1);
         return data.get(name).get(randomLine);
     }
 
+    /**
+     * Get random text/texts from database
+     * @param name name of text(i.e. "genre", "email1", etc)
+     * @param numberOfTexts how many texts to return, will be random from 0 to size of texts ArrayList if less than 0
+     * @return ArrayList containing texts
+     */
     public ArrayList<String> getRandomText(String name, int numberOfTexts) {
         ArrayList<String> texts = new ArrayList<>();
         final int nTexts = numberOfTexts <= 0 ? Utilities.getRandomInt(1, linesCount.get(name)) : numberOfTexts;
@@ -111,10 +127,18 @@ public class VODdata implements Serializable {
         return texts;
     }
 
+    /**
+     * Get random image from database
+     * @return random image
+     */
     public Image getRandomImage() {
         return images.get(Utilities.getRandomInt(0, images.size() - 1));
     }
 
+    /**
+     * Get random Subscription
+     * @return random Subscription
+     */
     public Subscription getRandomSubscription() {
         int rand = (int) (Math.random() * 4);
         return  rand == 3 ? null : (Subscription) subsciptions.values().toArray()[rand];

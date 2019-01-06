@@ -27,6 +27,9 @@ public class Sale implements Serializable {
         coveredProducts.add(product);
     }
 
+    /**
+     * Finish sale - all products on sale will have Sale set to null
+     */
     public void finishSale() {
         for (Product product: coveredProducts) {
             product.setSale(null);

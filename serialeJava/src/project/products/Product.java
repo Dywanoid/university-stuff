@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public abstract class Product implements Serializable {
     private static volatile int freeID = 0;
     private int ID;
@@ -55,6 +56,10 @@ public abstract class Product implements Serializable {
         return viewData;
     }
 
+    /**
+     * Watch this product in specific time
+     * @param time time in which this product is being watched
+     */
     public synchronized void watchThisProduct(int time) {
         // if there is no value for this specific time it will be 1 for now, if it exists it will be incremented
         viewData.merge(time, 1, (a, b) -> a + b);
@@ -147,10 +152,17 @@ public abstract class Product implements Serializable {
         return genre;
     }
 
+    /**
+     * Adding user to usersOwning ArrayList
+     * @param user user who bought this product
+     */
     synchronized public void addUser(User user) {
         usersOwning.add(user);
     }
 
+    /**
+     * Deleting this product from everywhere
+     */
     public void deleteMe() {
         distributor.deleteProductFromMe(this);
         distributor.deleteProductFromVOD(this);
@@ -158,6 +170,9 @@ public abstract class Product implements Serializable {
 
     }
 
+    /**
+     * Deleting this product from users who bought them
+     */
     public void unownUsers() {
         for (User user: usersOwning) {
             user.deleteProduct(this);
