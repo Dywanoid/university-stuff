@@ -4,7 +4,9 @@ import project.utils.Utilities;
 import project.window.WindowApp;
 import javafx.application.Application;
 
-public class Simulation  implements Runnable {
+import java.io.Serializable;
+
+public class Simulation  implements Runnable, Serializable {
     public static VOD vod;
     private static volatile int simulationTime = 0;
     private boolean alive = true;
@@ -12,11 +14,15 @@ public class Simulation  implements Runnable {
 
     public Simulation() {
         vod = new VOD();
-        Thread thread = new Thread(this);
-        thread.start();
+        start();
         System.out.println("Here we go!");
         Application.launch(WindowApp.class);
 
+    }
+
+    public void start() {
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     static synchronized int getSimulationTime() {

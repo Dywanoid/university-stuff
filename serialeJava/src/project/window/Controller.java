@@ -30,11 +30,12 @@ import project.entities.User;
 import project.entities.VOD;
 import project.products.Product;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-public class Controller {
+public class Controller implements Serializable {
     private VOD model = null;
     private String currentPanel = "start";
 
@@ -87,7 +88,7 @@ public class Controller {
                     controlPanel();
                     break;
                 case "products":
-                    productsPanel();
+                    if(fromController) productsPanel();
                     break;
                 case "objects":
                     if(fromController) objectsPanel();

@@ -1,9 +1,11 @@
 package project.components;
 
 import project.products.Product;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Sale {
+public class Sale implements Serializable {
     private int endDate;
     private float reduction;
     private ArrayList<Product> coveredProducts = new ArrayList<>();

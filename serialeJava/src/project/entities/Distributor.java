@@ -1,5 +1,6 @@
 package project.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -11,7 +12,7 @@ import project.products.*;
 import project.components.Episode;
 import project.components.Season;
 
-public class Distributor implements Runnable{
+public class Distributor implements Runnable, Serializable {
     private boolean alive = true;
     private static int numberOfDistributors = 0;
     private String name;
@@ -27,6 +28,10 @@ public class Distributor implements Runnable{
         this.name = name;
         this.ID = numberOfDistributors++;
         this.VODpointer = pointer;
+        start();
+    }
+
+    public void start() {
         Thread thread = new Thread(this);
         thread.start();
     }

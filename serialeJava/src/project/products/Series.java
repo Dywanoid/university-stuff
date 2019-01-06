@@ -1,10 +1,11 @@
 package project.products;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import project.components.Season;
 
-public class Series extends Product {
+public class Series extends Product implements Serializable {
     private String genre;
     private ArrayList<String> actors;
     private int numberOfSeasons;

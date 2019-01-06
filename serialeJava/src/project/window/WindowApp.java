@@ -7,7 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import project.entities.Simulation;
 
-public class WindowApp extends Application {
+import java.io.Serializable;
+
+public class WindowApp extends Application implements Serializable {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));

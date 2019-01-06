@@ -1,6 +1,8 @@
 package project.components;
 
-public class Subscription {
+import java.io.Serializable;
+
+public class Subscription implements Serializable {
     private float price;
     private int numberOfDevices;
     private String maxResolution;

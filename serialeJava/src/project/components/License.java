@@ -1,6 +1,8 @@
 package project.components;
 
-public class License {
+import java.io.Serializable;
+
+public class License implements Serializable {
     private boolean monthly;
     private float fee;
     private float monthlyFee;

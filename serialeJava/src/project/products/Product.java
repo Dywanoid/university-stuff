@@ -5,11 +5,12 @@ import project.components.Sale;
 import project.entities.Distributor;
 import project.entities.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Product {
+public abstract class Product implements Serializable {
     private static volatile int freeID = 0;
     private int ID;
     private Image image;

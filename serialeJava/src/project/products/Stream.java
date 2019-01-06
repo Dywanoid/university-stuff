@@ -2,7 +2,9 @@ package project.products;
 
 import project.components.Sale;
 
-public class Stream extends Product {
+import java.io.Serializable;
+
+public class Stream extends Product implements Serializable {
     private int date;
     private Sale sale;
 

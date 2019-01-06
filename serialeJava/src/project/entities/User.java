@@ -3,9 +3,10 @@ package project.entities;
 import project.components.Subscription;
 import project.products.Product;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User implements Runnable{
+public class User implements Runnable, Serializable {
     private static int newUserID = 0;
     private int ID;
     private String name;
@@ -24,6 +25,10 @@ public class User implements Runnable{
         this.ID = newUserID++;
         this.name = name;
         this.VODpointer = pointer;
+        start();
+    }
+
+    public void start() {
         Thread thread = new Thread(this);
         thread.start();
     }

@@ -6,12 +6,13 @@ import project.components.Subscription;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class VODdata {
+public class VODdata implements Serializable {
     private static Map<String, Subscription> subsciptions = Map.of(
             "Basic", new Subscription(29.99f, 1, "HD"),
             "Family", new Subscription(39.99f, 2, "FullHD"),

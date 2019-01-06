@@ -1,8 +1,9 @@
 package project.components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Season {
+public class Season implements Serializable {
     private ArrayList<Episode> episodes;
     private int whichSeason;
 

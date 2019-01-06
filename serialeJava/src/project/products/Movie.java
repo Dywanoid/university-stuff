@@ -1,9 +1,10 @@
 package project.products;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import project.components.Sale;
 
-public class Movie extends Product {
+public class Movie extends Product implements Serializable {
     private String genre;
     private ArrayList<String> actors;
     private String trailerURL;

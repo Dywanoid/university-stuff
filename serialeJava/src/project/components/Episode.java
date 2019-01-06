@@ -1,6 +1,8 @@
 package project.components;
 
-public class Episode {
+import java.io.Serializable;
+
+public class Episode implements Serializable {
     private String title;
     private String premiereDate;
     private int duration;

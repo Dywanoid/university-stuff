@@ -8,9 +8,10 @@ import project.products.*;
 import project.utils.Utilities;
 import project.window.Controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class VOD {
+public class VOD implements Serializable {
     private volatile ArrayList<Product> products = new ArrayList<>();
     private volatile int nProducts = 0;
     private volatile int nSeries = 0;
