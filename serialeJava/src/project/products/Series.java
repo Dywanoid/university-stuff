@@ -3,6 +3,7 @@ package project.products;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import project.components.Episode;
 import project.components.Season;
 
 public class Series extends Product implements Serializable {
@@ -33,8 +34,8 @@ public class Series extends Product implements Serializable {
      */
     public void calculateDuration() {
         int totalDuration = 0;
-        for (var season: seasons) {
-            for (var episode: season.getEpisodes()) {
+        for (Season season: seasons) {
+            for (Episode episode: season.getEpisodes()) {
                 totalDuration += episode.getDuration();
             }
         }

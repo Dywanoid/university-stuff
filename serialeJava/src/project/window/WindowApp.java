@@ -22,7 +22,7 @@ public class WindowApp extends Application implements Serializable {
         controller.controlPanel();
 
         stage.setTitle("Seriale");
-        stage.setScene(new Scene(root, 800, 600));
+        stage.setScene(new Scene(root, 900, 600));
         stage.show();
     }
 }

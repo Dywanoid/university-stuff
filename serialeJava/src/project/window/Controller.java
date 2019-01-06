@@ -261,7 +261,7 @@ public class Controller implements Serializable {
                                 objectInfoPane = loader.load();
                                 Stage stage = new Stage();
                                 stage.setTitle("Object info");
-                                stage.setScene(new Scene(objectInfoPane, 300, 300));
+                                stage.setScene(new Scene(objectInfoPane, 400, 400));
                                 stage.show();
                             } catch (Exception ex) {
                                 System.out.println("Error with loading another window!");
@@ -330,12 +330,15 @@ public class Controller implements Serializable {
     private ScrollPane generateProductList(String searchText) {
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.getStyleClass().add("scrollPane");
+        scrollPane.setPrefViewportWidth(460);
+        scrollPane.setMinViewportWidth(380);
         ArrayList<Product> products = new ArrayList<>(model.getProducts());
         products.removeIf(prod -> !checkProduct(prod, searchText));
         ArrayList<Product> productsToDisplay = products.size() > 100 ? new ArrayList<>(products.subList(0, 100)) : products;
         VBox listVBOX = new VBox();
+        listVBOX.setPrefSize(360, 600);
         listVBOX.setSpacing(5);
-        for (var product : productsToDisplay) {
+        for (Product product : productsToDisplay) {
             HBox productPanel = new HBox();
             productPanel.setSpacing(10);
             productPanel.getStyleClass().add("productListItem");
@@ -346,8 +349,8 @@ public class Controller implements Serializable {
                     productInfoPane = loader.load();
                     Stage stage = new Stage();
                     stage.setTitle("Product info");
-                    double height = product.getViewData().size() > 0 ? 600 : 250;
-                    stage.setScene(new Scene(productInfoPane, 500, height));
+                    double height = product.getViewData().size() > 0 ? 650 : 280;
+                    stage.setScene(new Scene(productInfoPane, 600, height));
                     stage.show();
                 } catch (Exception ex) {
                     System.out.println("Error with loading another window!");
@@ -470,9 +473,6 @@ public class Controller implements Serializable {
                 priceLabel
         );
 
-
-
-
         topHBox.getChildren().addAll(imageView, topLabelsVBox, uniqueLabels);
         mainVBox.getChildren().addAll(topHBox, labelsVBox);
 
@@ -489,7 +489,7 @@ public class Controller implements Serializable {
             lineChart.setTitle("watched over time");
 
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName("Product's info");
+            series.setName("Product watched over time");
             int maximumTime = Collections.max(data.keySet());
             for (int t = 0; t <= maximumTime; t++) {
                 Integer value = data.get(t);

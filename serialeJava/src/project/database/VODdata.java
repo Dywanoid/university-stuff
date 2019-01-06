@@ -4,23 +4,14 @@ import javafx.scene.image.Image;
 import project.utils.Utilities;
 import project.components.Subscription;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.Serializable;
+import java.io.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class VODdata implements Serializable {
-    private static Map<String, Subscription> subsciptions = Map.of(
-            "Basic", new Subscription(29.99f, 1, "HD"),
-            "Family", new Subscription(39.99f, 2, "FullHD"),
-            "Premium", new Subscription(49.99f, 4, "UltraHD"));
-
-    private final static String PROJECT_PATH = "./src/project";
-    private final static String TXT_PATH = "/database/txt";
-    private final static String IMG_PATH = "/database/img";
+    private static Map<String, Subscription> subscriptions = new HashMap<>();
 
     private ArrayList<String> files = new ArrayList<>();
     private Map<String, Integer> linesCount = new HashMap<>();
@@ -29,13 +20,16 @@ public class VODdata implements Serializable {
 
 
     public VODdata() {
+        subscriptions.put("Basic", new Subscription(29.99f, 1, "HD"));
+        subscriptions.put("Family", new Subscription(39.99f, 2, "FullHD"));
+        subscriptions.put("Premium", new Subscription(49.99f, 4, "UltraHD"));
         getFilesNames();
         readFiles();
         getImages();
     }
 
     public static Map<String, Subscription> getSubscriptions() {
-        return subsciptions;
+        return subscriptions;
     }
 
     /**
@@ -44,20 +38,23 @@ public class VODdata implements Serializable {
      * @param price new price
      */
     public static void changeSubscriptionPrice(String key, Float price) {
-        subsciptions.get(key).setPrice(price);
+        subscriptions.get(key).setPrice(price);
     }
 
     private void getFilesNames() {
         try {
-            Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "/files.txt"));
-            while (fileIn.hasNextLine()) {
-                String fileName = fileIn.nextLine();
+            InputStream is = getClass().getResourceAsStream("txt/files.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String fileName;
+            while((fileName = reader.readLine()) != null) {
                 files.add(fileName);
                 linesCount.put(fileName, 0);
                 data.put(fileName, new ArrayList<>());
             }
-            fileIn.close();
-        } catch (FileNotFoundException i) {
+            is.close();
+            reader.close();
+
+        } catch (Exception i) {
             i.printStackTrace();
         }
     }
@@ -65,29 +62,39 @@ public class VODdata implements Serializable {
     private void readFiles() {
         for (String name : files) {
             try {
-                Scanner fileIn = new Scanner(new File(PROJECT_PATH + TXT_PATH + "/" + name + ".txt"));
-                int count = 0;
+                InputStream is = getClass().getResourceAsStream(String.format("txt/%s.txt", name));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String entry;
                 ArrayList<String> entries = new ArrayList<>();
-                while (fileIn.hasNextLine()) {
+
+                int count = 0;
+                while((entry = reader.readLine()) != null) {
                     count++;
-                    entries.add(fileIn.nextLine());
+                    entries.add(entry);
                 }
                 linesCount.put(name, count);
                 data.put(name, entries);
-                fileIn.close();
-            } catch (FileNotFoundException i) {
+                is.close();
+                reader.close();
+            } catch (Exception i) {
                 i.printStackTrace();
             }
         }
     }
 
     private void getImages() {
-        File imgFolder = new File(PROJECT_PATH + IMG_PATH);
-        File[] listOfFiles = imgFolder.listFiles();
-        if(listOfFiles != null) {
-            for (var file : listOfFiles) {
-                images.add(new Image(String.format("file:%s%s/%s", PROJECT_PATH, IMG_PATH, file.getName())));
+        try {
+            InputStream is = getClass().getResourceAsStream("txt/img.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String imgName;
+            while((imgName = reader.readLine()) != null) {
+                images.add(new Image(getClass().getResourceAsStream("img/" + imgName)));
             }
+            is.close();
+            reader.close();
+
+        } catch (Exception i) {
+            i.printStackTrace();
         }
     }
 
@@ -141,6 +148,6 @@ public class VODdata implements Serializable {
      */
     public Subscription getRandomSubscription() {
         int rand = (int) (Math.random() * 4);
-        return  rand == 3 ? null : (Subscription) subsciptions.values().toArray()[rand];
+        return  rand == 3 ? null : (Subscription) subscriptions.values().toArray()[rand];
     }
 }
