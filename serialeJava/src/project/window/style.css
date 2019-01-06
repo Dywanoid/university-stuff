@@ -1,0 +1,77 @@
+.productListItem {
+    -fx-background-color: #F7B267;
+}
+
+.productListItem:hover{
+    -fx-background-color: #E3996A;
+}
+
+.menuPane {
+    -fx-background-color: #F27059;
+}
+
+.menuPane Button {
+    -fx-background-color: #F25C54;
+}
+
+.menuPane Button:hover {
+    -fx-background-color: #DC544D;
+}
+
+.contentPane{
+    -fx-background-color: #F79D65;
+}
+
+.scrollPane{
+    -fx-background-color: transparent;
+}
+/* hack? without it you cannot set scroll pane's background color */
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.actionPane {
+    -fx-background-color: #F27059;
+}
+
+.actionPane Button {
+    -fx-background-color: #F4845F;
+
+}
+
+.actionPane Button:hover {
+    -fx-background-color: #DE7857;
+
+}
+
+.selectedButton {
+   -fx-background-color: #F79D65;
+}
+
+.selectedButton:hover {
+    -fx-background-color: #E18F5C;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.list-view  .list-cell:even {
+    -fx-background-color: #F7A573;
+}
+
+.list-view  .list-cell:odd {
+    -fx-background-color: #E18F5C;
+}
+
+.combo-box .list-cell:even {
+    -fx-background-color: #FFF;
+    -fx-text-fill: black;
+
+}
+
+.combo-box .list-cell:odd {
+    -fx-background-color: #FFF;
+    -fx-text-fill: black;
+
+}
