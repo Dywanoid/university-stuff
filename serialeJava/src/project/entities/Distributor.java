@@ -75,7 +75,7 @@ public class Distributor implements Runnable{
         for (int s = 0; s < numberOfSeasons; s++) {
             ArrayList<Episode> episodes = new ArrayList<>();
             for (int e = 0; e < numberOfEpisodes; e++) {
-                episodes.add(new Episode("NAME","DATE", Utilities.getRandomInt(30, 70))); // TODO: CHANGE THOSE STRINGS
+                episodes.add(new Episode(String.format("Episdoe %d", e + 1),"DATE", Utilities.getRandomInt(30, 70)));
             }
             seasons.add(new Season(episodes, s + 1));
         }
