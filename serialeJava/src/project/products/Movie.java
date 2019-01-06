@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import project.components.Sale;
 
 public class Movie extends Product implements Serializable {
-    private String genre;
     private ArrayList<String> actors;
     private String trailerURL;
-    private int avalibleToWatchTime;
     private Sale sale;
 
     public Movie() {
@@ -26,14 +24,6 @@ public class Movie extends Product implements Serializable {
         return "Movie";
     }
 
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
     public ArrayList<String> getActors() {
         return actors;
     }
@@ -48,14 +38,6 @@ public class Movie extends Product implements Serializable {
 
     public void setTrailerURL(String trailerURL) {
         this.trailerURL = trailerURL;
-    }
-
-    public int getAvalibleToWatchTime() {
-        return avalibleToWatchTime;
-    }
-
-    public void setAvalibleToWatchTime(int avalibleToWatchTime) {
-        this.avalibleToWatchTime = avalibleToWatchTime;
     }
 
     public Sale getSale() {

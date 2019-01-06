@@ -28,7 +28,7 @@ public class User implements Runnable, Serializable {
         start();
     }
 
-    public void start() {
+    private void start() {
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -66,10 +66,6 @@ public class User implements Runnable, Serializable {
 
     void setSubscription(Subscription subscription) {
         this.subscription = subscription;
-    }
-
-    public ArrayList<Product> getBoughtProducts() {
-        return boughtProducts;
     }
 
     public void deleteProduct(Product product) {

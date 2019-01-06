@@ -5,7 +5,7 @@ import project.components.Sale;
 import java.io.Serializable;
 
 public class Stream extends Product implements Serializable {
-    private int date;
+    private String date;
     private Sale sale;
 
     public Stream() {
@@ -24,11 +24,11 @@ public class Stream extends Product implements Serializable {
         return "Stream";
     }
 
-    public int getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(int date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

@@ -9,6 +9,10 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
 
 import javafx.fxml.FXML;
@@ -28,9 +32,16 @@ import project.database.VODdata;
 import project.entities.Distributor;
 import project.entities.User;
 import project.entities.VOD;
+import project.products.Movie;
 import project.products.Product;
+import project.products.Series;
+import project.products.Stream;
 
+import java.awt.*;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -335,7 +346,8 @@ public class Controller implements Serializable {
                     productInfoPane = loader.load();
                     Stage stage = new Stage();
                     stage.setTitle("Product info");
-                    stage.setScene(new Scene(productInfoPane, 550, 450));
+                    double height = product.getViewData().size() > 0 ? 600 : 250;
+                    stage.setScene(new Scene(productInfoPane, 500, height));
                     stage.show();
                 } catch (Exception ex) {
                     System.out.println("Error with loading another window!");
@@ -398,29 +410,71 @@ public class Controller implements Serializable {
     private void displayProductInfo(Product product) {
         Map<Integer, Integer> data = product.getViewData();
 
-        VBox vbox = new VBox();
-        HBox hbox = new HBox();
+        VBox mainVBox = new VBox();
+        VBox topLabelsVBox = new VBox();
+        VBox uniqueLabels = new VBox();
+        VBox labelsVBox = new VBox();
+        HBox topHBox = new HBox();
 
         ImageView imageView = new ImageView();
         Image image = product.getImage();
         imageView.setImage(image);
-        Label title = new Label(product.getTitle());
+        Label titleLabel = new Label(product.getTitle());
         String typeString = product.getType();
-        Label type = new Label(typeString);
-        Label genre = new Label();
+        Label typeLabel = new Label("Type: " + typeString);
+        Label genreLabel = new Label("Genre: " + product.getGenre());
+        Label scoreLabel = new Label("Score: " + String.valueOf(product.getScore()));
+        Label descriptionLabel = new Label("Description: " + product.getDescription());
+        Label productionDateLabel = new Label("Production date: " + product.getProductionDate());
+        Label durationLabel = new Label("Duration: " + String.valueOf(product.getDuration()));
+        Label distributorLabel = new Label("Distributor: " + product.getDistributor().getName());
+        Label countriesLabel = new Label("Countries: " + product.getCountries().toString());
+        Label priceLabel = new Label("Price: " + String.valueOf(product.getPrice()));
+
+
         switch(typeString) {
             case "Series":
-                genre = new Label(product.getGenre());
+                uniqueLabels.getChildren().addAll(
+                        new Label("Number of seasons: " + ((Series) product).getNumberOfSeasons()),
+                        new Label("Number of episodes: "+ ((Series) product).getNumberOfEpisodes())
+                );
                 break;
             case "Movie" :
-                genre = new Label(product.getGenre());
+                Hyperlink url = new Hyperlink("Trailer URL");
+                url.setOnAction(actionEvent -> {
+                    try {
+                        Desktop.getDesktop().browse(new URL(((Movie) product).getTrailerURL()).toURI());
+                    } catch (IOException | URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                });
+                uniqueLabels.getChildren().add(url);
+
                 break;
             case "Stream":
+                uniqueLabels.getChildren().add(new Label("Event date: " + ((Stream) product).getDate()));
                 break;
         }
 
-        hbox.getChildren().addAll(imageView, title, type, genre);
-        vbox.getChildren().add(hbox);
+
+        topLabelsVBox.getChildren().addAll(titleLabel, typeLabel, descriptionLabel);
+
+        labelsVBox.setSpacing(5);
+        labelsVBox.getChildren().addAll(
+                scoreLabel,
+                genreLabel,
+                productionDateLabel,
+                durationLabel,
+                distributorLabel,
+                countriesLabel,
+                priceLabel
+        );
+
+
+
+
+        topHBox.getChildren().addAll(imageView, topLabelsVBox, uniqueLabels);
+        mainVBox.getChildren().addAll(topHBox, labelsVBox);
 
 
         if(data.size() > 0) {
@@ -444,9 +498,9 @@ public class Controller implements Serializable {
             }
 
             lineChart.getData().add(series);
-            vbox.getChildren().add(lineChart);
+            mainVBox.getChildren().add(lineChart);
         }
-        productInfoPane.getChildren().add(vbox);
+        productInfoPane.getChildren().add(mainVBox);
     }
 
     private void eventHelperForObjectInfo(Button button, String type) {

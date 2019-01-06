@@ -31,7 +31,7 @@ public class Distributor implements Runnable, Serializable {
         start();
     }
 
-    public void start() {
+    private void start() {
         Thread thread = new Thread(this);
         thread.start();
     }
@@ -100,14 +100,14 @@ public class Distributor implements Runnable, Serializable {
         product.setGenre(data.getRandomText("genre"));
         product.setActors(data.getRandomText("actor", 5));
         product.setTrailerURL("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-        product.setAvalibleToWatchTime(Utilities.getRandomInt(30, 90));
         product.setSale(null);
 
     }
 
     private void generateStream(VODdata data, Stream product) {
         generateProduct(data, product);
-        product.setDate(Utilities.getRandomInt(15, 100));
+        product.setDate(Utilities.getRandomDate(30, 300));
+        product.setGenre("-");
         product.setSale(null);
 
     }

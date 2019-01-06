@@ -22,14 +22,6 @@ public class Episode implements Serializable {
                 '}';
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getPremiereDate() {
-        return premiereDate;
-    }
-
     public int getDuration() {
         return duration;
     }

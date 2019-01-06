@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import project.components.Season;
 
 public class Series extends Product implements Serializable {
-    private String genre;
     private ArrayList<String> actors;
     private int numberOfSeasons;
     private ArrayList<Season> seasons;
@@ -17,11 +16,9 @@ public class Series extends Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Series "+ getTitle() +" {" +
-                "genre='" + genre + '\'' +
-                ", actors=" + actors +
+        return "Series{" + getTitle() +
+                "actors=" + actors +
                 ", numberOfSeasons=" + numberOfSeasons +
-                ", seasons=" + seasons +
                 ", numberOfEpisodes=" + numberOfEpisodes +
                 '}';
     }
@@ -41,10 +38,6 @@ public class Series extends Product implements Serializable {
         this.setDuration(totalDuration);
     }
 
-    public void addSeason(Season season) {
-        this.seasons.add(season);
-    }
-
     public int getNumberOfSeasons() {
         return numberOfSeasons;
     }
@@ -53,20 +46,8 @@ public class Series extends Product implements Serializable {
         this.numberOfSeasons = numberOfSeasons;
     }
 
-    public ArrayList<Season> getSeasons() {
-        return seasons;
-    }
-
     public void setSeasons(ArrayList<Season> seasons) {
         this.seasons = seasons;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
     }
 
     public ArrayList<String> getActors() {

@@ -7,11 +7,6 @@ public class Season implements Serializable {
     private ArrayList<Episode> episodes;
     private int whichSeason;
 
-    public Season() {
-        this.episodes = new ArrayList<>();
-        this.whichSeason = 1;
-    }
-
     public Season(ArrayList<Episode> episodes, int whichSeason) {
             this.episodes = episodes;
             this.whichSeason = whichSeason;
@@ -28,9 +23,4 @@ public class Season implements Serializable {
     public ArrayList<Episode> getEpisodes() {
         return episodes;
     }
-
-    public void addEpisode(Episode episode) {
-        this.episodes.add(episode);
-    }
-
 }

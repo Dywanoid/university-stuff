@@ -20,7 +20,7 @@ public class Simulation  implements Runnable, Serializable {
 
     }
 
-    public void start() {
+    private void start() {
         Thread thread = new Thread(this);
         thread.start();
     }

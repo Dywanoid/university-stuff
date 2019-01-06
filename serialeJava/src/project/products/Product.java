@@ -17,6 +17,7 @@ public abstract class Product implements Serializable {
     private String title;
     private String description;
     private String productionDate;
+    private String genre;
     private int duration;
     private Distributor distributor;
     private ArrayList<String> countries;
@@ -114,6 +115,10 @@ public abstract class Product implements Serializable {
         return countries;
     }
 
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
     public void setCountries(ArrayList<String> countries) {
         this.countries = countries;
     }
@@ -139,7 +144,7 @@ public abstract class Product implements Serializable {
     }
 
     public String getGenre() {
-        return "";
+        return genre;
     }
 
     synchronized public void addUser(User user) {
