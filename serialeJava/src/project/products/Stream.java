@@ -5,8 +5,6 @@ import project.components.Sale;
 public class Stream extends Product {
     private int date;
     private Sale sale;
-    private final String type = "Stream";
-
 
     public Stream() {
     }
@@ -21,7 +19,7 @@ public class Stream extends Product {
 
     @Override
     public String getType() {
-        return type;
+        return "Stream";
     }
 
     public int getDate() {

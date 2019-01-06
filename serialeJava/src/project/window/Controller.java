@@ -57,6 +57,7 @@ public class Controller {
 
     void setModel(VOD model) {
         this.model = model;
+        model.setController(this);
     }
 
     void setStage(Stage stage) {
@@ -76,50 +77,53 @@ public class Controller {
         objectsButton.getStyleClass().clear();
     }
 
-    private void refreshScreen() {
-        String current = currentPanel;
-        currentPanel = "refreshScreen";
-        switch (current) {
-            case "control":
-                controlPanel();
-                break;
-            case "products":
-                productsPanel();
-                break;
-            case "objects":
-                objectsPanel();
-                break;
-        }
+    public void refreshScreen(boolean fromController) {
+
+        Platform.runLater(() -> {
+            String current = currentPanel;
+            currentPanel = "refreshScreen";
+            switch (current) {
+                case "control":
+                    controlPanel();
+                    break;
+                case "products":
+                    productsPanel();
+                    break;
+                case "objects":
+                    if(fromController) objectsPanel();
+                    break;
+            }
+        });
     }
 
     @FXML
     private void addDist() {
         model.newDistributor();
-        refreshScreen();
+        refreshScreen(true);
     }
 
     @FXML
     private void addUser() {
         model.newUser();
-        refreshScreen();
+        refreshScreen(true);
     }
 
     @FXML
     private void addSeries() {
         model.newSeries();
-        refreshScreen();
+        refreshScreen(true);
     }
 
     @FXML
     private void addMovie() {
         model.newMovie();
-        refreshScreen();
+        refreshScreen(true);
     }
 
     @FXML
     private void addStream() {
         model.newStream();
-        refreshScreen();
+        refreshScreen(true);
     }
 
     @FXML
@@ -132,17 +136,17 @@ public class Controller {
 
             Label numberOfProducts = new Label();
             String label1 = String.format("Number of products: \n  -Total: %s\n  -Series: %s\n  -Movies: %s\n  -Streams: %s\n",
-                    model.getnProducts(),
-                    model.getnSeries(),
-                    model.getnMovies(),
-                    model.getnStreams());
+                    model.getNumProducts(),
+                    model.getNumSeries(),
+                    model.getNumMovies(),
+                    model.getNumStreams());
             numberOfProducts.setText(label1);
 
             Label numberOfUsers = new Label();
-            numberOfUsers.setText("Number of users: " + model.getnUsers());
+            numberOfUsers.setText("Number of users: " + model.getNumUsers());
 
             Label numberOfDistributors = new Label();
-            numberOfDistributors.setText(String.format("Number of distributors: %s\n\n", model.getnDistributors()));
+            numberOfDistributors.setText(String.format("Number of distributors: %s\n\n", model.getNumDistributors()));
             Label moneyLabel = new Label(String.format("Money in bank: %.2f\n\n", model.getMoney()));
 
             Map<String, Subscription> map = VODdata.getSubscriptions();
@@ -285,8 +289,7 @@ public class Controller {
                 break;
         }
 
-        // it will work fine
-        ListView<String> listView = (ListView<String>) (contentPane.lookup("#list-view"));
+        @SuppressWarnings("unchecked") ListView<String> listView = (ListView<String>) contentPane.lookup("#list-view");
         listView.setItems(listViewEntries);
     }
 
@@ -388,7 +391,7 @@ public class Controller {
         if(!text.isEmpty()) {
             VODdata.changeSubscriptionPrice("Premium", Float.parseFloat(text));
         }
-        refreshScreen();
+        refreshScreen(true);
     }
 
     private void displayProductInfo(Product product) {
@@ -403,12 +406,22 @@ public class Controller {
         Label title = new Label(product.getTitle());
         String typeString = product.getType();
         Label type = new Label(typeString);
-        Label genre = null;
-        if (!typeString.equals("stream")) {
-            genre = new Label(product.getGenre());
+        Label genre = new Label();
+        switch(typeString) {
+            case "Series":
+                genre = new Label(product.getGenre());
+                break;
+            case "Movie" :
+                genre = new Label(product.getGenre());
+                break;
+            case "Stream":
+                break;
         }
+
         hbox.getChildren().addAll(imageView, title, type, genre);
         vbox.getChildren().add(hbox);
+
+
         if(data.size() > 0) {
             final NumberAxis xAxis = new NumberAxis();
             final NumberAxis yAxis = new NumberAxis();
@@ -435,6 +448,12 @@ public class Controller {
         productInfoPane.getChildren().add(vbox);
     }
 
+    private void eventHelperForObjectInfo(Button button, String type) {
+        refreshScreen(true);
+        ((Stage) button.getScene().getWindow()).close();
+        populateList(type);
+    }
+
     private void displayObjectInfo(String idName) {
         String stringID = idName.substring(4, 4 + idName.substring(4).indexOf(" "));
         int id = Integer.parseInt(stringID);
@@ -450,7 +469,10 @@ public class Controller {
                 Label distributorName = new Label("Name: " + distributor.getName());
                 Label nProducts = new Label(String.format("Number of products: %d", distributor.numberOfProducts()));
                 Button distributorButton = new Button("Delete this distributor!");
-                distributorButton.setOnAction(actionEvent -> {distributor.deleteMe(); refreshScreen(); distributorButton.setOnAction(null);});
+                distributorButton.setOnAction(actionEvent -> {
+                    distributor.deleteMe();
+                    eventHelperForObjectInfo(distributorButton, type);
+                });
 
                 distributorVBox.getChildren().addAll(dID, distributorName, nProducts);
                 distributorHBox.getChildren().addAll(distributorVBox, distributorButton);
@@ -470,7 +492,11 @@ public class Controller {
                 Label userEmail = new Label("Email: " + user.getEmail());
                 Label userCreditCardNumber = new Label("Credit card number: \n  " + user.getCreditCardNumber());
                 Button userButton = new Button("Delete this user!");
-                userButton.setOnAction(actionEvent -> {user.deleteMe(); refreshScreen(); userButton.setOnAction(null);});
+                userButton.setOnAction(actionEvent -> {
+                    user.deleteMe();
+                    eventHelperForObjectInfo(userButton, type);
+
+                });
 
                 userVBox.getChildren().addAll(uID, userName, userBirthday, userEmail, userCreditCardNumber);
                 userHBox.getChildren().addAll(userVBox, userButton);
@@ -489,7 +515,11 @@ public class Controller {
                 Label productProductionDate = new Label("Production date: " + product.getProductionDate());
                 Label productDuration = new Label("Duration: " + product.getDuration());
                 Button productButton = new Button("Delete this product!");
-                productButton.setOnAction(actionEvent -> {product.deleteMe(); refreshScreen(); productButton.setOnAction(null);});
+                productButton.setOnAction(actionEvent -> {
+                    product.deleteMe();
+                    eventHelperForObjectInfo(productButton, type);
+
+                });
 
                 productVBox.getChildren().addAll(pID, productName, productProductionDate, productDuration);
                 productHBox.getChildren().addAll(productVBox, productButton);

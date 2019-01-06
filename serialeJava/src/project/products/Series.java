@@ -10,7 +10,6 @@ public class Series extends Product {
     private int numberOfSeasons;
     private ArrayList<Season> seasons;
     private int numberOfEpisodes;
-    private final String type = "Series";
 
     public Series() {
     }
@@ -28,7 +27,7 @@ public class Series extends Product {
 
     @Override
     public String getType() {
-        return type;
+        return "Series";
     }
 
     public void calculateDuration() {

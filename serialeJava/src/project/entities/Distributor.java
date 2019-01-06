@@ -40,7 +40,8 @@ public class Distributor implements Runnable{
                 '}';
     }
 
-    void newRandomProduct(VODdata data) {
+    private void newRandomProduct(VODdata data) {
+        VODpointer.refresh();
         int result = (int) ((new Random()).nextFloat() * 3);
         switch (result) {
             case 0:

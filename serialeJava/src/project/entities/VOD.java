@@ -6,9 +6,9 @@ import project.components.Subscription;
 import project.database.VODdata;
 import project.products.*;
 import project.utils.Utilities;
+import project.window.Controller;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class VOD {
     private volatile ArrayList<Product> products = new ArrayList<>();
@@ -24,9 +24,18 @@ public class VOD {
     private boolean closed = false;
     private final User userMonitor = new User();
     private volatile float money = 0;
+    private Controller controller;
 
     public void init() {
         data = new VODdata();
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    void refresh() {
+        controller.refreshScreen(false);
     }
 
     VOD() {}
@@ -80,14 +89,6 @@ public class VOD {
         }
     }
 
-    public void newRandomProducts() {
-        for (var dist: distributors) {
-            if((int) ((new Random()).nextFloat() * 3) == 2) {
-                dist.newRandomProduct(data);
-            }
-        }
-    }
-
     synchronized void seriesAdded() {
         nSeries++;
         nProducts++;
@@ -132,15 +133,17 @@ public class VOD {
         Sale sale = product.getSale();
         if(sale != null) reduction -= sale.getReduction();
         money += price * reduction;
+        refresh();
     }
 
     synchronized void takeSubscriptionMoney() {
         for (User user: users) {
-            Subscription subscribtion = user.getSubscription();
-            if(subscribtion!= null) {
-                money += subscribtion.getPrice() ;
+            Subscription subscription = user.getSubscription();
+            if(subscription!= null) {
+                money += subscription.getPrice() ;
             }
         }
+        refresh();
     }
 
     synchronized private void userDeleted() {
@@ -151,27 +154,27 @@ public class VOD {
         nDistributors--;
     }
 
-    synchronized public int getnProducts() {
+    synchronized public int getNumProducts() {
         return nProducts;
     }
 
-    synchronized public int getnSeries() {
+    synchronized public int getNumSeries() {
         return nSeries;
     }
 
-    synchronized public int getnMovies() {
+    synchronized public int getNumMovies() {
         return nMovies;
     }
 
-    synchronized public int getnStreams() {
+    synchronized public int getNumStreams() {
         return nStreams;
     }
 
-    synchronized  public int getnUsers() {
+    synchronized  public int getNumUsers() {
         return nUsers;
     }
 
-    synchronized public int getnDistributors() {
+    synchronized public int getNumDistributors() {
         return nDistributors;
     }
 
@@ -287,6 +290,7 @@ public class VOD {
                     money -= license.getFee() * distributor.getWatched();
                     distributor.clearWatched();
                 }
+                refresh();
             }
         }
     }

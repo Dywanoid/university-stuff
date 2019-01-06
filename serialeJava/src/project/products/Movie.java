@@ -1,7 +1,6 @@
 package project.products;
 
 import java.util.ArrayList;
-
 import project.components.Sale;
 
 public class Movie extends Product {
@@ -10,7 +9,6 @@ public class Movie extends Product {
     private String trailerURL;
     private int avalibleToWatchTime;
     private Sale sale;
-    private final String type = "Movie";
 
     public Movie() {
     }
@@ -24,7 +22,7 @@ public class Movie extends Product {
 
     @Override
     public String getType() {
-        return type;
+        return "Movie";
     }
 
     public String getGenre() {

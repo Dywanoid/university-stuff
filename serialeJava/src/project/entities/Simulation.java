@@ -1,5 +1,6 @@
 package project.entities;
 
+import project.utils.Utilities;
 import project.window.WindowApp;
 import javafx.application.Application;
 
@@ -18,7 +19,7 @@ public class Simulation  implements Runnable {
 
     }
 
-    public static synchronized int getSimulationTime() {
+    static synchronized int getSimulationTime() {
         return simulationTime;
     }
 
@@ -47,6 +48,7 @@ public class Simulation  implements Runnable {
                     kill();
                     vod.close();
                 }
+                if(Utilities.getRandomInt(100) > 95) {vod.newUser(); vod.refresh();}
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

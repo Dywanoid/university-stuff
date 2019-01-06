@@ -22,7 +22,7 @@ public abstract class Product {
     private float score;
     private float price;
     private volatile Map<Integer, Integer> viewData = new HashMap<>();
-    private ArrayList<User> usersOwning = new ArrayList<>();
+    private volatile ArrayList<User> usersOwning = new ArrayList<>();
     private Sale sale = null;
 
     Product() {
@@ -141,7 +141,7 @@ public abstract class Product {
         return "";
     }
 
-    public void addUser(User user) {
+    synchronized public void addUser(User user) {
         usersOwning.add(user);
     }
 
