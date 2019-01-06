@@ -120,33 +120,3 @@ public class VODdata implements Serializable {
         return  rand == 3 ? null : (Subscription) subsciptions.values().toArray()[rand];
     }
 }
-
-// SERIALIZACJA
-
-//        Subscription test2 = new Subscription(25.2f, 2, "HD");
-//        try {
-//            FileOutputStream fileOut =
-//                    new FileOutputStream("C:\\Users\\X\\Desktop\\subscription.ser");
-//            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//            out.writeObject(test2);
-//            out.close();
-//            fileOut.close();
-//            System.out.println("Serialized data is saved in C:\\Users\\X\\Desktop\\subscription.ser");
-//        } catch (IOException i) {
-//            i.printStackTrace();
-//        }
-
-//        Subscription el;
-//        try {
-//            FileInputStream fileIn = new FileInputStream("C:\\Users\\X\\Desktop\\subscription.ser");
-//            ObjectInputStream in = new ObjectInputStream(fileIn);
-//            el = (Subscription) in.readObject();
-//            in.close();
-//            fileIn.close();
-//            System.out.println(el.toString());
-//        } catch (IOException i) {
-//            i.printStackTrace();
-//        } catch (ClassNotFoundException c) {
-//            System.out.println("Employee class not found");
-//            c.printStackTrace();
-//        }

@@ -4,3 +4,5 @@ wp.pl
 onet.pl
 o2.pl
 pudelek.pl
+google.com
+wow.org.com.pl
