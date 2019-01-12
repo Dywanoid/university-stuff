@@ -40,10 +40,15 @@ class Simulation:
         self.on = True
         self.begin()
 
-    def __str__(self):
-        return "XD"
+    def __str__(self) -> str:
+        return f'\nSymulacja: \nMoc grzałki: {self.power}W\nSprawność: {self.eta}\n' + \
+               f'Temp. otoczenia: {convert_to_celsius(self.ambient_temperature)}*C\n' + \
+               f'Ilość wody: {self.mass_of_water}ml\nStała: {self.constant} 1/s\n'+\
+               f'Temp. wody: {convert_to_celsius(self.water_temperature)}*C\n' + \
+               f'Oczekiwana temp. wody: {convert_to_celsius(self.wanted_water_temperature)}*C\n\n'
 
     def begin(self):
+        print(self)
         going = True
         arr_x = []
         arr_y = []
@@ -137,7 +142,7 @@ class Simulation:
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         def on_key_press(event):
-            print("you pressed {}".format(event.key))
+            # print("you pressed {}".format(event.key))
             key_press_handler(event, canvas, toolbar)
 
         canvas.mpl_connect("key_press_event", on_key_press)
