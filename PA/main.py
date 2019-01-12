@@ -1,18 +1,12 @@
 from sympy import *
 import tkinter as tk
 from math import exp as exp_fun
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
-# Implement the default Matplotlib key bindings.
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
-
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-
-# x, y, z = symbols('x y z')
-# init_printing(use_unicode=True)
-# print(diff(cos(x), x))
+from random import random
+import math
 
 DELTA_TIME = 1
 
@@ -40,8 +34,8 @@ class Simulation:
         self.ambient_temperature = convert_to_kelvin(ambient_temperature)
         self.mass_of_water = mass_of_water
         self.constant = constant
-        self.water_temperature =  convert_to_kelvin(water_temp)
-        self.wanted_water_temperature =  convert_to_kelvin(water_temp_after)
+        self.water_temperature = convert_to_kelvin(water_temp)
+        self.wanted_water_temperature = convert_to_kelvin(water_temp_after)
         self.time = 0
         self.on = True
         self.begin()
@@ -53,31 +47,68 @@ class Simulation:
         going = True
         arr_x = []
         arr_y = []
+
+        # ambient will be +10 or -10 from given ambient
+        diff_ambient = self.ambient_temperature + (math.floor(random() * 2) * 20 - 10)
+        arr_y_diff_ambient = []
+
+        # constant will be +0.0001 or -0.0001 from given constant
+        diff_constant = self.constant + (math.floor(random() * 2) * 0.0002 - 0.0001)
+        arr_y_diff_constant = []
+
         heated_water = 0
 
-        while(going):
+        while going:
             arr_x.append(self.time)
             rising_temperature = temp(self.power,
                                       self.eta,
                                       self.water_temperature,
                                       self.time,
                                       self.mass_of_water)
+
+            rising_temperature_diff_ambient = temp(self.power,
+                                                   self.eta,
+                                                   self.water_temperature,
+                                                   self.time,
+                                                   self.mass_of_water)
+
+            rising_temperature_diff_const = temp(self.power,
+                                                 self.eta,
+                                                 self.water_temperature,
+                                                 self.time,
+                                                 self.mass_of_water)
+
             arr_y.append(convert_to_celsius(rising_temperature))
+            arr_y_diff_ambient.append(convert_to_celsius(rising_temperature_diff_ambient))
+            arr_y_diff_constant.append(convert_to_celsius(rising_temperature_diff_const))
+
             self.time += DELTA_TIME
-            if rising_temperature >= self.wanted_water_temperature:
+            if rising_temperature >= self.wanted_water_temperature or self.time >= 3600:
                 going = False
                 heated_water = rising_temperature
 
         cooling_start_time = self.time
         going = True
 
-        while(going):
+        while going:
             arr_x.append(self.time)
             lowering_temperature = lowering_temp(self.ambient_temperature,
-                                         self.constant,
-                                         self.time - cooling_start_time,
-                                         heated_water)
+                                                 self.constant,
+                                                 self.time - cooling_start_time,
+                                                 heated_water)
+
+            lowering_temperature_diff_ambient = lowering_temp(diff_ambient,
+                                                              self.constant,
+                                                              self.time - cooling_start_time,
+                                                              heated_water)
+
+            lowering_temperature_diff_constant = lowering_temp(self.ambient_temperature,
+                                                               diff_constant,
+                                                               self.time - cooling_start_time,
+                                                               heated_water)
             arr_y.append(convert_to_celsius(lowering_temperature))
+            arr_y_diff_ambient.append(convert_to_celsius(lowering_temperature_diff_ambient))
+            arr_y_diff_constant.append(convert_to_celsius(lowering_temperature_diff_constant))
             self.time += DELTA_TIME
             if lowering_temperature <= self.ambient_temperature * 1.01 or self.time >= 3600:
                 going = false
@@ -85,19 +116,20 @@ class Simulation:
         second_window = tk.Tk()
         second_window.wm_title("Symulacja - wykres")
 
-        fig = Figure(figsize=(5, 4), dpi=100)
-        fig.add_subplot(111).plot(arr_x, arr_y)
-        ax = fig.add_subplot(111)
-        ax.set_title("Wykres zmiany temperatury w czasie")
-        ax.set_xlabel("Czas [s]")
-        ax.set_ylabel("Temperatura [*C]")
-        # fig2 = Figure.legend()
+        fig = Figure(figsize=(6, 6), dpi=100)
+        fig.suptitle("Wykres zmiany temperatury w czasie", fontsize=12, fontweight='bold')
+        my_plot = fig.add_subplot(111)
+        my_plot.plot(arr_x, arr_y, "g", arr_x, arr_y_diff_ambient, "r", arr_x, arr_y_diff_constant, "b")
+
+        my_plot.set_xlabel("Czas [s]")
+        my_plot.set_ylabel("Temperatura [*C]")
+        my_plot.legend(('Dane parametry',
+                        f'Temp otoczenia: {convert_to_celsius(diff_ambient)}',
+                        f'Stała układu: {diff_constant}'), loc="upper right")
 
         canvas = FigureCanvasTkAgg(fig, master=second_window)
-        # canvas2 = FigureCanvasTkAgg(fig2, master=second_window)
 
         canvas.draw()
-        # canvas2.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         toolbar = NavigationToolbar2Tk(canvas, second_window)
@@ -111,10 +143,6 @@ class Simulation:
         canvas.mpl_connect("key_press_event", on_key_press)
 
         second_window.mainloop()
-        # plt.plot(arr_x, arr_y)
-        # plt.show()
-
-
 
 
 def temp(heater_power: float, eta: float, temp0: float, time: float, mass_of_water: float) -> float:
@@ -131,10 +159,6 @@ def convert_to_celsius(temp_in_kelvin: float) -> float:
 
 def convert_to_kelvin(temp_in_celsius: float) -> float:
     return temp_in_celsius + CELSIUS_CONSTANT
-
-
-# print(convert_to_celsius(temp(25, 250, 1000)))
-# print(convert_to_celsius(lowering_temp(3600, 80)))
 
 
 def start_new_simulation():
@@ -185,13 +209,13 @@ def start_new_simulation():
     except (ValueError, TypeError):
         print('Złe wartości!')
 
-    simulation = Simulation(p,
-                            eta,
-                            ambient_temperature,
-                            water_mass,
-                            configuration_constant,
-                            water_temp,
-                            water_temp_after)
+    Simulation(p,
+               eta,
+               ambient_temperature,
+               water_mass,
+               configuration_constant,
+               water_temp,
+               water_temp_after)
 
 
 if __name__ == '__main__':
