@@ -1,10 +1,13 @@
 from sympy import *
 import tkinter as tk
-import numpy as np
 from math import exp as exp_fun
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-# import matplotlib.backends.tkagg as tkagg
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg, NavigationToolbar2Tk)
+# Implement the default Matplotlib key bindings.
+from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 # x, y, z = symbols('x y z')
@@ -79,8 +82,37 @@ class Simulation:
             if lowering_temperature <= self.ambient_temperature * 1.01 or self.time >= 3600:
                 going = false
 
-        plt.plot(arr_x, arr_y)
-        plt.show()
+        second_window = tk.Tk()
+        second_window.wm_title("Symulacja - wykres")
+
+        fig = Figure(figsize=(5, 4), dpi=100)
+        fig.add_subplot(111).plot(arr_x, arr_y)
+        ax = fig.add_subplot(111)
+        ax.set_title("Wykres zmiany temperatury w czasie")
+        ax.set_xlabel("Czas [s]")
+        ax.set_ylabel("Temperatura [*C]")
+        # fig2 = Figure.legend()
+
+        canvas = FigureCanvasTkAgg(fig, master=second_window)
+        # canvas2 = FigureCanvasTkAgg(fig2, master=second_window)
+
+        canvas.draw()
+        # canvas2.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        toolbar = NavigationToolbar2Tk(canvas, second_window)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+        def on_key_press(event):
+            print("you pressed {}".format(event.key))
+            key_press_handler(event, canvas, toolbar)
+
+        canvas.mpl_connect("key_press_event", on_key_press)
+
+        second_window.mainloop()
+        # plt.plot(arr_x, arr_y)
+        # plt.show()
 
 
 
