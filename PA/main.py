@@ -11,7 +11,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 # init_printing(use_unicode=True)
 # print(diff(cos(x), x))
 
-DELTA_TIME = 0.01
+DELTA_TIME = 1
 
 SPECIFIC_HEAT_OF_WATER = 4.186  # specific heat of water J/g *K
 
@@ -40,7 +40,6 @@ class Simulation:
         self.water_temperature =  convert_to_kelvin(water_temp)
         self.wanted_water_temperature =  convert_to_kelvin(water_temp_after)
         self.time = 0
-        self.cooling_start_time = 0
         self.on = True
         self.begin()
 
@@ -51,7 +50,7 @@ class Simulation:
         going = True
         arr_x = []
         arr_y = []
-        heater_water = 0
+        heated_water = 0
 
         while(going):
             arr_x.append(self.time)
@@ -64,20 +63,20 @@ class Simulation:
             self.time += DELTA_TIME
             if rising_temperature >= self.wanted_water_temperature:
                 going = False
-                heater_water = rising_temperature
+                heated_water = rising_temperature
 
-        self.cooling_start_time = self.time
+        cooling_start_time = self.time
         going = True
 
         while(going):
             arr_x.append(self.time)
-            heater_water = lowering_temp(self.ambient_temperature,
+            lowering_temperature = lowering_temp(self.ambient_temperature,
                                          self.constant,
-                                         self.time - self.cooling_start_time,
-                                         heater_water)
-            arr_y.append(convert_to_celsius(heater_water))
+                                         self.time - cooling_start_time,
+                                         heated_water)
+            arr_y.append(convert_to_celsius(lowering_temperature))
             self.time += DELTA_TIME
-            if heater_water <= self.ambient_temperature * 1.01:
+            if lowering_temperature <= self.ambient_temperature * 1.01 or self.time >= 3600:
                 going = false
 
         plt.plot(arr_x, arr_y)
