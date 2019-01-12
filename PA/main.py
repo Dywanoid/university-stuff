@@ -5,10 +5,11 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
+from matplotlib.pyplot import setp
 from random import random
 import math
 
-DELTA_TIME = 1
+DELTA_TIME = 0.05
 
 SPECIFIC_HEAT_OF_WATER = 4.186  # specific heat of water J/g *K
 
@@ -43,7 +44,7 @@ class Simulation:
     def __str__(self) -> str:
         return f'\nSymulacja: \nMoc grzałki: {self.power}W\nSprawność: {self.eta}\n' + \
                f'Temp. otoczenia: {convert_to_celsius(self.ambient_temperature)}*C\n' + \
-               f'Ilość wody: {self.mass_of_water}ml\nStała: {self.constant} 1/s\n'+\
+               f'Ilość wody: {self.mass_of_water}ml\nStała: {self.constant} 1/s\n' + \
                f'Temp. wody: {convert_to_celsius(self.water_temperature)}*C\n' + \
                f'Oczekiwana temp. wody: {convert_to_celsius(self.wanted_water_temperature)}*C\n\n'
 
@@ -115,7 +116,7 @@ class Simulation:
             arr_y_diff_ambient.append(convert_to_celsius(lowering_temperature_diff_ambient))
             arr_y_diff_constant.append(convert_to_celsius(lowering_temperature_diff_constant))
             self.time += DELTA_TIME
-            if lowering_temperature <= self.ambient_temperature * 1.01 or self.time >= 3600:
+            if CELSIUS_CONSTANT >= lowering_temperature <= self.ambient_temperature * 1.01 or self.time >= 3600:
                 going = false
 
         second_window = tk.Tk()
@@ -124,7 +125,8 @@ class Simulation:
         fig = Figure(figsize=(6, 6), dpi=100)
         fig.suptitle("Wykres zmiany temperatury w czasie", fontsize=12, fontweight='bold')
         my_plot = fig.add_subplot(111)
-        my_plot.plot(arr_x, arr_y, "g", arr_x, arr_y_diff_ambient, "r", arr_x, arr_y_diff_constant, "b")
+        lines = my_plot.plot(arr_x, arr_y, "g", arr_x, arr_y_diff_ambient, "r--", arr_x, arr_y_diff_constant, "b--")
+        setp(lines[0], linewidth=4)
 
         my_plot.set_xlabel("Czas [s]")
         my_plot.set_ylabel("Temperatura [*C]")
