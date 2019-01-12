@@ -4,12 +4,23 @@ import numpy as np
 from math import exp as exp_fun
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib.backends.tkagg as tkagg
+# import matplotlib.backends.tkagg as tkagg
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 # x, y, z = symbols('x y z')
 # init_printing(use_unicode=True)
 # print(diff(cos(x), x))
+
+DELTA_TIME = 0.01
+
+SPECIFIC_HEAT_OF_WATER = 4.186  # specific heat of water J/g *K
+
+P = 1300  # power of heater
+Eta = 0.99  # efficiency of heater
+CELSIUS_CONSTANT = 273.15
+AMBIENT_TEMPERATURE_IN_CELSIUS = 20
+AMBIENT_TEMPERATURE = AMBIENT_TEMPERATURE_IN_CELSIUS + CELSIUS_CONSTANT  # ambient temperature in Kelvin
+CONFIGURATION_CONSTANT = 0.000503  # constant of I don't know
 
 
 class Simulation:
@@ -23,34 +34,64 @@ class Simulation:
                  water_temp_after: float):
         self.power = heater_power
         self.eta = eta
-        self.ambient_temperature = ambient_temperature
+        self.ambient_temperature = convert_to_kelvin(ambient_temperature)
         self.mass_of_water = mass_of_water
         self.constant = constant
-        self.water_temperature = water_temp
-        self.wanted_water_temperature = water_temp_after
+        self.water_temperature =  convert_to_kelvin(water_temp)
+        self.wanted_water_temperature =  convert_to_kelvin(water_temp_after)
+        self.time = 0
+        self.cooling_start_time = 0
+        self.on = True
+        self.begin()
 
     def __str__(self):
         return "XD"
 
+    def begin(self):
+        going = True
+        arr_x = []
+        arr_y = []
+        heater_water = 0
 
-SPECIFIC_HEAT_OF_WATER = 4.186  # specific heat of water J/g *K
+        while(going):
+            arr_x.append(self.time)
+            rising_temperature = temp(self.power,
+                                      self.eta,
+                                      self.water_temperature,
+                                      self.time,
+                                      self.mass_of_water)
+            arr_y.append(convert_to_celsius(rising_temperature))
+            self.time += DELTA_TIME
+            if rising_temperature >= self.wanted_water_temperature:
+                going = False
+                heater_water = rising_temperature
+
+        self.cooling_start_time = self.time
+        going = True
+
+        while(going):
+            arr_x.append(self.time)
+            heater_water = lowering_temp(self.ambient_temperature,
+                                         self.constant,
+                                         self.time - self.cooling_start_time,
+                                         heater_water)
+            arr_y.append(convert_to_celsius(heater_water))
+            self.time += DELTA_TIME
+            if heater_water <= self.ambient_temperature * 1.01:
+                going = false
+
+        plt.plot(arr_x, arr_y)
+        plt.show()
 
 
-P = 1300  # power of heater
-Eta = 0.99  # efficiency of heater
-CELSIUS_CONSTANT = 273.15
-AMBIENT_TEMPERATURE_IN_CELSIUS = 20
-AMBIENT_TEMPERATURE = AMBIENT_TEMPERATURE_IN_CELSIUS + CELSIUS_CONSTANT  # ambient temperature in Kelvin
-CONFIGURATION_CONSTANT = 0.000503  # constant of I don't know
 
 
-def temp(time0: float, time: float, mass_of_water: float) -> float:
-    return time0 + P * Eta * time / (mass_of_water * SPECIFIC_HEAT_OF_WATER)
+def temp(heater_power: float, eta: float, temp0: float, time: float, mass_of_water: float) -> float:
+    return temp0 + heater_power * eta * time / (mass_of_water * SPECIFIC_HEAT_OF_WATER)
 
 
-def lowering_temp(time: float, temp0: float) -> float:
-    temp0_in_kelvin = convert_to_kelvin(temp0)
-    return AMBIENT_TEMPERATURE + (temp0_in_kelvin - AMBIENT_TEMPERATURE) * exp_fun(-CONFIGURATION_CONSTANT * time)
+def lowering_temp(ambient_temperature: float, config_constant: float, time: float, temp0: float) -> float:
+    return ambient_temperature + (temp0 - ambient_temperature) * exp_fun(-config_constant * time)
 
 
 def convert_to_celsius(temp_in_kelvin: float) -> float:
@@ -68,7 +109,7 @@ def convert_to_kelvin(temp_in_celsius: float) -> float:
 def start_new_simulation():
     p = P
     eta = Eta
-    ambient_temperature = AMBIENT_TEMPERATURE
+    ambient_temperature = AMBIENT_TEMPERATURE_IN_CELSIUS
     configuration_constant = CONFIGURATION_CONSTANT
     water_mass = 1000
     water_temp = 25
@@ -96,17 +137,17 @@ def start_new_simulation():
             print("Domyślna stała układu: ", configuration_constant)
 
         if textfield_mass_of_water.get() != "":
-            configuration_constant = float(textfield_constant.get())
+            water_mass = float(textfield_mass_of_water.get())
         else:
             print("Domyślna ilość wody: ", water_mass)
 
         if textfield_water_temp_now.get() != "":
-            configuration_constant = float(textfield_constant.get())
+            water_temp = float(textfield_water_temp_now.get())
         else:
             print("Domyślna temp. wody: ", water_temp)
 
         if textfield_water_temp_after.get() != "":
-            configuration_constant = float(textfield_constant.get())
+            water_temp_after = float(textfield_water_temp_after.get())
         else:
             print("Domyślna docelowa temp. wody: ", water_temp_after)
 
@@ -120,7 +161,6 @@ def start_new_simulation():
                             configuration_constant,
                             water_temp,
                             water_temp_after)
-    print(simulation)
 
 
 if __name__ == '__main__':
@@ -131,11 +171,11 @@ if __name__ == '__main__':
 
     p_label = tk.Label(window, text="Wprowadź moc grzałki (P): ").grid(row=0, column=0)
     eta_label = tk.Label(window, text="Wprowadź sprawność grzałki (Eta): ").grid(row=1, column=0)
-    ambient_label = tk.Label(window, text="Wprowadź temperaturę otoczenia: ").grid(row=2, column=0)
+    ambient_label = tk.Label(window, text="Wprowadź temperaturę otoczenia (*C): ").grid(row=2, column=0)
     constant_label = tk.Label(window, text="Wprowadź stałą układu: ").grid(row=3, column=0)
     mass_of_water_label = tk.Label(window, text="Wprowadź ilość wody (ml): ").grid(row=4, column=0)
-    water_temp_now_label = tk.Label(window, text="Wprowadź temperaturę wody: ").grid(row=5, column=0)
-    water_temp_after_label = tk.Label(window, text="Wprowadź oczekiwaną temperaturę wody: ").grid(row=6, column=0)
+    water_temp_now_label = tk.Label(window, text="Wprowadź temperaturę wody (*C): ").grid(row=5, column=0)
+    water_temp_after_label = tk.Label(window, text="Wprowadź oczekiwaną temperaturę wody (*C): ").grid(row=6, column=0)
 
     textfield_p = tk.Entry(window)
     textfield_p.grid(row=0, column=1)
