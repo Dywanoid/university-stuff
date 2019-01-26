@@ -16,27 +16,17 @@ using namespace std;
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
 #define maintenanceTimeTo (int)(operationTimeTo / 2)
 
-int getRandomInt(int from, int to) {
-    static random_device rd;
-    static mt19937 mt(rd());
-
-    uniform_int_distribution<int> random(from, to);
-    return random(mt);
-};
-
 
 struct Operation {
-    int id;
     int timeToComplete;
     int startTime;
     int finishTime;
     Operation *otherOperation;
 
-    Operation(int id, int ttc) : id(id),
-                                 timeToComplete(ttc),
-                                 startTime(-1),
-                                 finishTime(-1),
-                                 otherOperation(nullptr) {}
+    explicit Operation(int ttc) : timeToComplete(ttc),
+                         startTime(-1),
+                         finishTime(-1),
+                         otherOperation(nullptr) {}
 };
 
 struct Job {
@@ -71,7 +61,6 @@ struct Machine {
                                                                                  finished(finished) {}
 };
 
-
 struct Instance {
     vector<Job> jobs;
     vector<Maintenance> maintenances;
@@ -100,13 +89,21 @@ struct Matrix {
     }
 };
 
+int getRandomInt(int from, int to) {
+    static random_device rd;
+    static mt19937 mt(rd());
+
+    uniform_int_distribution<int> random(from, to);
+    return random(mt);
+};
+
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
     int r1, r2;
     for (int i = 1; i < numberOfJobs + 1; ++i) {
         r1 = getRandomInt(operationTimeFrom, operationTimeTo);
         r2 = getRandomInt(operationTimeFrom, operationTimeTo);
-        jobs.push_back(Job(i, new Operation(i, r1), new Operation(i, r2)));
+        jobs.push_back(Job(i, new Operation(r1), new Operation(r2)));
     }
     return jobs;
 };
@@ -152,7 +149,7 @@ int pickOneJob(int size) {
     return -1;
 }
 
-Solution getRandomSolution(Instance instance) {
+Solution getRandomSolution(Instance &instance) {
     auto order = vector<int>();
     auto jobsCompleted = vector<int>();
     auto limit = static_cast<int>(instance.jobs.size());
@@ -223,17 +220,26 @@ Solution getRandomSolution(Instance instance) {
                     instance.maintenances);
 };
 
-vector<Solution> getPopulation(Instance &instance, int numberOfSolutions) {
+Instance copyInstance(const Instance &instance) {
+    auto jobs = vector<Job>();
+    for(Job j : instance.jobs)
+        jobs.emplace_back(j.id, new Operation(j.first->timeToComplete), new Operation(j.second->timeToComplete));
+    return Instance(jobs, instance.maintenances);
+};
+
+vector<Solution> getPopulation(Instance &mainInstance, int numberOfSolutions) {
+    auto instance = copyInstance(mainInstance);
     auto populationVector = vector<Solution>();
     for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(instance));
     return populationVector;
-}
+};
+
 
 int main() {
 //    vector<Job> jobs = generateJobs(n);
 //
 //
-    Instance i = generateInstance(n);
+    Instance mainInstance = generateInstance(n);
 //
 //    auto s = vector<Solution>();
 //    for(int x = 0; x < population; x++) {
@@ -242,7 +248,7 @@ int main() {
 //        s.push_back(temp);
 //    }
 
-    auto p = getPopulation(i, population);
+    auto p = getPopulation(mainInstance, population);
     for(auto s: p) {
         printf("%d\n", s.finishTime);
     }
