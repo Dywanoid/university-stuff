@@ -10,11 +10,11 @@ using namespace std;
 
 #define n 50
 #define k (int)(n * 0.2)
+#define population 100
 #define operationTimeFrom 5
 #define operationTimeTo 20
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
 #define maintenanceTimeTo (int)(operationTimeTo / 2)
-
 
 int getRandomInt(int from, int to) {
     static random_device rd;
@@ -24,20 +24,19 @@ int getRandomInt(int from, int to) {
     return random(mt);
 };
 
+
 struct Operation {
     int id;
     int timeToComplete;
     int startTime;
     int finishTime;
-    bool finished;
     Operation *otherOperation;
 
     Operation(int id, int ttc) : id(id),
                                  timeToComplete(ttc),
                                  startTime(-1),
                                  finishTime(-1),
-                                 otherOperation(nullptr),
-                                 finished(false) {}
+                                 otherOperation(nullptr) {}
 };
 
 struct Job {
@@ -92,6 +91,15 @@ struct Solution {
                                                                                         maintenances)) {}
 };
 
+struct Matrix {
+    int **antsPaths;
+
+    explicit Matrix(int dimensions) {
+        antsPaths = new int*[dimensions];
+        for(int i = 0; i < dimensions; i++) antsPaths[i] = new int[dimensions]();
+    }
+};
+
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
     int r1, r2;
@@ -107,8 +115,8 @@ template <class T>
 bool validateSpot(T vector, int startTime, int duration) {
     int finishTime = startTime + duration;
     for(auto o : vector) {
-        if((o.startTime <= startTime && o.finishTime >= startTime) ||
-           (o.startTime <= finishTime && o.finishTime >= finishTime) ||
+        if((o.startTime < startTime && o.finishTime > startTime) ||
+           (o.startTime < finishTime && o.finishTime > finishTime) ||
            (o.startTime >= startTime && o.finishTime <= finishTime))
         {return false;};
     }
@@ -139,13 +147,21 @@ Instance generateInstance(int numberOfJobs) {
     return Instance(jobs, mains);
 };
 
-Solution getRandomSolution(Instance instance, int numberOfJobs) {
+int pickOneJob(int size) {
+    if(size > 0) return getRandomInt(0, size - 1);
+    return -1;
+}
+
+Solution getRandomSolution(Instance instance) {
     auto order = vector<int>();
     auto jobsCompleted = vector<int>();
-    for (int i = 1; i < numberOfJobs + 1; ++i) order.push_back(i);
+    auto limit = static_cast<int>(instance.jobs.size());
+    for (int i = 1; i <= limit; ++i) order.push_back(i);
     shuffle(order.begin(), order.end(), default_random_engine(
             static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())));
     int currentTime = 0;
+    int secondMachineTime = 0;
+    int pickedID, pickedIndex;
     float timeBonus = 1;
     for(int id: order) {
         Operation *x = instance.jobs[id - 1].first;
@@ -154,30 +170,82 @@ Solution getRandomSolution(Instance instance, int numberOfJobs) {
         while(!validateSpot<vector<Maintenance>>(instance.maintenances, currentTime, duration)){
             currentTime++;
             timeBonus = 1; // resetting timeBonus to 0 after maintenance
+            duration = x->timeToComplete;
         };
+
         x->startTime = currentTime;
         x->finishTime = currentTime + duration;
         currentTime += duration;
+        if (timeBonus > 0.75) timeBonus -= 0.05;
+        jobsCompleted.push_back(id);
+        pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
+        if(pickedIndex != -1) {
+            pickedID = jobsCompleted[pickedIndex];
+            Operation *f = instance.jobs[pickedID - 1].first;
+            Operation *s = instance.jobs[pickedID - 1].second;
+            int fT = f->finishTime;
+            if (fT >= secondMachineTime) {
+                secondMachineTime = fT + s->timeToComplete;
+            } else {
+                secondMachineTime += s->timeToComplete;
+            }
+            s->finishTime = secondMachineTime;
+            jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
+        }
     }
 
-    for(int i: order) {
-        Operation *o = instance.jobs[i-1].first;
-
-        printf("id: %d sT: %d fT: %d dur: %d\n", o->id, o->startTime, o->finishTime, o->timeToComplete);
+    while(!jobsCompleted.empty()) { // TODO: make a function out of it (code duplication)
+        pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
+        pickedID = jobsCompleted[pickedIndex];
+        Operation *f = instance.jobs[pickedID - 1].first;
+        Operation *s = instance.jobs[pickedID - 1].second;
+        int fT = f->finishTime;
+        if (fT >= secondMachineTime) {
+            secondMachineTime = fT + s->timeToComplete;
+        } else {
+            secondMachineTime += s->timeToComplete;
+        }
+        s->finishTime = secondMachineTime;
+        jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
     }
-    for(auto m: instance.maintenances) {
-        printf("ST: %d FT: %d\n", m.startTime, m.finishTime);
-    }
 
-    return Solution(currentTime, instance.jobs, instance.maintenances);
+
+//    for(int i: order) {
+//        Operation *o = instance.jobs[i-1].first;
+//
+//        printf("id: %d sT: %d fT: %d dur: %d\n", o->id, o->startTime, o->finishTime, o->timeToComplete);
+//    }
+//    for(auto m: instance.maintenances) {
+//        printf("ST: %d FT: %d\n", m.startTime, m.finishTime);
+//    }
+    return Solution(secondMachineTime > currentTime ? secondMachineTime : currentTime,
+                    instance.jobs,
+                    instance.maintenances);
 };
 
+vector<Solution> getPopulation(Instance &instance, int numberOfSolutions) {
+    auto populationVector = vector<Solution>();
+    for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(instance));
+    return populationVector;
+}
+
 int main() {
-    vector<Job> jobs = generateJobs(n);
-
+//    vector<Job> jobs = generateJobs(n);
+//
+//
     Instance i = generateInstance(n);
+//
+//    auto s = vector<Solution>();
+//    for(int x = 0; x < population; x++) {
+//        Solution temp = getRandomSolution(i);
+//        printf("%d\n", temp.finishTime);
+//        s.push_back(temp);
+//    }
 
-    Solution s = getRandomSolution(i, n);
-
+    auto p = getPopulation(i, population);
+    for(auto s: p) {
+        printf("%d\n", s.finishTime);
+    }
+    auto m = Matrix(n);
     return 0;
 }
