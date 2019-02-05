@@ -81,11 +81,10 @@ struct Solution {
 };
 
 struct Matrix {
-    int **antsPaths;
+    vector<vector<float>> antsPaths;
 
     explicit Matrix(int dimensions) {
-        antsPaths = new int*[dimensions];
-        for(int i = 0; i < dimensions; i++) antsPaths[i] = new int[dimensions]();
+        for(int i = 0; i < dimensions; i++) antsPaths.emplace_back(dimensions, 0);
     }
 };
 
@@ -96,6 +95,14 @@ int getRandomInt(int from, int to) {
     uniform_int_distribution<int> random(from, to);
     return random(mt);
 };
+
+float getRandomFloat(float from, float to) {
+    static random_device rd;
+    static mt19937 mt(rd());
+
+    uniform_real_distribution<float> random(from, to);
+    return random(mt);
+}
 
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
