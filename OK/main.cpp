@@ -73,11 +73,13 @@ struct Solution {
     int finishTime;
     vector<Job> jobs;
     vector<Maintenance> maintenances;
+    vector<int> order;
 
-    Solution(int finishT, vector<Job> jobs, vector<Maintenance> maintenances) : finishTime(finishT),
-                                                                                jobs(std::move(jobs)),
-                                                                                maintenances(std::move(
-                                                                                        maintenances)) {}
+    Solution(int finishTime, vector<Job> jobs, vector<Maintenance> maintenances, vector<int> order)
+            : finishTime(finishTime),
+            jobs(std::move(jobs)),
+            maintenances(std::move(maintenances)),
+            order(std::move(order)) {}
 };
 
 struct Matrix {
@@ -156,13 +158,31 @@ int pickOneJob(int size) {
     return -1;
 }
 
-Solution getRandomSolution(Instance &instance) {
+Instance copyInstance(const Instance &instance) {
+    auto jobs = vector<Job>();
+    for(Job j : instance.jobs)
+        jobs.emplace_back(j.id, new Operation(j.first->timeToComplete), new Operation(j.second->timeToComplete));
+    return Instance(jobs, instance.maintenances);
+};
+
+void showInstance(const Instance &i) {
+//    printf("\n");
+}
+
+//void deleteInstance(Instance &instance)
+
+Solution getRandomSolution(Instance &mainInstance) {
+    static default_random_engine dre = default_random_engine(
+                         static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
+
+    Instance instance = copyInstance(mainInstance);
+//    showInstance(instance);
+
     auto order = vector<int>();
     auto jobsCompleted = vector<int>();
     auto limit = static_cast<int>(instance.jobs.size());
     for (int i = 1; i <= limit; ++i) order.push_back(i);
-    shuffle(order.begin(), order.end(), default_random_engine(
-            static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count())));
+    shuffle(order.begin(), order.end(), dre);
     int currentTime = 0;
     int secondMachineTime = 0;
     int pickedID, pickedIndex;
@@ -213,52 +233,49 @@ Solution getRandomSolution(Instance &instance) {
         jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
     }
 
-
-//    for(int i: order) {
-//        Operation *o = instance.jobs[i-1].first;
-//
-//        printf("id: %d sT: %d fT: %d dur: %d\n", o->id, o->startTime, o->finishTime, o->timeToComplete);
-//    }
-//    for(auto m: instance.maintenances) {
-//        printf("ST: %d FT: %d\n", m.startTime, m.finishTime);
-//    }
     return Solution(secondMachineTime > currentTime ? secondMachineTime : currentTime,
                     instance.jobs,
-                    instance.maintenances);
-};
-
-Instance copyInstance(const Instance &instance) {
-    auto jobs = vector<Job>();
-    for(Job j : instance.jobs)
-        jobs.emplace_back(j.id, new Operation(j.first->timeToComplete), new Operation(j.second->timeToComplete));
-    return Instance(jobs, instance.maintenances);
+                    instance.maintenances,
+                    order);
 };
 
 vector<Solution> getPopulation(Instance &mainInstance, int numberOfSolutions) {
-    auto instance = copyInstance(mainInstance);
     auto populationVector = vector<Solution>();
-    for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(instance));
+    for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(mainInstance));
     return populationVector;
 };
 
+void populateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
+    for(Solution solution : solutions) {
+        for (int i = 0; i < solution.jobs.size() - 1; ++i) {
+            matrix.antsPaths[solution.order[i] - 1][solution.order[i+1] - 1] += 1;
+        }
+    }
+}
+
+int findNextAntsPathIndex(vector<float> values, vector<int> used) {
+    static random_device rd;
+    static mt19937 mt(rd());
+    for(int u: used) values[u] = 0;
+    discrete_distribution<int> distribution (values.begin(), values.end());
+    return distribution(mt);
+};
 
 int main() {
-//    vector<Job> jobs = generateJobs(n);
-//
-//
     Instance mainInstance = generateInstance(n);
-//
-//    auto s = vector<Solution>();
-//    for(int x = 0; x < population; x++) {
-//        Solution temp = getRandomSolution(i);
-//        printf("%d\n", temp.finishTime);
-//        s.push_back(temp);
-//    }
 
-    auto p = getPopulation(mainInstance, population);
-    for(auto s: p) {
-        printf("%d\n", s.finishTime);
+    vector<Solution> p = getPopulation(mainInstance, population);
+
+    auto matrix = Matrix(n);
+    populateMatrix(matrix, p);
+    vector<int> used;
+    int index = getRandomInt(0, n-1);
+    for(int i = 0; i < n; i++) {
+        used.push_back(index);
+        index = findNextAntsPathIndex(matrix.antsPaths[index], used);
+//        printf("%d\n", index);
     }
-    auto m = Matrix(n);
+    sort(used.begin(), used.end());
+    for(auto u: used) printf("%d\n", u);
     return 0;
 }
