@@ -8,6 +8,7 @@
 // PROBLEM 3
 using namespace std;
 
+// OPERATIONS SETTINGS
 #define n 50
 #define k (int)(n * 0.2)
 #define population 100
@@ -16,6 +17,15 @@ using namespace std;
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
 #define maintenanceTimeTo (int)(operationTimeTo / 2)
 
+// PROBLEM SETTINGS
+#define maxTimeReduction 0.75
+#define timeReductionStep 0.05
+#define numberOfIterations 100
+
+// ANTS SETTINGS
+#define numberOfAnts population
+#define antStepValue 1
+#define evaporationRate 0.9
 
 struct Operation {
     int timeToComplete;
@@ -51,16 +61,6 @@ struct Maintenance {
     Maintenance(int sT, int dur) : startTime(sT), finishTime(sT+dur), duration(dur){};
 };
 
-struct Machine {
-    vector<Maintenance> maintenances;
-    vector<Job> jobs;
-    bool finished;
-
-    Machine(vector<Maintenance> maintenances, vector<Job> jobs, bool finished) : maintenances(std::move(maintenances)),
-                                                                                 jobs(std::move(jobs)),
-                                                                                 finished(finished) {}
-};
-
 struct Instance {
     vector<Job> jobs;
     vector<Maintenance> maintenances;
@@ -86,7 +86,7 @@ struct Matrix {
     vector<vector<float>> antsPaths;
 
     explicit Matrix(int dimensions) {
-        for(int i = 0; i < dimensions; i++) antsPaths.emplace_back(dimensions, 0);
+        for(int i = 0; i < dimensions; i++) antsPaths.emplace_back(dimensions, 1);
     }
 };
 
@@ -108,11 +108,11 @@ float getRandomFloat(float from, float to) {
 
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
-    int r1, r2;
+    int op1, op2;
     for (int i = 1; i < numberOfJobs + 1; ++i) {
-        r1 = getRandomInt(operationTimeFrom, operationTimeTo);
-        r2 = getRandomInt(operationTimeFrom, operationTimeTo);
-        jobs.push_back(Job(i, new Operation(r1), new Operation(r2)));
+        op1 = getRandomInt(operationTimeFrom, operationTimeTo);
+        op2 = getRandomInt(operationTimeFrom, operationTimeTo);
+        jobs.push_back(Job(i, new Operation(op1), new Operation(op2)));
     }
     return jobs;
 };
@@ -165,28 +165,13 @@ Instance copyInstance(const Instance &instance) {
     return Instance(jobs, instance.maintenances);
 };
 
-void showInstance(const Instance &i) {
-//    printf("\n");
-}
-
-//void deleteInstance(Instance &instance)
-
-Solution getRandomSolution(Instance &mainInstance) {
-    static default_random_engine dre = default_random_engine(
-                         static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
-
-    Instance instance = copyInstance(mainInstance);
-//    showInstance(instance);
-
-    auto order = vector<int>();
-    auto jobsCompleted = vector<int>();
-    auto limit = static_cast<int>(instance.jobs.size());
-    for (int i = 1; i <= limit; ++i) order.push_back(i);
-    shuffle(order.begin(), order.end(), dre);
+Solution getSolution(const Instance &instance, vector<int> &order) {
     int currentTime = 0;
     int secondMachineTime = 0;
     int pickedID, pickedIndex;
     float timeBonus = 1;
+    auto jobsCompleted = vector<int>();
+
     for(int id: order) {
         Operation *x = instance.jobs[id - 1].first;
         auto duration = static_cast<int>(x->timeToComplete * timeBonus);
@@ -200,7 +185,7 @@ Solution getRandomSolution(Instance &mainInstance) {
         x->startTime = currentTime;
         x->finishTime = currentTime + duration;
         currentTime += duration;
-        if (timeBonus > 0.75) timeBonus -= 0.05;
+        if (timeBonus > maxTimeReduction) timeBonus -= timeReductionStep;
         jobsCompleted.push_back(id);
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         if(pickedIndex != -1) {
@@ -237,45 +222,100 @@ Solution getRandomSolution(Instance &mainInstance) {
                     instance.jobs,
                     instance.maintenances,
                     order);
+}
+
+Solution getRandomSolution(const Instance &instance) {
+    static default_random_engine dre = default_random_engine(
+                         static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
+
+    Instance copiedInstance = copyInstance(instance);
+
+    auto order = vector<int>();
+    auto limit = static_cast<int>(copiedInstance.jobs.size());
+    for (int i = 1; i <= limit; ++i) order.push_back(i);
+    shuffle(order.begin(), order.end(), dre);
+
+    return getSolution(instance, order);
 };
 
-vector<Solution> getPopulation(Instance &mainInstance, int numberOfSolutions) {
+vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfSolutions) {
     auto populationVector = vector<Solution>();
     for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(mainInstance));
     return populationVector;
 };
 
-void populateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
-    for(Solution solution : solutions) {
-        for (int i = 0; i < solution.jobs.size() - 1; ++i) {
-            matrix.antsPaths[solution.order[i] - 1][solution.order[i+1] - 1] += 1;
-        }
+void updateMatrix(Matrix &matrix, const Solution &solution) {
+    for (int i = 0; i < solution.jobs.size() - 1; ++i) {
+        matrix.antsPaths[solution.order[i] - 1][solution.order[i+1] - 1] += antStepValue;
     }
 }
 
-int findNextAntsPathIndex(vector<float> values, vector<int> used) {
+void populateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
+    for(const Solution &solution : solutions)
+        updateMatrix(matrix, solution);
+}
+
+int findNextAntsPathIndex(const vector<float> &matrixValues, vector<int> used) {
     static random_device rd;
     static mt19937 mt(rd());
+    auto values = vector<float>(matrixValues);
     for(int u: used) values[u] = 0;
     discrete_distribution<int> distribution (values.begin(), values.end());
     return distribution(mt);
 };
 
-int main() {
-    Instance mainInstance = generateInstance(n);
 
-    vector<Solution> p = getPopulation(mainInstance, population);
-
-    auto matrix = Matrix(n);
-    populateMatrix(matrix, p);
+Solution newAntPath(Matrix &matrix, const Instance &instance) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     vector<int> used;
     int index = getRandomInt(0, n-1);
     for(int i = 0; i < n; i++) {
         used.push_back(index);
         index = findNextAntsPathIndex(matrix.antsPaths[index], used);
-//        printf("%d\n", index);
     }
-    sort(used.begin(), used.end());
-    for(auto u: used) printf("%d\n", u);
+    return getSolution(instance, used);
+}
+
+vector<Solution> getAntPaths(Matrix &matrix, const Instance &instance, int numOfAnts){
+    auto solutions = vector<Solution>();
+    for (int i = 0; i < numOfAnts; ++i) {
+        printf("%d\n", i);
+        auto s = newAntPath(matrix, instance);
+        printf("FC: %d\n", s.finishTime);
+        solutions.push_back(s);
+    }
+    return solutions;
+}
+
+bool sortSolutions(Solution a, Solution b) {
+    return a.finishTime > b.finishTime;
+}
+
+vector<Solution> choosePaths(vector<Solution> &paths ) {
+    sort(paths.begin(), paths.end(), sortSolutions);
+    printf("Funkcja celu: \n");
+    for(const auto &path: paths) printf("%d\n", path.finishTime);
+    return paths;
+}
+
+int main() {
+    random_device rd;
+    mt19937 mt(rd());
+    auto values = vector<float>(5, 1);
+    discrete_distribution<int> distribution (values.begin(), values.end());
+    printf("test: %d\n", distribution(mt));
+    printf("test: %d\n", distribution(mt));
+    printf("test: %d\n", distribution(mt));
+
+
+    Instance mainInstance = generateInstance(n);
+
+    vector<Solution> p = getRandomPopulation(mainInstance, population);
+
+    auto matrix = Matrix(n);
+    populateMatrix(matrix, p);
+
+    auto paths = getAntPaths(matrix, mainInstance, numberOfAnts);
+    choosePaths(paths);
+
     return 0;
 }
