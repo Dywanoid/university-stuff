@@ -165,7 +165,9 @@ Instance copyInstance(const Instance &instance) {
     return Instance(jobs, instance.maintenances);
 };
 
-Solution getSolution(const Instance &instance, vector<int> &order) {
+Solution getSolution(const Instance &mainInstance, vector<int> &order) {
+    Instance instance = copyInstance(mainInstance);
+
     int currentTime = 0;
     int secondMachineTime = 0;
     int pickedID, pickedIndex;
@@ -173,7 +175,7 @@ Solution getSolution(const Instance &instance, vector<int> &order) {
     auto jobsCompleted = vector<int>();
 
     for(int id: order) {
-        Operation *x = instance.jobs[id - 1].first;
+        Operation *x = instance.jobs[id].first;
         auto duration = static_cast<int>(x->timeToComplete * timeBonus);
 
         while(!validateSpot<vector<Maintenance>>(instance.maintenances, currentTime, duration)){
@@ -190,8 +192,8 @@ Solution getSolution(const Instance &instance, vector<int> &order) {
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         if(pickedIndex != -1) {
             pickedID = jobsCompleted[pickedIndex];
-            Operation *f = instance.jobs[pickedID - 1].first;
-            Operation *s = instance.jobs[pickedID - 1].second;
+            Operation *f = instance.jobs[pickedID].first;
+            Operation *s = instance.jobs[pickedID].second;
             int fT = f->finishTime;
             if (fT >= secondMachineTime) {
                 secondMachineTime = fT + s->timeToComplete;
@@ -206,8 +208,8 @@ Solution getSolution(const Instance &instance, vector<int> &order) {
     while(!jobsCompleted.empty()) { // TODO: make a function out of it (code duplication)
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         pickedID = jobsCompleted[pickedIndex];
-        Operation *f = instance.jobs[pickedID - 1].first;
-        Operation *s = instance.jobs[pickedID - 1].second;
+        Operation *f = instance.jobs[pickedID].first;
+        Operation *s = instance.jobs[pickedID].second;
         int fT = f->finishTime;
         if (fT >= secondMachineTime) {
             secondMachineTime = fT + s->timeToComplete;
@@ -232,7 +234,7 @@ Solution getRandomSolution(const Instance &instance) {
 
     auto order = vector<int>();
     auto limit = static_cast<int>(copiedInstance.jobs.size());
-    for (int i = 1; i <= limit; ++i) order.push_back(i);
+    for (int i = 0; i < limit; ++i) order.push_back(i);
     shuffle(order.begin(), order.end(), dre);
 
     return getSolution(instance, order);
@@ -246,7 +248,7 @@ vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfS
 
 void updateMatrix(Matrix &matrix, const Solution &solution) {
     for (int i = 0; i < solution.jobs.size() - 1; ++i) {
-        matrix.antsPaths[solution.order[i] - 1][solution.order[i+1] - 1] += antStepValue;
+        matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStepValue;
     }
 }
 
@@ -265,7 +267,7 @@ int findNextAntsPathIndex(const vector<float> &matrixValues, vector<int> used) {
 };
 
 
-Solution newAntPath(Matrix &matrix, const Instance &instance) { // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Solution newAntPath(Matrix &matrix, const Instance &instance) {
     vector<int> used;
     int index = getRandomInt(0, n-1);
     for(int i = 0; i < n; i++) {
@@ -277,17 +279,13 @@ Solution newAntPath(Matrix &matrix, const Instance &instance) { // @@@@@@@@@@@@@
 
 vector<Solution> getAntPaths(Matrix &matrix, const Instance &instance, int numOfAnts){
     auto solutions = vector<Solution>();
-    for (int i = 0; i < numOfAnts; ++i) {
-        printf("%d\n", i);
-        auto s = newAntPath(matrix, instance);
-        printf("FC: %d\n", s.finishTime);
-        solutions.push_back(s);
-    }
+    for (int i = 0; i < numOfAnts; ++i)
+        solutions.push_back(newAntPath(matrix, instance));
     return solutions;
 }
 
 bool sortSolutions(Solution a, Solution b) {
-    return a.finishTime > b.finishTime;
+    return a.finishTime < b.finishTime;
 }
 
 vector<Solution> choosePaths(vector<Solution> &paths ) {
@@ -298,15 +296,6 @@ vector<Solution> choosePaths(vector<Solution> &paths ) {
 }
 
 int main() {
-    random_device rd;
-    mt19937 mt(rd());
-    auto values = vector<float>(5, 1);
-    discrete_distribution<int> distribution (values.begin(), values.end());
-    printf("test: %d\n", distribution(mt));
-    printf("test: %d\n", distribution(mt));
-    printf("test: %d\n", distribution(mt));
-
-
     Instance mainInstance = generateInstance(n);
 
     vector<Solution> p = getRandomPopulation(mainInstance, population);
