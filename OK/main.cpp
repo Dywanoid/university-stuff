@@ -9,7 +9,7 @@
 using namespace std;
 
 // OPERATIONS SETTINGS
-#define n 50
+#define n 100
 #define k (int)(n * 0.2)
 #define population 100
 #define operationTimeFrom 5
@@ -20,12 +20,12 @@ using namespace std;
 // PROBLEM SETTINGS
 #define maxTimeReduction 0.75
 #define timeReductionStep 0.05
-#define numberOfIterations 100
+#define numberOfIterations 200
 
 // ANTS SETTINGS
 #define numberOfAnts population
-#define antStepValue 1
-#define evaporationRate 0.9
+#define antStepValue 15
+#define evaporationRate 0.8f
 
 struct Operation {
     int timeToComplete;
@@ -128,6 +128,15 @@ bool validateSpot(T vector, int startTime, int duration) {
     }
     return true;
 }
+
+template <class T>
+vector<T> connectVectors(vector<T> A, vector<T> B){
+    vector<T> C;
+    C.reserve(A.size() + B.size());
+    C.insert(C.end(), A.begin(), A.end());
+    C.insert(C.end(), B.begin(), B.end());
+    return C;
+};
 
 vector<Maintenance> generateMaintenance(int numberOfMaintenances, const vector<Job> &jobs) {
     auto maintenances = vector<Maintenance>();
@@ -240,21 +249,35 @@ Solution getRandomSolution(const Instance &instance) {
     return getSolution(instance, order);
 };
 
+bool sortSolutions(Solution a, Solution b) {
+    return a.finishTime < b.finishTime;
+}
+
 vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfSolutions) {
     auto populationVector = vector<Solution>();
     for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(mainInstance));
     return populationVector;
 };
 
-void updateMatrix(Matrix &matrix, const Solution &solution) {
+void addSolutionToMatrix(Matrix &matrix, const Solution &solution) {
     for (int i = 0; i < solution.jobs.size() - 1; ++i) {
         matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStepValue;
     }
 }
 
-void populateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
+void updateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
     for(const Solution &solution : solutions)
-        updateMatrix(matrix, solution);
+        addSolutionToMatrix(matrix, solution);
+}
+
+void evaporateMatrix(Matrix &matrix) {
+    auto size = static_cast<int>(matrix.antsPaths.size());
+    for (int x = 0; x < size; ++x) {
+        for (int y = 0; y < size; ++y) {
+            float val = matrix.antsPaths[x][y] * evaporationRate;
+            matrix.antsPaths[x][y] = val < 1 ? ceil(val) :  val;
+        }
+    }
 }
 
 int findNextAntsPathIndex(const vector<float> &matrixValues, vector<int> used) {
@@ -265,7 +288,6 @@ int findNextAntsPathIndex(const vector<float> &matrixValues, vector<int> used) {
     discrete_distribution<int> distribution (values.begin(), values.end());
     return distribution(mt);
 };
-
 
 Solution newAntPath(Matrix &matrix, const Instance &instance) {
     vector<int> used;
@@ -284,27 +306,56 @@ vector<Solution> getAntPaths(Matrix &matrix, const Instance &instance, int numOf
     return solutions;
 }
 
-bool sortSolutions(Solution a, Solution b) {
-    return a.finishTime < b.finishTime;
+vector<Solution> choosePaths(vector<Solution> paths, int number ) {
+    static default_random_engine dre = default_random_engine(
+            static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
+
+    sort(paths.begin(), paths.end(), sortSolutions);
+    vector<Solution> output = vector<Solution>(paths.begin(), paths.begin() + number / 2);
+
+    paths.erase(paths.begin(), paths.begin() + number / 2);
+    shuffle(paths.begin(), paths.end(), dre);
+    paths.erase(paths.begin() + number / 2, paths.end());
+    return connectVectors(output, paths);
 }
 
-vector<Solution> choosePaths(vector<Solution> &paths ) {
-    sort(paths.begin(), paths.end(), sortSolutions);
-    printf("Funkcja celu: \n");
-    for(const auto &path: paths) printf("%d\n", path.finishTime);
-    return paths;
+void antColonyOptimization(const Instance &instance, int dimensions, int numOfSolutions, int iterations, int numOfAnts) {
+    Matrix matrix = Matrix(dimensions);
+    vector<Solution> randomSolutions = getRandomPopulation(instance, numOfSolutions);
+    updateMatrix(matrix, randomSolutions);
+
+    vector<Solution> pathsOne = getAntPaths(matrix, instance, numOfAnts);
+    vector<Solution> connected = connectVectors<Solution>(randomSolutions, pathsOne);
+    vector<Solution> bestSolutions = choosePaths(connected, numOfSolutions);
+    float avg = 0;
+    for(auto s : bestSolutions) {
+        avg += s.finishTime;
+    }
+    avg /= numOfSolutions;
+    printf("Avg: %f\n", avg);
+
+    printf("Best: %d\n", bestSolutions[0].finishTime);
+    updateMatrix(matrix, bestSolutions);
+    for (int iter = 0; iter < iterations; ++iter) {
+        pathsOne = getAntPaths(matrix, instance, numOfAnts);
+        connected = connectVectors(pathsOne, bestSolutions);
+        bestSolutions = choosePaths(connected, numOfSolutions);
+        updateMatrix(matrix, bestSolutions);
+        evaporateMatrix(matrix);
+    }
+    sort(bestSolutions.begin(), bestSolutions.end(), sortSolutions);
+    printf("Best after: %d\n", bestSolutions[0].finishTime);
+    avg = 0;
+    for(auto s : bestSolutions) {
+        avg += s.finishTime;
+    }
+    avg /= numOfSolutions;
+    printf("Avg after: %f\n", avg);
 }
 
 int main() {
     Instance mainInstance = generateInstance(n);
 
-    vector<Solution> p = getRandomPopulation(mainInstance, population);
-
-    auto matrix = Matrix(n);
-    populateMatrix(matrix, p);
-
-    auto paths = getAntPaths(matrix, mainInstance, numberOfAnts);
-    choosePaths(paths);
-
+    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
     return 0;
 }
