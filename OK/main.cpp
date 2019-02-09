@@ -13,9 +13,9 @@
 using namespace std;
 
 // OPERATIONS SETTINGS
-#define n 50
-#define k (int)(n * 0.3)
-#define population 50
+#define n {50, 80, 100}
+#define kRate {0.3f, 0.4f, 0.5f}
+#define population {50, 100}
 #define operationTimeFrom 10
 #define operationTimeTo 30
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
@@ -24,16 +24,14 @@ using namespace std;
 // PROBLEM SETTINGS
 #define maxTimeReduction 0.75f
 #define timeReductionStep 0.05f
-#define numberOfIterations 200
+#define numberOfIterations {50, 150}
 
 // ANTS SETTINGS
-#define numberOfAnts 150
-#define antStepValue 20
-#define evaporationRate 0.6f
+#define numberOfAnts {50, 100, 150}
+#define antStepValue {15, 20}
+#define evaporationRate {0.5f, 0.6f, 0.8f}
 #define positionMaxBonus 8.5f
 #define positionStep 0.2f
-
-
 
 struct Operation {
     int timeToComplete;
@@ -82,6 +80,7 @@ struct Solution {
     vector<Job> jobs;
     vector<Maintenance> maintenances;
     vector<int> order;
+    int previousTime = -1;
 
     Solution(int finishTime, vector<Job> jobs, vector<Maintenance> maintenances, vector<int> order)
             : finishTime(finishTime),
@@ -167,9 +166,9 @@ vector<Maintenance> generateMaintenance(int numberOfMaintenances, const vector<J
     return maintenances;
 };
 
-Instance generateInstance(int numberOfJobs) {
+Instance generateInstance(int numberOfJobs, int numberOfMaintenances) {
     auto jobs = generateJobs(numberOfJobs);
-    auto mains = generateMaintenance(k, jobs);
+    auto mains = generateMaintenance(numberOfMaintenances, jobs);
 
     return Instance(jobs, mains);
 };
@@ -197,7 +196,7 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
 
     for(int id: order) {
         Operation *x = instance.jobs[id].first;
-        auto duration = static_cast<int>(x->timeToComplete * timeBonus);
+        auto duration = static_cast<int>(ceil(x->timeToComplete * timeBonus));
 
         while(!validateSpot<vector<Maintenance>>(instance.maintenances, currentTime, duration)){
             currentTime++;
@@ -221,6 +220,7 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
             } else {
                 secondMachineTime += s->timeToComplete;
             }
+            s->startTime = secondMachineTime - s->timeToComplete;
             s->finishTime = secondMachineTime;
             jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
         }
@@ -237,6 +237,7 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
         } else {
             secondMachineTime += s->timeToComplete;
         }
+        s->startTime = secondMachineTime - s->timeToComplete;
         s->finishTime = secondMachineTime;
         jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
     }
@@ -269,30 +270,38 @@ bool sortJobsForSecondMachine(Job A, Job B) {
     return A.second->startTime < B.second->startTime;
 }
 
+bool sortJobsForFirstMachine(Job A, Job B) {
+    return A.first->startTime < B.first->startTime;
+}
+
+bool sortMaintenances(Maintenance A, Maintenance B) {
+    return A.startTime < B.startTime;
+}
+
 vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfSolutions) {
     auto populationVector = vector<Solution>();
     for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(mainInstance));
     return populationVector;
 };
 
-void addSolutionToMatrix(Matrix &matrix, const Solution &solution, int position) {
+void addSolutionToMatrix(Matrix &matrix, const Solution &solution, int position, int antStep) {
     float multiplier = positionMaxBonus - position * positionStep;
     for (int i = 0; i < solution.jobs.size() - 1; ++i) {
-        matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStepValue * multiplier < 1 ? 1: multiplier;
+        matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStep * multiplier < 1 ? 1: multiplier;
     }
 }
 
-void updateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
+void updateMatrix(Matrix &matrix, const vector<Solution> &solutions, int antStep) {
     for (int i = 0; i < solutions.size(); ++i) {
-        addSolutionToMatrix(matrix, solutions[i], i + 1);
+        addSolutionToMatrix(matrix, solutions[i], i + 1, antStep);
     }
 }
 
-void evaporateMatrix(Matrix &matrix) {
+void evaporateMatrix(Matrix &matrix, float evaporation) {
     auto size = static_cast<int>(matrix.antsPaths.size());
     for (int x = 0; x < size; ++x) {
         for (int y = 0; y < size; ++y) {
-            float val = matrix.antsPaths[x][y] * evaporationRate;
+            float val = matrix.antsPaths[x][y] * evaporation;
             matrix.antsPaths[x][y] = val < 1 ? ceil(val) :  val;
         }
     }
@@ -307,20 +316,20 @@ int findNextAntsPathIndex(const vector<float> &matrixValues, vector<int> used) {
     return distribution(mt);
 };
 
-Solution newAntPath(Matrix &matrix, const Instance &instance) {
+Solution newAntPath(Matrix &matrix, const Instance &instance, int N) {
     vector<int> used;
-    int index = getRandomInt(0, n-1);
-    for(int i = 0; i < n; i++) {
+    int index = getRandomInt(0, N - 1);
+    for(int i = 0; i < N; i++) {
         used.push_back(index);
         index = findNextAntsPathIndex(matrix.antsPaths[index], used);
     }
     return getSolution(instance, used);
 }
 
-vector<Solution> getAntPaths(Matrix &matrix, const Instance &instance, int numOfAnts){
+vector<Solution> getAntPaths(Matrix &matrix, const Instance &instance, int numOfAnts, int N){
     auto solutions = vector<Solution>();
     for (int i = 0; i < numOfAnts; ++i)
-        solutions.push_back(newAntPath(matrix, instance));
+        solutions.push_back(newAntPath(matrix, instance, N));
     return solutions;
 }
 
@@ -339,32 +348,38 @@ vector<Solution> choosePaths(vector<Solution> paths, int number ) {
     return picked;
 }
 
-void antColonyOptimization(const Instance &instance, int dimensions, int numOfSolutions, int iterations, int numOfAnts) {
+Solution antColonyOptimization(const Instance &instance,
+                                int dimensions,
+                                int numOfSolutions,
+                                int iterations,
+                                int numOfAnts,
+                                int antStep,
+                                float evaporation) {
+
     Matrix matrix = Matrix(dimensions);
     vector<Solution> randomSolutions = getRandomPopulation(instance, numOfSolutions);
     sort(randomSolutions.begin(), randomSolutions.end(), sortSolutions);
-    updateMatrix(matrix, randomSolutions);
+    updateMatrix(matrix, randomSolutions, antStep);
     int B1 = randomSolutions[getRandomInt(0, numOfSolutions - 1)].finishTime;
 
-    printf("Best: %d\n", B1);
-    vector<Solution> pathsOne = getAntPaths(matrix, instance, numOfAnts);
+    vector<Solution> pathsOne = getAntPaths(matrix, instance, numOfAnts, dimensions);
     vector<Solution> connected = connectVectors<Solution>(randomSolutions, pathsOne);
     vector<Solution> bestSolutions = choosePaths(connected, numOfSolutions);
 
 
-    updateMatrix(matrix, bestSolutions);
+    updateMatrix(matrix, bestSolutions, antStep);
     for (int iter = 0; iter < iterations; ++iter) {
-        pathsOne = getAntPaths(matrix, instance, numOfAnts);
+        pathsOne = getAntPaths(matrix, instance, numOfAnts, dimensions);
         connected = connectVectors(pathsOne, bestSolutions);
         bestSolutions = choosePaths(connected, numOfSolutions);
-        updateMatrix(matrix, bestSolutions);
-        evaporateMatrix(matrix);
+        updateMatrix(matrix, bestSolutions, antStep);
+        evaporateMatrix(matrix, evaporation);
     }
     sort(bestSolutions.begin(), bestSolutions.end(), sortSolutions);
     int B2 = bestSolutions[0].finishTime;
-    printf("Best after: %d\n", B2);
-    printf("Difference: %d, Gain: %.02f%%\n", B1-B2,(B1-B2)*100/(float)B1);
-
+    printf("Best before/after: %d/%d Difference: %d, Gain: %.02f%%\n", B1, B2, B1-B2,(B1-B2)*100/(float)B1);
+    bestSolutions[0].previousTime = B1;
+    return bestSolutions[0];
 }
 
 void saveInstance(const Instance &instance, int instanceNumber) {
@@ -420,7 +435,7 @@ Instance loadInstance(int instanceNumber) {
 void saveOutput(const Instance &instance, const Solution &bestSolution, int previousTime, int instanceNumber) {
     ofstream outputFile;
     ostringstream  streamName;
-    streamName << "tests/instance" << instanceNumber << ".txt";
+    streamName << "tests/test" << instanceNumber<< ".txt";
     string var = streamName.str();
     outputFile.open (var.c_str(), ios::trunc);
     outputFile << "****" << instanceNumber << "****" <<endl;
@@ -439,9 +454,12 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
     int currentTime = 0,
         maintenanceIndex = 1,
         idleIndex = 1;
-    for(int index : bestSolution.order) { // first machine
-        Job job = bestSolution.jobs[index];
-        while(!done) {
+    vector<Job> firstMachine = vector<Job>(bestSolution.jobs);
+    vector<Maintenance> firstMachineMaintenances = vector<Maintenance>(instance.maintenances);
+    sort(firstMachine.begin(), firstMachine.end(), sortJobsForFirstMachine);
+    sort(firstMachineMaintenances.begin(), firstMachineMaintenances.end(), sortMaintenances);
+    for(Job job : firstMachine) { // first machine
+        while (!done) {
             if (job.first->startTime == currentTime) {
                 if (idle) {
                     helperStream << "idle" << idleIndex++ << "_M1, " <<
@@ -453,14 +471,16 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
                     totalIdleTimeM1 += currentTime - idleStartTime;
                 }
                 helperStream << "op1_" << job.id << ", " <<
-                             job.first->timeToComplete << ", " << job.first->finishTime - job.first->startTime << "; ";
-                currentTime = job.first->finishTime;
+                             currentTime << ", " << job.first->timeToComplete <<
+                             ", " << currentTime + job.first->finishTime - job.first->startTime << "; ";
+                currentTime += job.first->finishTime - job.first->startTime;
                 M1 += helperStream.str();
                 helperStream.str("");
                 break;
             }
 
-            int idleTest = maintenanceIndex;
+            int maintenanceChange = maintenanceIndex;
+
             for (auto maintenance : instance.maintenances) {
                 if (maintenance.startTime == currentTime) {
                     if (idle) {
@@ -476,49 +496,142 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
                                  maintenance.startTime << ", " << maintenance.duration << "; ";
                     M1 += helperStream.str();
                     helperStream.str("");
-                    currentTime = maintenance.finishTime;
+                    currentTime += maintenance.duration;
                     break;
                 }
             }
-
-            if(idleTest == maintenanceIndex) {
+            if (maintenanceChange != maintenanceIndex) {
+                break;
+            }
+            if (maintenanceChange == maintenanceIndex && !idle) {
                 idle = true;
                 idleStartTime = currentTime;
             }
             currentTime++;
         }
-
     }
     vector<Job> secondMachine = vector<Job>(bestSolution.jobs);
     sort(secondMachine.begin(), secondMachine.end(), sortJobsForSecondMachine);
+    currentTime = 0;
+    idleIndex = 1;
+    idle = false;
+    done = false;
     for(Job job : secondMachine) {
+        while(!done) {
+            if (job.second->startTime == currentTime) {
+                if(idle) {
+                    helperStream << "idle" << idleIndex++ << "_M2, " <<
+                                 idleStartTime << ", " << currentTime - idleStartTime << "; ";
+                    M2 += helperStream.str();
+                    helperStream.str("");
+                    idle = false;
+                    numOfIdlesM2++;
+                    totalIdleTimeM2 += currentTime - idleStartTime;
+                }
 
+                helperStream << "op1_" << job.id << ", " <<
+                             currentTime << ", " << job.second->timeToComplete <<
+                             ", " <<  currentTime + job.second->finishTime - job.second->startTime << "; ";
+                currentTime += job.second->finishTime - job.second->startTime;
+                M2 += helperStream.str();
+                helperStream.str("");
+                break;
+            }
+            if(!idle) idleStartTime = currentTime;
+            idle = true;
+            currentTime++;
+        }
+    }
+    int maintenancesTotalTime = 0;
+    for(Maintenance maintenance : instance.maintenances) {
+        maintenancesTotalTime += maintenance.duration;
     }
     outputFile << "M1: " << M1 << endl;
     outputFile << "M2: " << M2 << endl;
-    outputFile << instance.maintenances.size() << ";" << endl;
-    outputFile << "0;0" << endl;
-    outputFile << numOfIdlesM1 << ";" << totalIdleTimeM1 << endl;
-    outputFile << numOfIdlesM2 << ";" << totalIdleTimeM2 << endl;
+    outputFile << instance.maintenances.size() << ", " << maintenancesTotalTime << endl;
+    outputFile << "0, 0" << endl;
+    outputFile << numOfIdlesM1 << ", " << totalIdleTimeM1 << endl;
+    outputFile << numOfIdlesM2 << ", " << totalIdleTimeM2 << endl;
     outputFile << "***EOF***";
     outputFile.close();
 };
 
-void testFunction() {};
-
+void testFunction(int ID, int N, int K, int POPULATION, int NUMBEROFITERATIONS, int NUMBEROFANTS, int ANTSTEPVALUE, float EVAPORATIONRATE) {
+    printf("Nr %d\n", ID);
+    Instance mainInstance = generateInstance(N, K);
+    saveInstance(mainInstance, ID);
+    Solution bestSolution = antColonyOptimization(mainInstance, N, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+    saveOutput(mainInstance, bestSolution, bestSolution.previousTime, ID);
+};
 
 int main() {
-//    for(int i = 1; i <= 10; i++) {
-//        printf("\n\nNr %d:\n", i);
-//        Instance mainInstance = generateInstance(n);
-//      antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
-//    }
-    Instance mainInstance = generateInstance(n);
-//    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
-    saveInstance(mainInstance, 3);
-    Instance testing = loadInstance(5);
-    saveInstance(testing, 4);
-    antColonyOptimization(testing, n, population, numberOfIterations, numberOfAnts);
+
+    int ns[] = n;
+    vector<int> nsVector (ns, ns + sizeof(ns) / sizeof(int) );
+
+    float kRates[] = kRate;
+    vector<float> kRatesVector (kRates, kRates + sizeof(kRates) / sizeof(float) );
+
+    int populations[] = population;
+    vector<int> populationsVector (populations, populations + sizeof(populations) / sizeof(int) );
+
+    int numberOfAntsArray[] = numberOfAnts;
+    vector<int> numberOfAntsVector (numberOfAntsArray, numberOfAntsArray + sizeof(numberOfAntsArray) / sizeof(int) );
+
+    int numsOfIters[] = numberOfIterations;
+    vector<int> numsOfItersVector (numsOfIters, numsOfIters + sizeof(numsOfIters) / sizeof(int) );
+
+    int antStepValues[] = antStepValue;
+    vector<int> antStepValuesVector (antStepValues, antStepValues + sizeof(antStepValues) / sizeof(int) );
+
+    float evaporationRates[] = evaporationRate;
+    vector<float> evaporationRatesVector (evaporationRates, evaporationRates + sizeof(evaporationRates) / sizeof(float));
+
+
+    int ID = 1;
+    for(int N : nsVector) {
+        printf("Test N dla: %d\n", N);
+        int K = (int) 0.3 * N; // default k
+        int POPULATION = 100;
+        int NUMBEROFITERATIONS = 100;
+        int NUMBEROFANTS = 200;
+        int ANTSTEPVALUE = 10;
+        float EVAPORATIONRATE = 0.7;
+
+        printf("kRate: \n");
+        for(float KRATE : kRatesVector) {
+            testFunction(ID++, N, (int) KRATE * N, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+        }
+
+        printf("Population: \n");
+        for(int POP : populationsVector) {
+            testFunction(ID++, N, K, POP, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+        }
+
+        printf("Iterations: \n");
+        for(int ITER : numsOfItersVector) {
+            testFunction(ID++, N, K, POPULATION, ITER, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+
+        }
+
+        printf("Ants: \n");
+        for(int ANTS : numberOfAntsVector) {
+            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, ANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+
+        }
+
+        printf("Step: \n");
+        for(int STEP : antStepValuesVector) {
+            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, STEP, EVAPORATIONRATE);
+
+        }
+
+        printf("Evaporation: \n");
+        for(float EVAPORATION : evaporationRatesVector) {
+            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATION);
+
+        }
+    }
 
     return 0;
 }
