@@ -166,6 +166,13 @@ vector<Maintenance> generateMaintenance(int numberOfMaintenances, const vector<J
     return maintenances;
 };
 
+void deleteInstance(Instance &instance) {
+    for(Job job : instance.jobs) {
+        delete job.first;
+        delete job.second;
+    }
+}
+
 Instance generateInstance(int numberOfJobs, int numberOfMaintenances) {
     auto jobs = generateJobs(numberOfJobs);
     auto mains = generateMaintenance(numberOfMaintenances, jobs);
@@ -562,6 +569,7 @@ void testFunction(int ID, int N, int K, int POPULATION, int NUMBEROFITERATIONS, 
     saveInstance(mainInstance, ID);
     Solution bestSolution = antColonyOptimization(mainInstance, N, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
     saveOutput(mainInstance, bestSolution, bestSolution.previousTime, ID);
+    deleteInstance(mainInstance);
 };
 
 int main() {
