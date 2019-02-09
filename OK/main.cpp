@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 
+
 // PROBLEM 3
 using namespace std;
 
@@ -104,6 +105,18 @@ int getRandomInt(int from, int to) {
     uniform_int_distribution<int> random(from, to);
     return random(mt);
 };
+
+vector<string> split(const string& s, char delimiter)
+{
+    vector<std::string> tokens;
+    string token;
+    istringstream tokenStream(s);
+    while (getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
 
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
@@ -356,7 +369,6 @@ void saveInstance(const Instance &instance, int instanceNumber) {
     streamName << "instances/instance" << instanceNumber << ".txt";
     string var = streamName.str();
     instanceFile.open (var.c_str(), ios::trunc);
-//    instanceFile.open("instances/instance1.txt", ios::trunc);
     unsigned long long int numOp = instance.jobs.size();
     instanceFile << "****" << instanceNumber << "****" <<endl;
     instanceFile << numOp << endl;
@@ -371,34 +383,77 @@ void saveInstance(const Instance &instance, int instanceNumber) {
     instanceFile.close();
 }
 
-void loadInstance(int instanceNumber) {
+Instance loadInstance(int instanceNumber) {
     ifstream instanceFile;
-    string line;
+    string line, seg;
     ostringstream  streamName;
     streamName << "instances/instance" << instanceNumber << ".txt";
     string var = streamName.str();
+
+    vector<Job> jobs = vector<Job>();
+    int jobIndex = 1;
+    vector<Maintenance> maintenances = vector<Maintenance>();
+
     instanceFile.open(var.c_str(), ios::out);
+    getline(instanceFile, line); //first line (with instance number)
+    getline(instanceFile, line); //getting number of jobs
+    int numOfJobs = stoi(line);
+    for (int i = 0; i < numOfJobs; ++i) {
+        getline(instanceFile, line);
+        auto pieces = split(line, ';');
+        jobs.push_back(Job(jobIndex++, new Operation(stoi(pieces[0])), new Operation(stoi(pieces[1]))));
+    }
+
     while(getline(instanceFile, line)) {
-        cout << line << endl;
+        auto pieces = split(line, ';');
+        if(pieces.size() == 1) break;
+        maintenances.push_back(Maintenance(stoi(pieces[3]), stoi(pieces[2]))); // NOLINT(modernize-use-emplace)
     }
     instanceFile.close();
+    return Instance(jobs, maintenances);
 };
 
-void saveOutput() {};
+void saveOutput(const Instance &instance, const Solution &bestSolution, int previousTime, int instanceNumber) {
+    ofstream outputFile;
+    ostringstream  streamName;
+    streamName << "tests/instance" << instanceNumber << ".txt";
+    string var = streamName.str();
+    outputFile.open (var.c_str(), ios::trunc);
+    outputFile << "****" << instanceNumber << "****" <<endl;
+    outputFile << bestSolution.finishTime << ", " << previousTime << endl;
+    string M1, M2;
+    int numOfIdlesM1 = 0,
+    totalIdleTimeM1 = 0,
+    numOfIdlesM2 = 0,
+    totalIdleTimeM2 = 0;
+
+
+
+    outputFile << "M1: " << M1 << endl;
+    outputFile << "M2: " << M2 << endl;
+    outputFile << instance.maintenances.size() << ";" << endl;
+    outputFile << "0;0" << endl;
+    outputFile << numOfIdlesM1 << ";" << totalIdleTimeM1 << endl;
+    outputFile << numOfIdlesM2 << ";" << totalIdleTimeM2 << endl;
+    outputFile << "***EOF***";
+    outputFile.close();
+};
 
 void testFunction() {};
 
 
 int main() {
-    for(int i = 1; i <= 10; i++) {
-        printf("\n\nNr %d:\n", i);
-        Instance mainInstance = generateInstance(n);
-//        antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
-    }
+//    for(int i = 1; i <= 10; i++) {
+//        printf("\n\nNr %d:\n", i);
+//        Instance mainInstance = generateInstance(n);
+//      antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
+//    }
     Instance mainInstance = generateInstance(n);
 //    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
     saveInstance(mainInstance, 3);
-    loadInstance(5);
+    Instance testing = loadInstance(5);
+    antColonyOptimization(testing, n, population, numberOfIterations, numberOfAnts);
+
 
 
     return 0;
