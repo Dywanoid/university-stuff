@@ -1,4 +1,7 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include <utility>
 #include <vector>
 #include <random>
@@ -9,23 +12,27 @@
 using namespace std;
 
 // OPERATIONS SETTINGS
-#define n 100
-#define k (int)(n * 0.2)
-#define population 100
-#define operationTimeFrom 5
-#define operationTimeTo 20
+#define n 50
+#define k (int)(n * 0.3)
+#define population 50
+#define operationTimeFrom 10
+#define operationTimeTo 30
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
 #define maintenanceTimeTo (int)(operationTimeTo / 2)
 
 // PROBLEM SETTINGS
-#define maxTimeReduction 0.75
-#define timeReductionStep 0.05
+#define maxTimeReduction 0.75f
+#define timeReductionStep 0.05f
 #define numberOfIterations 200
 
 // ANTS SETTINGS
-#define numberOfAnts population
-#define antStepValue 15
-#define evaporationRate 0.8f
+#define numberOfAnts 150
+#define antStepValue 20
+#define evaporationRate 0.6f
+#define positionMaxBonus 8.5f
+#define positionStep 0.2f
+
+
 
 struct Operation {
     int timeToComplete;
@@ -97,14 +104,6 @@ int getRandomInt(int from, int to) {
     uniform_int_distribution<int> random(from, to);
     return random(mt);
 };
-
-float getRandomFloat(float from, float to) {
-    static random_device rd;
-    static mt19937 mt(rd());
-
-    uniform_real_distribution<float> random(from, to);
-    return random(mt);
-}
 
 vector<Job> generateJobs(int numberOfJobs) {
     auto jobs = vector<Job>();
@@ -259,15 +258,17 @@ vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfS
     return populationVector;
 };
 
-void addSolutionToMatrix(Matrix &matrix, const Solution &solution) {
+void addSolutionToMatrix(Matrix &matrix, const Solution &solution, int position) {
+    float multiplier = positionMaxBonus - position * positionStep;
     for (int i = 0; i < solution.jobs.size() - 1; ++i) {
-        matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStepValue;
+        matrix.antsPaths[solution.order[i]][solution.order[i+1]] += antStepValue * multiplier < 1 ? 1: multiplier;
     }
 }
 
 void updateMatrix(Matrix &matrix, const vector<Solution> &solutions) {
-    for(const Solution &solution : solutions)
-        addSolutionToMatrix(matrix, solution);
+    for (int i = 0; i < solutions.size(); ++i) {
+        addSolutionToMatrix(matrix, solutions[i], i + 1);
+    }
 }
 
 void evaporateMatrix(Matrix &matrix) {
@@ -311,30 +312,29 @@ vector<Solution> choosePaths(vector<Solution> paths, int number ) {
             static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
 
     sort(paths.begin(), paths.end(), sortSolutions);
-    vector<Solution> output = vector<Solution>(paths.begin(), paths.begin() + number / 2);
+    vector<Solution> output = vector<Solution>(paths.begin(), paths.begin() + (int) (number * 0.75));
 
-    paths.erase(paths.begin(), paths.begin() + number / 2);
+    paths.erase(paths.begin(), paths.begin() + (int) (number * 0.75));
     shuffle(paths.begin(), paths.end(), dre);
-    paths.erase(paths.begin() + number / 2, paths.end());
-    return connectVectors(output, paths);
+    paths.erase(paths.begin() + (int) (number * 0.75), paths.end());
+    auto picked = connectVectors(output, paths);
+    sort(picked.begin(), picked.end(), sortSolutions);
+    return picked;
 }
 
 void antColonyOptimization(const Instance &instance, int dimensions, int numOfSolutions, int iterations, int numOfAnts) {
     Matrix matrix = Matrix(dimensions);
     vector<Solution> randomSolutions = getRandomPopulation(instance, numOfSolutions);
+    sort(randomSolutions.begin(), randomSolutions.end(), sortSolutions);
     updateMatrix(matrix, randomSolutions);
+    int B1 = randomSolutions[getRandomInt(0, numOfSolutions - 1)].finishTime;
 
+    printf("Best: %d\n", B1);
     vector<Solution> pathsOne = getAntPaths(matrix, instance, numOfAnts);
     vector<Solution> connected = connectVectors<Solution>(randomSolutions, pathsOne);
     vector<Solution> bestSolutions = choosePaths(connected, numOfSolutions);
-    float avg = 0;
-    for(auto s : bestSolutions) {
-        avg += s.finishTime;
-    }
-    avg /= numOfSolutions;
-    printf("Avg: %f\n", avg);
 
-    printf("Best: %d\n", bestSolutions[0].finishTime);
+
     updateMatrix(matrix, bestSolutions);
     for (int iter = 0; iter < iterations; ++iter) {
         pathsOne = getAntPaths(matrix, instance, numOfAnts);
@@ -344,18 +344,62 @@ void antColonyOptimization(const Instance &instance, int dimensions, int numOfSo
         evaporateMatrix(matrix);
     }
     sort(bestSolutions.begin(), bestSolutions.end(), sortSolutions);
-    printf("Best after: %d\n", bestSolutions[0].finishTime);
-    avg = 0;
-    for(auto s : bestSolutions) {
-        avg += s.finishTime;
-    }
-    avg /= numOfSolutions;
-    printf("Avg after: %f\n", avg);
+    int B2 = bestSolutions[0].finishTime;
+    printf("Best after: %d\n", B2);
+    printf("Difference: %d, Gain: %.02f%%\n", B1-B2,(B1-B2)*100/(float)B1);
+
 }
 
-int main() {
-    Instance mainInstance = generateInstance(n);
+void saveInstance(const Instance &instance, int instanceNumber) {
+    ofstream instanceFile;
+    ostringstream  streamName;
+    streamName << "instances/instance" << instanceNumber << ".txt";
+    string var = streamName.str();
+    instanceFile.open (var.c_str(), ios::trunc);
+//    instanceFile.open("instances/instance1.txt", ios::trunc);
+    unsigned long long int numOp = instance.jobs.size();
+    instanceFile << "****" << instanceNumber << "****" <<endl;
+    instanceFile << numOp << endl;
+    for(auto job :instance.jobs) {
+        instanceFile << job.first->timeToComplete << ";" << job.second->timeToComplete << ";" << "1;" << "2;" << endl;
+    }
+    int maintenanceIndex = 1;
+    for(auto maintenance : instance.maintenances) {
+        instanceFile << maintenanceIndex++ << ";" << "1;" << maintenance.duration << ";" << maintenance.startTime << endl;
+    }
+    instanceFile << "***EOF***";
+    instanceFile.close();
+}
 
-    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
+void loadInstance(int instanceNumber) {
+    ifstream instanceFile;
+    string line;
+    ostringstream  streamName;
+    streamName << "instances/instance" << instanceNumber << ".txt";
+    string var = streamName.str();
+    instanceFile.open(var.c_str(), ios::out);
+    while(getline(instanceFile, line)) {
+        cout << line << endl;
+    }
+    instanceFile.close();
+};
+
+void saveOutput() {};
+
+void testFunction() {};
+
+
+int main() {
+    for(int i = 1; i <= 10; i++) {
+        printf("\n\nNr %d:\n", i);
+        Instance mainInstance = generateInstance(n);
+//        antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
+    }
+    Instance mainInstance = generateInstance(n);
+//    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
+    saveInstance(mainInstance, 3);
+    loadInstance(5);
+
+
     return 0;
 }
