@@ -265,6 +265,10 @@ bool sortSolutions(Solution a, Solution b) {
     return a.finishTime < b.finishTime;
 }
 
+bool sortJobsForSecondMachine(Job A, Job B) {
+    return A.second->startTime < B.second->startTime;
+}
+
 vector<Solution> getRandomPopulation(const Instance &mainInstance, int numberOfSolutions) {
     auto populationVector = vector<Solution>();
     for (int i = 0; i < numberOfSolutions; ++i) populationVector.push_back(getRandomSolution(mainInstance));
@@ -422,13 +426,74 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
     outputFile << "****" << instanceNumber << "****" <<endl;
     outputFile << bestSolution.finishTime << ", " << previousTime << endl;
     string M1, M2;
+    ostringstream  helperStream;
+
     int numOfIdlesM1 = 0,
-    totalIdleTimeM1 = 0,
-    numOfIdlesM2 = 0,
-    totalIdleTimeM2 = 0;
+            totalIdleTimeM1 = 0,
+            numOfIdlesM2 = 0,
+            totalIdleTimeM2 = 0;
 
+    bool idle = false;
+    bool done = false;
+    int idleStartTime = 0;
+    int currentTime = 0,
+        maintenanceIndex = 1,
+        idleIndex = 1;
+    for(int index : bestSolution.order) { // first machine
+        Job job = bestSolution.jobs[index];
+        while(!done) {
+            if (job.first->startTime == currentTime) {
+                if (idle) {
+                    helperStream << "idle" << idleIndex++ << "_M1, " <<
+                                 idleStartTime << ", " << currentTime - idleStartTime << "; ";
+                    M1 += helperStream.str();
+                    helperStream.str("");
+                    idle = false;
+                    numOfIdlesM1++;
+                    totalIdleTimeM1 += currentTime - idleStartTime;
+                }
+                helperStream << "op1_" << job.id << ", " <<
+                             job.first->timeToComplete << ", " << job.first->finishTime - job.first->startTime << "; ";
+                currentTime = job.first->finishTime;
+                M1 += helperStream.str();
+                helperStream.str("");
+                break;
+            }
 
+            int idleTest = maintenanceIndex;
+            for (auto maintenance : instance.maintenances) {
+                if (maintenance.startTime == currentTime) {
+                    if (idle) {
+                        helperStream << "idle" << idleIndex++ << "_M1, " <<
+                                     idleStartTime << ", " << currentTime - idleStartTime << "; ";
+                        M1 += helperStream.str();
+                        helperStream.str("");
+                        idle = false;
+                        numOfIdlesM1++;
+                        totalIdleTimeM1 += currentTime - idleStartTime;
+                    }
+                    helperStream << "maint" << maintenanceIndex++ << "_M1, " <<
+                                 maintenance.startTime << ", " << maintenance.duration << "; ";
+                    M1 += helperStream.str();
+                    helperStream.str("");
+                    currentTime = maintenance.finishTime;
+                    break;
+                }
+            }
 
+            if(idleTest == maintenanceIndex) {
+                idle = true;
+                idleStartTime = currentTime;
+            }
+            currentTime++;
+        }
+
+    }
+    vector<Job> secondMachine = vector<Job>(bestSolution.jobs);
+    sort(secondMachine.begin(), secondMachine.end(), sortJobsForSecondMachine);
+    for(Job job : secondMachine) {
+
+    }
     outputFile << "M1: " << M1 << endl;
     outputFile << "M2: " << M2 << endl;
     outputFile << instance.maintenances.size() << ";" << endl;
@@ -452,9 +517,8 @@ int main() {
 //    antColonyOptimization(mainInstance, n, population, numberOfIterations, numberOfAnts);
     saveInstance(mainInstance, 3);
     Instance testing = loadInstance(5);
+    saveInstance(testing, 4);
     antColonyOptimization(testing, n, population, numberOfIterations, numberOfAnts);
-
-
 
     return 0;
 }
