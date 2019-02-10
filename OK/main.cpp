@@ -224,7 +224,7 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
         }
     }
 
-    while(!jobsCompleted.empty()) { // TODO: make a function out of it (code duplication)
+    while(!jobsCompleted.empty()) {
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         pickedID = jobsCompleted[pickedIndex];
         int fT = instance.jobs[pickedID].first.finishTime;
