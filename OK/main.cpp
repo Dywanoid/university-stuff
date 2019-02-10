@@ -13,11 +13,11 @@
 using namespace std;
 
 // OPERATIONS SETTINGS
-#define n {50, 80, 100}
-#define kRate {0.3f, 0.4f, 0.5f}
+#define n {50, 80, 100, 120}
+#define kRate {0.3f, 0.4f, 0.5f, 0.6f}
 #define population {50, 100}
-#define operationTimeFrom 10
-#define operationTimeTo 30
+#define operationTimeFrom 15
+#define operationTimeTo 60
 #define maintenanceTimeFrom (int)(operationTimeFrom / 2)
 #define maintenanceTimeTo (int)(operationTimeTo / 2)
 
@@ -27,9 +27,9 @@ using namespace std;
 #define numberOfIterations {50, 150}
 
 // ANTS SETTINGS
-#define numberOfAnts {50, 100, 150}
-#define antStepValue {15, 20}
-#define evaporationRate {0.5f, 0.6f, 0.8f}
+#define numberOfAnts {50, 150, 200}
+#define antStepValue {10, 20}
+#define evaporationRate {0.5f, 0.6f, 0.7f, 0.8f}
 #define positionMaxBonus 8.5f
 #define positionStep 0.2f
 
@@ -37,23 +37,24 @@ struct Operation {
     int timeToComplete;
     int startTime;
     int finishTime;
-    Operation *otherOperation;
 
+    Operation() {
+        timeToComplete = -1;
+        startTime = -1;
+        finishTime = -1;
+    }
     explicit Operation(int ttc) : timeToComplete(ttc),
                          startTime(-1),
-                         finishTime(-1),
-                         otherOperation(nullptr) {}
+                         finishTime(-1){}
 };
 
 struct Job {
     int id;
-    Operation *first;
-    Operation *second;
+    Operation first;
+    Operation second;
 
-    Job(int jobID, Operation *one, Operation *two){
+    Job(int jobID, Operation one, Operation two){
         id = jobID;
-        one->otherOperation = two;
-        two->otherOperation = one;
         first = one;
         second = two;
     };
@@ -123,7 +124,7 @@ vector<Job> generateJobs(int numberOfJobs) {
     for (int i = 1; i < numberOfJobs + 1; ++i) {
         op1 = getRandomInt(operationTimeFrom, operationTimeTo);
         op2 = getRandomInt(operationTimeFrom, operationTimeTo);
-        jobs.push_back(Job(i, new Operation(op1), new Operation(op2)));
+        jobs.emplace_back(i, Operation(op1), Operation(op2));
     }
     return jobs;
 };
@@ -153,7 +154,7 @@ vector<Maintenance> generateMaintenance(int numberOfMaintenances, const vector<J
     auto maintenances = vector<Maintenance>();
     int operationsTotalTime = 0;
     int startTime, duration;
-    for(auto job: jobs) operationsTotalTime += job.first -> timeToComplete;
+    for(auto job: jobs) operationsTotalTime += job.first.timeToComplete;
 
     for (int i = 0; i < numberOfMaintenances; ++i) {
         do{
@@ -165,13 +166,6 @@ vector<Maintenance> generateMaintenance(int numberOfMaintenances, const vector<J
     }
     return maintenances;
 };
-
-void deleteInstance(Instance &instance) {
-    for(Job job : instance.jobs) {
-        delete job.first;
-        delete job.second;
-    }
-}
 
 Instance generateInstance(int numberOfJobs, int numberOfMaintenances) {
     auto jobs = generateJobs(numberOfJobs);
@@ -188,7 +182,7 @@ int pickOneJob(int size) {
 Instance copyInstance(const Instance &instance) {
     auto jobs = vector<Job>();
     for(Job j : instance.jobs)
-        jobs.emplace_back(j.id, new Operation(j.first->timeToComplete), new Operation(j.second->timeToComplete));
+        jobs.emplace_back(j.id, Operation(j.first.timeToComplete), Operation(j.second.timeToComplete));
     return Instance(jobs, instance.maintenances);
 };
 
@@ -202,33 +196,30 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
     auto jobsCompleted = vector<int>();
 
     for(int id: order) {
-        Operation *x = instance.jobs[id].first;
-        auto duration = static_cast<int>(ceil(x->timeToComplete * timeBonus));
+        auto duration = static_cast<int>(ceil(instance.jobs[id].first.timeToComplete * timeBonus));
 
         while(!validateSpot<vector<Maintenance>>(instance.maintenances, currentTime, duration)){
             currentTime++;
             timeBonus = 1; // resetting timeBonus to 0 after maintenance
-            duration = x->timeToComplete;
+            duration = instance.jobs[id].first.timeToComplete;
         };
 
-        x->startTime = currentTime;
-        x->finishTime = currentTime + duration;
+        instance.jobs[id].first.startTime = currentTime;
+        instance.jobs[id].first.finishTime = currentTime + duration;
         currentTime += duration;
         if (timeBonus > maxTimeReduction) timeBonus -= timeReductionStep;
         jobsCompleted.push_back(id);
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         if(pickedIndex != -1) {
             pickedID = jobsCompleted[pickedIndex];
-            Operation *f = instance.jobs[pickedID].first;
-            Operation *s = instance.jobs[pickedID].second;
-            int fT = f->finishTime;
+            int fT = instance.jobs[pickedID].first.finishTime;
             if (fT >= secondMachineTime) {
-                secondMachineTime = fT + s->timeToComplete;
+                secondMachineTime = fT + instance.jobs[pickedID].second.timeToComplete;
             } else {
-                secondMachineTime += s->timeToComplete;
+                secondMachineTime += instance.jobs[pickedID].second.timeToComplete;
             }
-            s->startTime = secondMachineTime - s->timeToComplete;
-            s->finishTime = secondMachineTime;
+            instance.jobs[pickedID].second.startTime = secondMachineTime - instance.jobs[pickedID].second.timeToComplete;
+            instance.jobs[pickedID].second.finishTime = secondMachineTime;
             jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
         }
     }
@@ -236,16 +227,14 @@ Solution getSolution(const Instance &mainInstance, vector<int> &order) {
     while(!jobsCompleted.empty()) { // TODO: make a function out of it (code duplication)
         pickedIndex = pickOneJob(static_cast<int>(jobsCompleted.size()));
         pickedID = jobsCompleted[pickedIndex];
-        Operation *f = instance.jobs[pickedID].first;
-        Operation *s = instance.jobs[pickedID].second;
-        int fT = f->finishTime;
+        int fT = instance.jobs[pickedID].first.finishTime;
         if (fT >= secondMachineTime) {
-            secondMachineTime = fT + s->timeToComplete;
+            secondMachineTime = fT + instance.jobs[pickedID].second.timeToComplete;
         } else {
-            secondMachineTime += s->timeToComplete;
+            secondMachineTime += instance.jobs[pickedID].second.timeToComplete;
         }
-        s->startTime = secondMachineTime - s->timeToComplete;
-        s->finishTime = secondMachineTime;
+        instance.jobs[pickedID].second.startTime = secondMachineTime - instance.jobs[pickedID].second.timeToComplete;
+        instance.jobs[pickedID].second.finishTime = secondMachineTime;
         jobsCompleted.erase(jobsCompleted.begin() + pickedIndex);
     }
 
@@ -274,11 +263,11 @@ bool sortSolutions(Solution a, Solution b) {
 }
 
 bool sortJobsForSecondMachine(Job A, Job B) {
-    return A.second->startTime < B.second->startTime;
+    return A.second.startTime < B.second.startTime;
 }
 
 bool sortJobsForFirstMachine(Job A, Job B) {
-    return A.first->startTime < B.first->startTime;
+    return A.first.startTime < B.first.startTime;
 }
 
 bool sortMaintenances(Maintenance A, Maintenance B) {
@@ -399,7 +388,7 @@ void saveInstance(const Instance &instance, int instanceNumber) {
     instanceFile << "****" << instanceNumber << "****" <<endl;
     instanceFile << numOp << endl;
     for(auto job :instance.jobs) {
-        instanceFile << job.first->timeToComplete << ";" << job.second->timeToComplete << ";" << "1;" << "2;" << endl;
+        instanceFile << job.first.timeToComplete << ";" << job.second.timeToComplete << ";" << "1;" << "2;" << endl;
     }
     int maintenanceIndex = 1;
     for(auto maintenance : instance.maintenances) {
@@ -427,7 +416,7 @@ Instance loadInstance(int instanceNumber) {
     for (int i = 0; i < numOfJobs; ++i) {
         getline(instanceFile, line);
         auto pieces = split(line, ';');
-        jobs.push_back(Job(jobIndex++, new Operation(stoi(pieces[0])), new Operation(stoi(pieces[1]))));
+        jobs.push_back(Job(jobIndex++, Operation(stoi(pieces[0])), Operation(stoi(pieces[1])))); // NOLINT(modernize-use-emplace)
     }
 
     while(getline(instanceFile, line)) {
@@ -467,7 +456,7 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
     sort(firstMachineMaintenances.begin(), firstMachineMaintenances.end(), sortMaintenances);
     for(Job job : firstMachine) { // first machine
         while (!done) {
-            if (job.first->startTime == currentTime) {
+            if (job.first.startTime == currentTime) {
                 if (idle) {
                     helperStream << "idle" << idleIndex++ << "_M1, " <<
                                  idleStartTime << ", " << currentTime - idleStartTime << "; ";
@@ -478,9 +467,9 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
                     totalIdleTimeM1 += currentTime - idleStartTime;
                 }
                 helperStream << "op1_" << job.id << ", " <<
-                             currentTime << ", " << job.first->timeToComplete <<
-                             ", " << currentTime + job.first->finishTime - job.first->startTime << "; ";
-                currentTime += job.first->finishTime - job.first->startTime;
+                             currentTime << ", " << job.first.timeToComplete <<
+                             ", " << currentTime + job.first.finishTime - job.first.startTime << "; ";
+                currentTime += job.first.finishTime - job.first.startTime;
                 M1 += helperStream.str();
                 helperStream.str("");
                 break;
@@ -525,7 +514,7 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
     done = false;
     for(Job job : secondMachine) {
         while(!done) {
-            if (job.second->startTime == currentTime) {
+            if (job.second.startTime == currentTime) {
                 if(idle) {
                     helperStream << "idle" << idleIndex++ << "_M2, " <<
                                  idleStartTime << ", " << currentTime - idleStartTime << "; ";
@@ -537,9 +526,9 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
                 }
 
                 helperStream << "op1_" << job.id << ", " <<
-                             currentTime << ", " << job.second->timeToComplete <<
-                             ", " <<  currentTime + job.second->finishTime - job.second->startTime << "; ";
-                currentTime += job.second->finishTime - job.second->startTime;
+                             currentTime << ", " << job.second.timeToComplete <<
+                             ", " <<  currentTime + job.second.finishTime - job.second.startTime << "; ";
+                currentTime += job.second.finishTime - job.second.startTime;
                 M2 += helperStream.str();
                 helperStream.str("");
                 break;
@@ -565,11 +554,11 @@ void saveOutput(const Instance &instance, const Solution &bestSolution, int prev
 
 void testFunction(int ID, int N, int K, int POPULATION, int NUMBEROFITERATIONS, int NUMBEROFANTS, int ANTSTEPVALUE, float EVAPORATIONRATE) {
     printf("Nr %d\n", ID);
+    printf("N: %d K: %d POPULATION: %d ITERATIONS: %d ANTS: %d STEP: %d EVAPORATION: %.2f\n", N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
     Instance mainInstance = generateInstance(N, K);
     saveInstance(mainInstance, ID);
     Solution bestSolution = antColonyOptimization(mainInstance, N, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
     saveOutput(mainInstance, bestSolution, bestSolution.previousTime, ID);
-    deleteInstance(mainInstance);
 };
 
 int main() {
@@ -596,48 +585,46 @@ int main() {
     vector<float> evaporationRatesVector (evaporationRates, evaporationRates + sizeof(evaporationRates) / sizeof(float));
 
 
+
     int ID = 1;
+    int POPULATION = 100;
+    int NUMBEROFITERATIONS = 100;
+    int NUMBEROFANTS = 100;
+    int ANTSTEPVALUE = 15;
+    float EVAPORATIONRATE = 0.55;
     for(int N : nsVector) {
-        printf("Test N dla: %d\n", N);
-        int K = (int) 0.3 * N; // default k
-        int POPULATION = 100;
-        int NUMBEROFITERATIONS = 100;
-        int NUMBEROFANTS = 200;
-        int ANTSTEPVALUE = 10;
-        float EVAPORATIONRATE = 0.7;
-
-        printf("kRate: \n");
+        printf("\n\nTest N dla: %d\n", N);
         for(float KRATE : kRatesVector) {
-            testFunction(ID++, N, (int) KRATE * N, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
-        }
+            int K = (int)(KRATE * N);
+            printf("\nTest K dla: %d\n\n", K);
+            printf("Population: \n");
+            for(int POP : populationsVector) {
+                testFunction(ID++, N, K, POP, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+            }
 
-        printf("Population: \n");
-        for(int POP : populationsVector) {
-            testFunction(ID++, N, K, POP, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
-        }
+            printf("Iterations: \n");
+            for(int ITER : numsOfItersVector) {
+                testFunction(ID++, N, K, POPULATION, ITER, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
 
-        printf("Iterations: \n");
-        for(int ITER : numsOfItersVector) {
-            testFunction(ID++, N, K, POPULATION, ITER, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+            }
 
-        }
+            printf("Ants: \n");
+            for(int ANTS : numberOfAntsVector) {
+                testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, ANTS, ANTSTEPVALUE, EVAPORATIONRATE);
 
-        printf("Ants: \n");
-        for(int ANTS : numberOfAntsVector) {
-            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, ANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+            }
 
-        }
+            printf("Step: \n");
+            for(int STEP : antStepValuesVector) {
+                testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, STEP, EVAPORATIONRATE);
 
-        printf("Step: \n");
-        for(int STEP : antStepValuesVector) {
-            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, STEP, EVAPORATIONRATE);
+            }
 
-        }
+            printf("Evaporation: \n");
+            for(float EVAPORATION : evaporationRatesVector) {
+                testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATION);
 
-        printf("Evaporation: \n");
-        for(float EVAPORATION : evaporationRatesVector) {
-            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATION);
-
+            }
         }
     }
 
