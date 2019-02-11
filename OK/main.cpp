@@ -248,10 +248,8 @@ Solution getRandomSolution(const Instance &instance) {
     static default_random_engine dre = default_random_engine(
                          static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
 
-    Instance copiedInstance = copyInstance(instance);
-
     auto order = vector<int>();
-    auto limit = static_cast<int>(copiedInstance.jobs.size());
+    auto limit = static_cast<int>(instance.jobs.size());
     for (int i = 0; i < limit; ++i) order.push_back(i);
     shuffle(order.begin(), order.end(), dre);
 
@@ -334,11 +332,11 @@ vector<Solution> choosePaths(vector<Solution> paths, int number ) {
             static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
 
     sort(paths.begin(), paths.end(), sortSolutions);
-    vector<Solution> output = vector<Solution>(paths.begin(), paths.begin() + (int) (number * 0.75));
+    vector<Solution> output = vector<Solution>(paths.begin(), paths.begin() + (int) (number * 0.5));
 
-    paths.erase(paths.begin(), paths.begin() + (int) (number * 0.75));
+    paths.erase(paths.begin(), paths.begin() + (int) (number * 0.5));
     shuffle(paths.begin(), paths.end(), dre);
-    paths.erase(paths.begin() + (int) (number * 0.75), paths.end());
+    paths.erase(paths.begin() + (int) (number * 0.5), paths.end());
     auto picked = connectVectors(output, paths);
     sort(picked.begin(), picked.end(), sortSolutions);
     return picked;
@@ -358,15 +356,15 @@ Solution antColonyOptimization(const Instance &instance,
     updateMatrix(matrix, randomSolutions, antStep);
     int B1 = randomSolutions[getRandomInt(0, numOfSolutions - 1)].finishTime;
 
-    vector<Solution> pathsOne = getAntPaths(matrix, instance, numOfAnts, dimensions);
-    vector<Solution> connected = connectVectors<Solution>(randomSolutions, pathsOne);
+    vector<Solution> paths = getAntPaths(matrix, instance, numOfAnts, dimensions);
+    vector<Solution> connected = connectVectors<Solution>(randomSolutions, paths);
     vector<Solution> bestSolutions = choosePaths(connected, numOfSolutions);
 
 
     updateMatrix(matrix, bestSolutions, antStep);
     for (int iter = 0; iter < iterations; ++iter) {
-        pathsOne = getAntPaths(matrix, instance, numOfAnts, dimensions);
-        connected = connectVectors(pathsOne, bestSolutions);
+        paths = getAntPaths(matrix, instance, numOfAnts, dimensions);
+        connected = connectVectors(paths, bestSolutions);
         bestSolutions = choosePaths(connected, numOfSolutions);
         updateMatrix(matrix, bestSolutions, antStep);
         evaporateMatrix(matrix, evaporation);
@@ -587,7 +585,7 @@ int main() {
 
 
     int ID = 1;
-    int POPULATION = 100;
+    int POPULATION = 150;
     int NUMBEROFITERATIONS = 100;
     int NUMBEROFANTS = 100;
     int ANTSTEPVALUE = 15;
@@ -597,6 +595,8 @@ int main() {
         for(float KRATE : kRatesVector) {
             int K = (int)(KRATE * N);
             printf("\nTest K dla: %d\n\n", K);
+            testFunction(ID++, N, K, POPULATION, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
+
             printf("Population: \n");
             for(int POP : populationsVector) {
                 testFunction(ID++, N, K, POP, NUMBEROFITERATIONS, NUMBEROFANTS, ANTSTEPVALUE, EVAPORATIONRATE);
